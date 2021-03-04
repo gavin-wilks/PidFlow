@@ -1,0 +1,37 @@
+# a comment - this is ignored
+# ignore share lib
+*/.sl*
+# ignore .consign, *.d, *.so, *.eps, *.swp, all the log file and script in StRoot
+*.swp
+temp_gccflags.c
+*/StRoot/**/.consign
+*/StRoot/**/*.d
+*/StRoot/**/*.so
+*/StRoot/**/*.eps
+*/StRoot/**/*.err
+*/StRoot/**/*.log
+*/StRoot/**/*.csh
+*/StRoot/**/*.swp
+*/*.swp
+*/temp_gccflags.c
+*/*_C.*
+*/macro/*_C.*
+
+FileList/*/*.list
+!FileList/*/runNumber.list
+
+*/*.root
+*/StRoot/CVS/
+*/StRoot/StRefMultCorr/CVS/
+*/StRoot/*Utility/RunIndex/badRunIndexUnSorted*.txt
+*/submit/*/JOBS/
+*/submit/*/Log/
+*/submit/*/sched*
+*/submit/*/*.session.xml
+*/submit/*/Submitted/
+*/macro/figures/*.eps
+*/macro/figures/*.png
+*/macro/figures/*.pdf
+*/macro/*.eps
+*/macro/*.png
+*/macro/*.pdf
