@@ -186,7 +186,7 @@ bool StEventPlaneCut::passTrackBasic(StPicoTrack *picoTrack)
   {
     return kFALSE;
   }
-  if((float)picoTrack->nHitsFit()/(float)picoTrack->nHitsMax() < recoEP::mHitsRatioTPCMin)
+  if((double)picoTrack->nHitsFit()/(double)picoTrack->nHitsMax() < recoEP::mHitsRatioTPCMin)
   {
     return kFALSE;
   }
@@ -195,11 +195,12 @@ bool StEventPlaneCut::passTrackBasic(StPicoTrack *picoTrack)
   // float eta = picoTrack->pMom().pseudoRapidity();
   // float eta = picoTrack->pMom().PseudoRapidity();
   TVector3 primMom; // temp fix for StThreeVectorF & TVector3
-  float primPx    = picoTrack->pMom().x(); // x works for both TVector3 and StThreeVectorF
-  float primPy    = picoTrack->pMom().y();
-  float primPz    = picoTrack->pMom().z();
+  const double primPx    = picoTrack->pMom().x(); // x works for both TVector3 and StThreeVectorF
+  const double primPy    = picoTrack->pMom().y();
+  const double primPz    = picoTrack->pMom().z();
   primMom.SetXYZ(primPx,primPy,primPz);
-  float eta = primMom.PseudoRapidity();
+
+  const double eta = primMom.PseudoRapidity();
   if(fabs(eta) > recoEP::mEtaMax)
   {
     return kFALSE;
@@ -213,120 +214,102 @@ bool StEventPlaneCut::passTrackBasic(StPicoTrack *picoTrack)
   return kTRUE;
 }
 
-bool StEventPlaneCut::passTrackQA(StPicoTrack *picoTrack, StPicoEvent *picoEvent)
+bool StEventPlaneCut::passTrackEP(StPicoTrack *picoTrack, StPicoEvent* picoEvent)
 {
   if(!passTrackBasic(picoTrack)) return kFALSE;
-  if(!picoEvent) return kFALSE;
 
-  const float vx    = picoEvent->primaryVertex().x(); // x works for both TVector3 and StThreeVectorF
-  const float vy    = picoEvent->primaryVertex().y();
-  const float vz    = picoEvent->primaryVertex().z();
+  const double vx = picoEvent->primaryVertex().x(); // x works for both TVector3 and StThreeVectorF
+  const double vy = picoEvent->primaryVertex().y();
+  const double vz = picoEvent->primaryVertex().z();
 
-  if(picoTrack->gDCA(vx,vy,vz) > recoEP::mDcaTrQAMax)
+  // dca cut for event plane reconstruction: 200GeV = 3.0, BES = 1.0
+  if(picoTrack->gDCA(vx,vy,vz) > recoEP::mDcaEPMax[mEnergy])
+  {
+    return kFALSE;
+  }
+
+  // pt cut 0.2 - 2.0 GeV/c
+  TVector3 primMom; // temp fix for StThreeVectorF & TVector3
+  const double primPx    = picoTrack->pMom().x(); // x works for both TVector3 and StThreeVectorF
+  const double primPy    = picoTrack->pMom().y();
+  const double primPz    = picoTrack->pMom().z();
+  primMom.SetXYZ(primPx,primPy,primPz);
+
+  const double pt = primMom.Perp();
+  const double p  = primMom.Mag();
+  if(!(pt > recoEP::mPrimPtMin[mEnergy] && pt < recoEP::mPrimPtMax && p < recoEP::mPrimMomMax))
   {
     return kFALSE;
   }
 
   return kTRUE;
 }
-
 //---------------------------------------------------------------------------------
-float StEventPlaneCut::getBeta(StPicoDst *picoDst, int i_track)
+double StEventPlaneCut::getBeta(StPicoTrack *picoTrack, StPicoDst *picoDst)
 {
-  float Beta = -999.9;
-  StPicoTrack *picoTrack = (StPicoTrack*)picoDst->track(i_track); // return ith track
+  double beta = -999.9;
+  // StPicoTrack *picoTrack = (StPicoTrack*)picoDst->track(i_track); // return ith track
   int tofIndex = picoTrack->bTofPidTraitsIndex(); // return ToF PID traits
   if(tofIndex >= 0)
   {
     StPicoBTofPidTraits *tofTrack = picoDst->btofPidTraits(tofIndex);
-    Beta = tofTrack->btofBeta();
+    beta = tofTrack->btofBeta();
   }
 
-  return Beta;
+  return beta;
 }
 
-float StEventPlaneCut::getPrimaryMass2(StPicoDst *picoDst, int i_track)
+double StEventPlaneCut::getPrimaryMass2(StPicoTrack *picoTrack, StPicoDst *picoDst)
 {
-  float Mass2 = -999.9;
-  StPicoTrack *picoTrack = (StPicoTrack*)picoDst->track(i_track); // return ith track
+  double mass2 = -999.9;
+  // StPicoTrack *picoTrack = (StPicoTrack*)picoDst->track(i_track); // return ith track
   int tofIndex = picoTrack->bTofPidTraitsIndex(); // return ToF PID traits
   if(tofIndex >= 0)
   {
     StPicoBTofPidTraits *tofTrack = picoDst->btofPidTraits(tofIndex);
-    float Beta = tofTrack->btofBeta();
-    // float Momentum = picoTrack->pMom().mag(); // primary momentum for 54GeV_2017
-    // float Momentum = picoTrack->pMom().Mag(); // primary momentum for 27GeV_2018
+    const double beta = tofTrack->btofBeta();
+    // const double Momentum = picoTrack->pMom().mag(); // primary momentum for 54GeV_2017
+    // const double Momentum = picoTrack->pMom().Mag(); // primary momentum for 27GeV_2018
     TVector3 primMom; // temp fix for StThreeVectorF & TVector3
-    float primPx    = picoTrack->pMom().x(); // x works for both TVector3 and StThreeVectorF
-    float primPy    = picoTrack->pMom().y();
-    float primPz    = picoTrack->pMom().z();
+    const double primPx    = picoTrack->pMom().x(); // x works for both TVector3 and StThreeVectorF
+    const double primPy    = picoTrack->pMom().y();
+    const double primPz    = picoTrack->pMom().z();
     primMom.SetXYZ(primPx,primPy,primPz);
-    float Momentum = primMom.Mag(); // primary momentum
+    const double Momentum = primMom.Mag(); // primary momentum
 
-    if(tofTrack->btofMatchFlag() > 0 && tofTrack->btof() != 0 && Beta != 0)
+    if(tofTrack->btofMatchFlag() > 0 && tofTrack->btof() != 0 && beta != 0)
     {
-      Mass2 = Momentum*Momentum*(1.0/(Beta*Beta) - 1.0);
+      mass2 = Momentum*Momentum*(1.0/(beta*beta) - 1.0);
     }
   }
 
-  return Mass2;
+  return mass2;
 }
 
-float StEventPlaneCut::getGlobalMass2(StPicoDst *picoDst, int i_track)
+double StEventPlaneCut::getGlobalMass2(StPicoTrack *picoTrack, StPicoDst *picoDst)
 {
-  float Mass2 = -999.9;
-  StPicoTrack *picoTrack = (StPicoTrack*)picoDst->track(i_track); // return ith track
+  double mass2 = -999.9;
+  // StPicoTrack *picoTrack = (StPicoTrack*)picoDst->track(i_track); // return ith track
   int tofIndex = picoTrack->bTofPidTraitsIndex(); // return ToF PID traits
   if(tofIndex >= 0)
   {
     StPicoBTofPidTraits *tofTrack = picoDst->btofPidTraits(tofIndex);
-    float Beta = tofTrack->btofBeta();
-    // float Momentum = picoTrack->gMom().mag(); // global momentum for 54GeV_2017
-    // float Momentum = picoTrack->gMom().Mag(); // global momentum for 27GeV_2018
+    const double beta = tofTrack->btofBeta();
+    // const double Momentum = picoTrack->gMom().mag(); // global momentum for 54GeV_2017
+    // const double Momentum = picoTrack->gMom().Mag(); // global momentum for 27GeV_2018
     TVector3 globMom; // temp fix for StThreeVectorF & TVector3
-    float globPx     = picoTrack->gMom().x(); // x works for both TVector3 and StThreeVectorF
-    float globPy     = picoTrack->gMom().y();
-    float globPz     = picoTrack->gMom().z();
+    const double globPx     = picoTrack->gMom().x(); // x works for both TVector3 and StThreeVectorF
+    const double globPy     = picoTrack->gMom().y();
+    const double globPz     = picoTrack->gMom().z();
     globMom.SetXYZ(globPx,globPy,globPz);
-    float Momentum = globMom.Mag(); // global momentum
+    const double Momentum = globMom.Mag(); // global momentum
 
-    if(tofTrack->btofMatchFlag() > 0 && tofTrack->btof() != 0 && Beta != 0)
+    if(tofTrack->btofMatchFlag() > 0 && tofTrack->btof() != 0 && beta != 0)
     {
-      Mass2 = Momentum*Momentum*(1.0/(Beta*Beta) - 1.0);
+      mass2 = Momentum*Momentum*(1.0/(beta*beta) - 1.0);
     }
   }
 
-  return Mass2;
-}
-
-int StEventPlaneCut::getTriggerBin(StPicoEvent *picoEvent)
-{
-  // std::cout << "year: " << picoEvent->year() << std::endl;
-  // std::cout << "day: " << picoEvent->day() << std::endl;
-  // std::cout << "triggerIds: " << picoEvent->triggerIds()[0] << std::endl;
-  if( mEnergy == 0 && recoEP::mBeamYear[mEnergy] == picoEvent->year() )
-  { // 200GeV_2014
-    if( picoEvent->isTrigger(450005) ) return 0; // VPDMB-5-p-nobsmd
-    if( picoEvent->isTrigger(450015) ) return 1; // VPDMB-5-p-nobsmd
-    if( picoEvent->isTrigger(450025) ) return 2; // VPDMB-5-p-nobsmd
-    if( picoEvent->isTrigger(450050) ) return 3; // VPDMB-5-p-nobsmd-hlt
-    if( picoEvent->isTrigger(450060) ) return 4; // VPDMB-5-p-nobsmd-hlt
-  }
-  if( mEnergy == 1 && recoEP::mBeamYear[mEnergy] == picoEvent->year() )
-  { // 54GeV_2017
-    if( picoEvent->isTrigger(580001) ) return 0; // minBias
-    if( picoEvent->isTrigger(580021) ) return 1; // minBias
-  }
-  if( mEnergy == 2 && recoEP::mBeamYear[mEnergy] == picoEvent->year() )
-  { // 27GeV_2018
-    if( picoEvent->isTrigger(610001) ) return 0; // mb
-    if( picoEvent->isTrigger(610011) ) return 1; // mb
-    if( picoEvent->isTrigger(610021) ) return 2; // mb
-    if( picoEvent->isTrigger(610031) ) return 3; // mb
-    if( picoEvent->isTrigger(610041) ) return 4; // mb
-    if( picoEvent->isTrigger(610051) ) return 5; // mb
-  }
-
-  return -1;
+  return mass2;
 }
 //---------------------------------------------------------------------------------

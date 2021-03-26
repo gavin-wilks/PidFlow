@@ -15,6 +15,7 @@ class StEventPlaneCut;
 class StEventPlaneHistoManager;
 class StEventPlaneProManager;
 class StZdcEpManager;
+class StTpcEpManager;
 
 class StEventPlaneMaker : public StMaker {
   public:
@@ -37,9 +38,9 @@ class StEventPlaneMaker : public StMaker {
     StEventPlaneHistoManager *mEventPlaneHistoManager;
     StEventPlaneProManager *mEventPlaneProManager;
     StZdcEpManager *mZdcEpManager;
-    // StEventPlaneBbcEpManager *mEventPlaneBbcEpManager;
-    // StEventPlaneEpdEpManager *mEventPlaneEpdEpManager;
-    // StEventPlaneTpcEpManager *mEventPlaneTpcEpManager;
+    // StBbcEpManager *mBbcEpManager;
+    // StEpdEpManager *mEpdEpManager;
+    StTpcEpManager *mTpcEpManager;
     
     int mMode;
     int mEnergy;

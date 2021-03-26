@@ -3,7 +3,6 @@
 
 #include "TObject.h"
 #include "TVector2.h"
-#include "TString.h"
 
 class StPicoDst;
 class StPicoTrack;
@@ -14,85 +13,95 @@ class TNtuple;
 class StTpcEpManager : public TObject
 {
   public:
-    StTpcEpManager(Int_t energy);
+    StTpcEpManager(int energy);
     virtual ~StTpcEpManager();
-
+    void clearTpcEp();
+    void initTpcEp(int Cent9, int RunIndex, int VzSign);
 
     // ReCenter Correction
     bool passTrackEtaEast(StPicoTrack*);
     bool passTrackEtaWest(StPicoTrack*);
-    bool passTrackFull(StPicoTrack*);
+    bool passTrackEtaFull(StPicoTrack*);
 
     TVector2 calq2Vector(StPicoTrack*);
-    Float_t getWeight(StPicoTrack*);
+    double getWeight(StPicoTrack*);
 
-    void InitReCenterCorrection();
-    void addTrack_EastRaw(StPicoTrack* track, Int_t Cent9, Int_t RunIndex);
-    void addTrack_WestRaw(StPicoTrack* track, Int_t Cent9, Int_t RunIndex);
-    void addTrack_FullRaw(StPicoTrack* track, Int_t Cent9, Int_t RunIndex);
+    void addTrackEastRaw(StPicoTrack* picoTrack); // raw EP
+    void addTrackWestRaw(StPicoTrack* picoTrack);
+    void addTrackFullRaw(StPicoTrack* picoTrack);
 
-    void addTrack_East(StPicoTrack* track, Int_t Cent9, Int_t RunIndex, Int_t i); // i = vz_sign
-    void addTrack_West(StPicoTrack* track, Int_t Cent9, Int_t RunIndex, Int_t i);
-    void addTrack_Full(StPicoTrack* track, Int_t Cent9, Int_t RunIndex, Int_t i);
+    void initReCenterCorr();
+    TVector2 getReCenterParEast();
+    TVector2 getReCenterParWest();
+    TVector2 getReCenterParFull();
 
-    void addTrack_A(StPicoTrack* track, Int_t Cent9, Int_t RunIndex, Int_t i); // i = vz_sign || random sub A
-    void addTrack_B(StPicoTrack* track, Int_t Cent9, Int_t RunIndex, Int_t i); // i = vz_sign || random sub B
+    void addTrackEast(StPicoTrack* picoTrack); // re-centered EP
+    void addTrackWest(StPicoTrack* picoTrack);
+    void addTrackFull(StPicoTrack* picoTrack);
+    void addTrackSubA(StPicoTrack* picoTrack); // random sub A
+    void addTrackSubB(StPicoTrack* picoTrack); // random sub B
     void Randomization();
 
-    TVector2 getReCenterPar_East(Int_t Cent9, Int_t RunIndex, Int_t vz_sign);
-    TVector2 getReCenterPar_West(Int_t Cent9, Int_t RunIndex, Int_t vz_sign);
-    TVector2 getReCenterPar_Full(Int_t Cent9, Int_t RunIndex, Int_t vz_sign);
-
     void print(TVector2);
-    void clear();
 
     // Shift Correction
-    bool passTrackEtaNumCut();
-    bool passTrackFullNumCut();
     bool passTrackEtaNumRawCut();
     bool passTrackFullNumRawCut();
+    bool passTrackEtaNumCut();
+    bool passTrackFullNumCut();
 
-    // Event Plane method
-    TVector2 calPsi2_East_EP(Int_t); // 0 = ShiftOrder: 2, 4, 6, 8, 10
-    TVector2 calPsi2_West_EP(Int_t);
-    TVector2 calPsi2_Full_EP(Int_t);
+    void initShiftCorr();
+    double AngleShift(double Psi2Raw);
 
-    void InitShiftCorrection();
-    Float_t AngleShift(Float_t Psi_raw);
+    double calShiftAngle2East();
+    double calShiftAngle2West();
+    double calShiftAngle2SubA();
+    double calShiftAngle2SubB();
+    double calShiftAngle2Full();
+    double calShiftAngle2Full(StPicoTrack *picoTrack); // subtract self-correlation
 
-    // Event Plane method
-    Float_t calShiftAngle2East_EP(Int_t runIndex, Int_t Cent9, Int_t vz_sign);
-    Float_t calShiftAngle2West_EP(Int_t runIndex, Int_t Cent9, Int_t vz_sign);
-    Float_t calShiftAngle2A_EP(Int_t runIndex, Int_t Cent9, Int_t vz_sign);
-    Float_t calShiftAngle2B_EP(Int_t runIndex, Int_t Cent9, Int_t vz_sign);
-    Float_t calShiftAngle2Full_EP(Int_t runIndex, Int_t Cent9, Int_t vz_sign);
-    Float_t calShiftAngle2Full_EP(Int_t runIndex, Int_t Cent9, Int_t vz_sign, StPicoTrack *track); // subtract self-correlation
+    void initResolutionCorr();
+    double getRes2Sub(int Cent9);
+    double getRes2Full(int Cent9);
 
-    void InitResolutionCorr();
-    Float_t getResolution2_EP(Int_t Cent9);
-    Float_t getResolution2_Full_EP(Int_t Cent9);
-
-    TVector2 getQVector(Int_t l); // east/west
-    TVector2 getQVectorRaw(Int_t l);
-    Int_t getNumTrack(Int_t);
+    TVector2 getQVector(int nEP); // east/west/full/subA/subB
+    TVector2 getQVectorRaw(int nEP);
+    int getNumTrack(int nEP);
 
   private:
     //Event Plane method
-    TVector2 mQ2Vector_EastRaw_EP, mQ2Vector_WestRaw_EP, mQ2Vector_FullRaw_EP;
-    TVector2 mQ2Vector_East_EP, mQ2Vector_West_EP, mQ2Vector_Full_EP, mQ2Vector_A_EP, mQ2Vector_B_EP;
+    TVector2 mQ2VecEastRaw, mQ2VecWestRaw, mQ2VecFullRaw;
+    int mQ2CounterRawEast, mQ2CounterRawWest, mQ2CounterRawFull;
 
-    Int_t    mQCounter_RawEast, mQCounter_RawWest, mQCounter_RawFull;
-    Int_t    mQCounter_East, mQCounter_West, mQCounter_Full;
-    Int_t    mQCounter_Full_East, mQCounter_Full_West;
-    Int_t    mQCounter_A, mQCounter_B;
-    Int_t    mEnergy;
+    TVector2 mQ2VecEast, mQ2VecWest, mQ2VecFull, mQ2VecSubA, mQ2VecSubB;
+    int mQ2CounterEast, mQ2CounterWest, mQ2CounterFull;
+    int mQ2CounterFull_East, mQ2CounterFull_West;
+    int mQ2CounterSubA, mQ2CounterSubB;
 
-    TFile *mInPutFile;
+    int mEnergy;
+    int mCent9;
+    int mRunIndex;
+    int mVzSign;
+
+    // TPC ReCenter Correction | x axis is RunIndex, y axis is Centrality
+    TProfile2D *p_mTpcq2xEast[2]; // 0 = vertex pos/neg
+    TProfile2D *p_mTpcq2yEast[2];
+    TProfile2D *p_mTpcq2xWest[2];
+    TProfile2D *p_mTpcq2yWest[2];
+    TProfile2D *p_mTpcq2xFull[2];
+    TProfile2D *p_mTpcq2yFull[2];
+
+    // Shift Correction | x axis is RunIndex, y axis is Centrality
+    TProfile2D *p_mTpcQ2EastCos[2][20]; // 0 = vertex pos/neg, 1 = ShiftOrder
+    TProfile2D *p_mTpcQ2EastSin[2][20];
+    TProfile2D *p_mTpcQ2WestCos[2][20]; 
+    TProfile2D *p_mTpcQ2WestSin[2][20];
+    TProfile2D *p_mTpcQ2FullCos[2][20];
+    TProfile2D *p_mTpcQ2FullSin[2][20];
+
+    TFile *mInPutFile_ReCenter;
     TFile *mInPutFile_Shift;
     TFile *mInPutFile_Res;
-
-    static TString mVStr[2];
-    static TString mOrder;
 
   ClassDef(StTpcEpManager,1)
 };

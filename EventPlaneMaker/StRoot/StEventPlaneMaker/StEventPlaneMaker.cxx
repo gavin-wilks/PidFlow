@@ -14,6 +14,7 @@
 #include "StRoot/StEventPlaneMaker/StEventPlaneHistoManager.h"
 #include "StRoot/StEventPlaneMaker/StEventPlaneProManager.h"
 #include "StRoot/StEventPlaneMaker/StZdcEpManager.h"
+#include "StRoot/StEventPlaneMaker/StTpcEpManager.h"
 
 #include <algorithm>
 
@@ -34,11 +35,11 @@ StEventPlaneMaker::StEventPlaneMaker(const char* name, StPicoDstMaker *picoMaker
   mMode = Mode;
   mEnergy = energy;
 
-  if(mMode == 0) // Gain Correction for ZDC-SMD
+  if(mMode == 0) // Get Gain Correction Parameters for ZDC-SMD
   {
     mOutPut_GainCorr = Form("./file_%s_GainCorr_%s.root",recoEP::mBeamEnergy[energy].c_str(),jobId.c_str());
   }
-  if(mMode == 1) // Re-Center Correction for ZDC-SMD & TPC
+  if(mMode == 1) // Get Re-Center Correction Parameters for ZDC-SMD & TPC
   {
     mOutPut_ReCenterPar = Form("./file_%s_ReCenterParameter_%s.root",recoEP::mBeamEnergy[energy].c_str(),jobId.c_str());
   }
@@ -57,6 +58,7 @@ int StEventPlaneMaker::Init()
   mEventPlaneUtility->initRunIndex(); // initialize std::map for run index
   mEventPlaneProManager = new StEventPlaneProManager();
   mZdcEpManager = new StZdcEpManager(mEnergy); // initialize ZDC EP Manager
+  mTpcEpManager = new StTpcEpManager(mEnergy); // initialize TPC EP Manager
 
   if(!mRefMultCorr)
   {
@@ -72,9 +74,12 @@ int StEventPlaneMaker::Init()
   if(mMode == 1)
   { // fill ReCenter Correction Parameters for ZDC-SMD & TPC
     mFile_ReCenterPar = new TFile(mOutPut_ReCenterPar.c_str(),"RECREATE");
-    mEventPlaneProManager->initZdcReCenter();
+
+    mEventPlaneProManager->initZdcReCenter(); // ZDC-SMD
     mEventPlaneHistoManager->initZdcRawEP();
     mZdcEpManager->readGainCorr();
+
+    mEventPlaneHistoManager->initTpcRawEP(); // TPC
   }
 
   return kStOK;
@@ -97,8 +102,12 @@ int StEventPlaneMaker::Finish()
     if(mOutPut_ReCenterPar != "")
     {
       mFile_ReCenterPar->cd();
-      mEventPlaneProManager->writeZdcReCenter();
+
+      mEventPlaneProManager->writeZdcReCenter(); // ZDC-SMD
       mEventPlaneHistoManager->writeZdcRawEP();
+
+      mEventPlaneHistoManager->writeTpcRawEP(); // TPC
+
       mFile_GainCorr->Close();
     }
   }
@@ -174,7 +183,7 @@ int StEventPlaneMaker::Make()
     const int cent9 = mRefMultCorr->getCentralityBin9(); // get Centrality9
     const double reweight = mRefMultCorr->getWeight(); // get weight
     const int runIndex = mEventPlaneUtility->findRunIndex(runId); // find run index for a specific run
-    const int triggerBin = mEventPlaneCut->getTriggerBin(mPicoEvent);
+    // const int triggerBin = mEventPlaneCut->getTriggerBin(mPicoEvent);
     // cout << "runId = " << runId << ", runIndex = " << runIndex << endl;
     if(runIndex < 0)
     {
@@ -191,7 +200,7 @@ int StEventPlaneMaker::Make()
     if(mEventPlaneCut->passEventCut(mPicoDst) && !isPileUpEvent)
     { // apply Event Cuts for anlaysis 
       // ZDC-SMD EP
-      mZdcEpManager->initZdcEp(cent9,runIndex);
+      mZdcEpManager->initZdcEp(cent9,runIndex,vz_sign);
       if(mMode == 0)
       { // fill Gain Correction Factors for BBC & ZDC
 	for(int i_slat = 0; i_slat < 8; ++i_slat) // read in raw ADC value from ZDC-SMD
@@ -230,8 +239,8 @@ int StEventPlaneMaker::Make()
 	  TVector2 QFull = QWest-QEast;
 	  if( !(QEast.Mod() < 1e-10 || QWest.Mod() < 1e-10 || QFull.Mod() < 1e-10) )
 	  {
-	    mEventPlaneProManager->fillZdcReCenterEast(QEast,cent9,runIndex);
-	    mEventPlaneProManager->fillZdcReCenterWest(QWest,cent9,runIndex);
+	    mEventPlaneProManager->fillZdcReCenterEast(QEast,cent9,runIndex,vz_sign);
+	    mEventPlaneProManager->fillZdcReCenterWest(QWest,cent9,runIndex,vz_sign);
 	    mEventPlaneHistoManager->fillZdcRawEP(QEast,QWest,QFull,cent9,runIndex);
 	  }
 	}

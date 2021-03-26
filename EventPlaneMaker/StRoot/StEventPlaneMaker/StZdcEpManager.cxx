@@ -16,7 +16,7 @@
 #include "TRandom3.h"
 #include "TF1.h"
 
-Double_t Resolution_Full(Double_t *x_val, Double_t *par)
+Double_t Resolution_ZdcFull(Double_t *x_val, Double_t *par)
 {
   Double_t y;
   Double_t chi = x_val[0];
@@ -47,7 +47,7 @@ void StZdcEpManager::clearZdcEp()
 {
   mCent9 = -1;
   mRunIndex = -1;
-  mVz_sign = -1;
+  mVzSign = -1;
   for(int i_eastwest = 0; i_eastwest < 2; ++i_eastwest)
   {
     for(int i_verthori = 0; i_verthori < 2; ++i_verthori)
@@ -66,10 +66,11 @@ void StZdcEpManager::clearZdcEp()
   for(int i_cent = 0; i_cent < 9; ++i_cent) mResolution[i_cent] = 0.0;
 }
 
-void StZdcEpManager::initZdcEp(int Cent9, int RunIndex)
+void StZdcEpManager::initZdcEp(int Cent9, int RunIndex, int VzSign)
 {
   mCent9 = Cent9;
   mRunIndex = RunIndex;
+  mVzSign = VzSign;
 }
 
 //---------------------------------------------------------------------------------
@@ -201,31 +202,33 @@ void StZdcEpManager::readReCenterCorr()
   mFile_ReCenterPar = TFile::Open(InPutFile.c_str());
 
   string ProName;
+  for(int i_vz = 0; i_vz < 2; ++i_vz)
+  {
+    ProName = Form("p_mZdcQ1EastVertical_%s",recoEP::mVStr[i_vz].c_str());
+    p_mZdcQ1EastVertical[i_vz] = (TProfile2D*)mFile_ReCenterPar->Get(ProName.c_str());
+    ProName = Form("p_mZdcQ1EastHorizontal_%s",recoEP::mVStr[i_vz].c_str());
+    p_mZdcQ1EastHorizontal[i_vz] = (TProfile2D*)mFile_ReCenterPar->Get(ProName.c_str());
 
-  ProName = "p_mQEastVertical";
-  p_mQEastVertical = (TProfile2D*)mFile_ReCenterPar->Get(ProName.c_str());
-  ProName = "p_mQEastHorizontal";
-  p_mQEastHorizontal = (TProfile2D*)mFile_ReCenterPar->Get(ProName.c_str());
-
-  ProName = "p_mQWestVertical";
-  p_mQWestVertical = (TProfile2D*)mFile_ReCenterPar->Get(ProName.c_str());
-  ProName = "p_mQWestHorizontal";
-  p_mQWestHorizontal = (TProfile2D*)mFile_ReCenterPar->Get(ProName.c_str());
+    ProName = Form("p_mZdcQ1WestVertical_%s",recoEP::mVStr[i_vz].c_str());
+    p_mZdcQ1WestVertical[i_vz] = (TProfile2D*)mFile_ReCenterPar->Get(ProName.c_str());
+    ProName = Form("p_mZdcQ1WestHorizontal_%s",recoEP::mVStr[i_vz].c_str());
+    p_mZdcQ1WestHorizontal[i_vz] = (TProfile2D*)mFile_ReCenterPar->Get(ProName.c_str());
+  }
 }
 
 void StZdcEpManager::setZdcSmdCenter()
 {
-  int binEastVertical = p_mQEastVertical->FindBin((double)mRunIndex,(double)mCent9);
-  mCenterEastVertical = p_mQEastVertical->GetBinContent(binEastVertical);
+  int binEastVertical = p_mZdcQ1EastVertical[mVzSign]->FindBin((double)mRunIndex,(double)mCent9);
+  mCenterEastVertical = p_mZdcQ1EastVertical[mVzSign]->GetBinContent(binEastVertical);
 
-  int binEastHorizontal = p_mQEastHorizontal->FindBin((double)mRunIndex,(double)mCent9);
-  mCenterEastHorizontal = p_mQEastHorizontal->GetBinContent(binEastHorizontal);
+  int binEastHorizontal = p_mZdcQ1EastHorizontal[mVzSign]->FindBin((double)mRunIndex,(double)mCent9);
+  mCenterEastHorizontal = p_mZdcQ1EastHorizontal[mVzSign]->GetBinContent(binEastHorizontal);
 
-  int binWestVertical = p_mQWestVertical->FindBin((double)mRunIndex,(double)mCent9);
-  mCenterWestVertical = -1.0*p_mQWestVertical->GetBinContent(binWestVertical);
+  int binWestVertical = p_mZdcQ1WestVertical[mVzSign]->FindBin((double)mRunIndex,(double)mCent9);
+  mCenterWestVertical = -1.0*p_mZdcQ1WestVertical[mVzSign]->GetBinContent(binWestVertical);
 
-  int binWestHorizontal = p_mQWestHorizontal->FindBin((double)mRunIndex,(double)mCent9);
-  mCenterWestHorizontal = p_mQWestHorizontal->GetBinContent(binWestHorizontal);
+  int binWestHorizontal = p_mZdcQ1WestHorizontal[mVzSign]->FindBin((double)mRunIndex,(double)mCent9);
+  mCenterWestHorizontal = p_mZdcQ1WestHorizontal[mVzSign]->GetBinContent(binWestHorizontal);
   // cout << "mCenterEastVertical = " << mCenterEastVertical << ", mCenterEastHorizontal = " << mCenterEastHorizontal << ", mCenterWestVertical = " << mCenterWestVertical << ", mCenterWestHorizontal = " << mCenterWestHorizontal << endl;
 }
 
@@ -236,19 +239,21 @@ void StZdcEpManager::readShiftCorr()
   string InPutFile = Form("StRoot/StEventPlaneUtility/ShiftParameter/file_%s_ZdcShiftParameter.root",recoEP::mBeamEnergy[mEnergy].c_str());
   mFile_ShiftPar = TFile::Open(InPutFile.c_str());
 
-  for(int i_shift = 0; i_shift < 20; ++i_shift) // Shift Order
+  string ProName;
+  for(int i_vz = 0; i_vz < 2; ++i_vz)
   {
-    string ProName;
+    for(int i_shift = 0; i_shift < recoEP::mNumShiftOrder; ++i_shift) // Shift Order
+    {
+      ProName = Form("p_mZdcQ1EastCos_%s_%d",recoEP::mVStr[i_vz].c_str(),i_shift);
+      p_mZdcQ1EastCos[i_vz][i_shift] = (TProfile2D*)mFile_ShiftPar->Get(ProName.c_str());
+      ProName = Form("p_mZdcQ1EastSin_%s_%d",recoEP::mVStr[i_vz].c_str(),i_shift);
+      p_mZdcQ1EastSin[i_vz][i_shift] = (TProfile2D*)mFile_ShiftPar->Get(ProName.c_str());
 
-    ProName = Form("p_mQEastCos_%d",i_shift);
-    p_mQEastCos[i_shift] = (TProfile2D*)mFile_ShiftPar->Get(ProName.c_str());
-    ProName = Form("p_mQEastSin_%d",i_shift);
-    p_mQEastSin[i_shift] = (TProfile2D*)mFile_ShiftPar->Get(ProName.c_str());
-
-    ProName = Form("p_mQWestCos_%d",i_shift);
-    p_mQWestCos[i_shift] = (TProfile2D*)mFile_ShiftPar->Get(ProName.c_str());
-    ProName = Form("p_mQWestSin_%d",i_shift);
-    p_mQWestSin[i_shift] = (TProfile2D*)mFile_ShiftPar->Get(ProName.c_str());
+      ProName = Form("p_mZdcQ1WestCos_%s_%d",recoEP::mVStr[i_vz].c_str(),i_shift);
+      p_mZdcQ1WestCos[i_vz][i_shift] = (TProfile2D*)mFile_ShiftPar->Get(ProName.c_str());
+      ProName = Form("p_mZdcQ1WestSin_%s_%d",recoEP::mVStr[i_vz].c_str(),i_shift);
+      p_mZdcQ1WestSin[i_vz][i_shift] = (TProfile2D*)mFile_ShiftPar->Get(ProName.c_str());
+    }
   }
 }
 
@@ -259,13 +264,13 @@ TVector2 StZdcEpManager::ApplyZdcSmdShiftCorrEast(TVector2 qVector)
   float delta_Psi = 0.0;
   float Psi_Shift;
 
-  for(Int_t i_shift = 0; i_shift < 20; ++i_shift) // Shift Order loop
+  for(Int_t i_shift = 0; i_shift < recoEP::mNumShiftOrder; ++i_shift) // Shift Order loop
   {
-    int bin_Cos = p_mQEastCos[i_shift]->FindBin((double)mRunIndex,(double)mCent9);
-    float mean_Cos = p_mQEastCos[i_shift]->GetBinContent(bin_Cos);
+    int bin_Cos = p_mZdcQ1EastCos[mVzSign][i_shift]->FindBin((double)mRunIndex,(double)mCent9);
+    float mean_Cos = p_mZdcQ1EastCos[mVzSign][i_shift]->GetBinContent(bin_Cos);
 
-    int bin_Sin = p_mQEastSin[i_shift]->FindBin((double)mRunIndex,(double)mCent9);
-    float mean_Sin = p_mQEastSin[i_shift]->GetBinContent(bin_Sin);
+    int bin_Sin = p_mZdcQ1EastSin[mVzSign][i_shift]->FindBin((double)mRunIndex,(double)mCent9);
+    float mean_Sin = p_mZdcQ1EastSin[mVzSign][i_shift]->GetBinContent(bin_Sin);
 
     delta_Psi += (2.0/((float)i_shift+1.0))*(-1.0*mean_Sin*TMath::Cos(((float)i_shift+1.0)*Psi_ReCenter)+mean_Cos*TMath::Sin(((float)i_shift+1.0)*Psi_ReCenter));
   }
@@ -285,13 +290,13 @@ TVector2 StZdcEpManager::ApplyZdcSmdShiftCorrWest(TVector2 qVector)
   float delta_Psi = 0.0;
   float Psi_Shift;
 
-  for(Int_t i_shift = 0; i_shift < 20; ++i_shift) // Shift Order loop
+  for(Int_t i_shift = 0; i_shift < recoEP::mNumShiftOrder; ++i_shift) // Shift Order loop
   {
-    int bin_Cos = p_mQWestCos[i_shift]->FindBin((double)mRunIndex,(double)mCent9);
-    float mean_Cos = p_mQWestCos[i_shift]->GetBinContent(bin_Cos);
+    int bin_Cos = p_mZdcQ1WestCos[mVzSign][i_shift]->FindBin((double)mRunIndex,(double)mCent9);
+    float mean_Cos = p_mZdcQ1WestCos[mVzSign][i_shift]->GetBinContent(bin_Cos);
 
-    int bin_Sin = p_mQWestSin[i_shift]->FindBin((double)mRunIndex,(double)mCent9);
-    float mean_Sin = p_mQWestSin[i_shift]->GetBinContent(bin_Sin);
+    int bin_Sin = p_mZdcQ1WestSin[mVzSign][i_shift]->FindBin((double)mRunIndex,(double)mCent9);
+    float mean_Sin = p_mZdcQ1WestSin[mVzSign][i_shift]->GetBinContent(bin_Sin);
 
     delta_Psi += (2.0/((float)i_shift+1.0))*(-1.0*mean_Sin*TMath::Cos(((float)i_shift+1.0)*Psi_ReCenter)+mean_Cos*TMath::Sin(((float)i_shift+1.0)*Psi_ReCenter));
   }
@@ -327,14 +332,16 @@ void StZdcEpManager::readShiftCorrFull()
   string InPutFile = Form("StRoot/StEventPlaneUtility/ShiftParameterFull/file_%s_ZdcShiftParameterFull.root",recoEP::mBeamEnergy[mEnergy].c_str());
   mFile_ShiftPar = TFile::Open(InPutFile.c_str());
 
-  for(int i_shift = 0; i_shift < 20; ++i_shift) // Shift Order
+  string ProName;
+  for(int i_vz = 0; i_vz < 2; ++i_vz)
   {
-    string ProName;
-
-    ProName = Form("p_mQFullCos_%d",i_shift);
-    p_mQFullCos[i_shift] = (TProfile2D*)mFile_ShiftPar->Get(ProName.c_str());
-    ProName = Form("p_mQFullSin_%d",i_shift);
-    p_mQFullSin[i_shift] = (TProfile2D*)mFile_ShiftPar->Get(ProName.c_str());
+    for(int i_shift = 0; i_shift < recoEP::mNumShiftOrder; ++i_shift) // Shift Order
+    {
+      ProName = Form("p_mZdcQ1FullCos_%s_%d",recoEP::mVStr[i_vz].c_str(),i_shift);
+      p_mZdcQ1FullCos[i_vz][i_shift] = (TProfile2D*)mFile_ShiftPar->Get(ProName.c_str());
+      ProName = Form("p_mZdcQ1FullSin_%s_%d",recoEP::mVStr[i_vz].c_str(),i_shift);
+      p_mZdcQ1FullSin[i_vz][i_shift] = (TProfile2D*)mFile_ShiftPar->Get(ProName.c_str());
+    }
   }
 }
 
@@ -345,13 +352,13 @@ TVector2 StZdcEpManager::ApplyZdcSmdShiftCorrFull(TVector2 qVector)
   float delta_Psi = 0.0;
   float Psi_Shift;
 
-  for(Int_t i_shift = 0; i_shift < 20; ++i_shift) // Shift Order loop
+  for(Int_t i_shift = 0; i_shift < recoEP::mNumShiftOrder; ++i_shift) // Shift Order loop
   {
-    int bin_Cos = p_mQFullCos[i_shift]->FindBin((double)mRunIndex,(double)mCent9);
-    float mean_Cos = p_mQFullCos[i_shift]->GetBinContent(bin_Cos);
+    int bin_Cos = p_mZdcQ1FullCos[mVzSign][i_shift]->FindBin((double)mRunIndex,(double)mCent9);
+    float mean_Cos = p_mZdcQ1FullCos[mVzSign][i_shift]->GetBinContent(bin_Cos);
 
-    int bin_Sin = p_mQFullSin[i_shift]->FindBin((double)mRunIndex,(double)mCent9);
-    float mean_Sin = p_mQFullSin[i_shift]->GetBinContent(bin_Sin);
+    int bin_Sin = p_mZdcQ1FullSin[mVzSign][i_shift]->FindBin((double)mRunIndex,(double)mCent9);
+    float mean_Sin = p_mZdcQ1FullSin[mVzSign][i_shift]->GetBinContent(bin_Sin);
 
     delta_Psi += (2.0/((float)i_shift+1.0))*(-1.0*mean_Sin*TMath::Cos(((float)i_shift+1.0)*Psi_ReCenter)+mean_Cos*TMath::Sin(((float)i_shift+1.0)*Psi_ReCenter));
   }
@@ -383,7 +390,7 @@ void StZdcEpManager::readResolution()
 
 void StZdcEpManager::calResolution()
 {
-  TF1 *f_Res_Full = new TF1("f_Res_Full",Resolution_Full,0,10,0);
+  TF1 *f_Res_Full = new TF1("f_Res_Full",Resolution_ZdcFull,0,10,0);
   for(Int_t i_cent = 0; i_cent < 9; i_cent++)
   {
     float val_res_full, err_res_full;

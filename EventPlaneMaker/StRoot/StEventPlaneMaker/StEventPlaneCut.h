@@ -18,12 +18,13 @@ class StEventPlaneCut : public TObject
     bool isBES();
     bool isPileUpEvent(int, int, int); // refmult/grefmult & nTofMatch & nTofHits
     bool passEventCut(StPicoDst*);
+
     bool passTrackBasic(StPicoTrack*);
-    bool passTrackQA(StPicoTrack*, StPicoEvent*);
-    float getBeta(StPicoDst*, int); // return beta of i-th track (tof || -999)
-    float getPrimaryMass2(StPicoDst*, int); // return m^2 of i-th track (primary || -999)
-    float getGlobalMass2(StPicoDst*, int); // return m^2 of i-th track (global || -999)
-    int getTriggerBin(StPicoEvent*); // return trigger bin for event QA
+    bool passTrackEP(StPicoTrack*, StPicoEvent*);
+
+    double getBeta(StPicoTrack*, StPicoDst*); // return beta of picoTrack (tof || -999)
+    double getPrimaryMass2(StPicoTrack*, StPicoDst*); // return m^2 picoTrack (primary || -999)
+    double getGlobalMass2(StPicoTrack*, StPicoDst*); // return m^2 of picoTrack (global || -999)
 
   private:
     // int mMatchedToF;

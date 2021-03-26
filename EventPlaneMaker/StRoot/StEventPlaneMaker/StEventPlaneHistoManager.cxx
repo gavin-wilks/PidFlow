@@ -87,5 +87,33 @@ void StEventPlaneHistoManager::writeZdcRawEP()
     h_mZdcRawFull[i_cent]->Write();
   }
 }
+//-------------------------------------------------------------------------------------------
 
+//-------------------------------------------------------------------------------------------
+// TPC EP
+void StEventPlaneHistoManager::initTpcRawEP()
+{
+  for(int i_cent = 0; i_cent < 9; ++i_cent)
+  {
+    string HistName = Form("h_mTpcRawEast_%d",i_cent);
+    h_mTpcRawEast[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),360,-1.0*TMath::Pi(),TMath::Pi(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5);
+    HistName = Form("h_mTpcRawWest_%d",i_cent);
+    h_mTpcRawWest[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),360,-1.0*TMath::Pi(),TMath::Pi(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5);
+  }
+}
+
+void StEventPlaneHistoManager::fillTpcRawEP(TVector2 QEast, TVector2 QWest, int Cent9, int runIndex)
+{
+  float PsiEast = TMath::ATan2(QEast.Y(),QEast.X()); h_mTpcRawEast[Cent9]->Fill(PsiEast,runIndex);
+  float PsiWest = TMath::ATan2(QWest.Y(),QWest.X()); h_mTpcRawWest[Cent9]->Fill(PsiWest,runIndex);
+}
+
+void StEventPlaneHistoManager::writeTpcRawEP()
+{
+  for(int i_cent = 0; i_cent < 9; ++i_cent)
+  {
+    h_mTpcRawEast[i_cent]->Write();
+    h_mTpcRawWest[i_cent]->Write();
+  }
+}
 //-------------------------------------------------------------------------------------------
