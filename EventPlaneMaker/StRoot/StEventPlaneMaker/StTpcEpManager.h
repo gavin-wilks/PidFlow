@@ -72,6 +72,7 @@ class StTpcEpManager : public TObject
     //Event Plane method
     TVector2 mQ2VecEastRaw, mQ2VecWestRaw, mQ2VecFullRaw;
     int mQ2CounterRawEast, mQ2CounterRawWest, mQ2CounterRawFull;
+    int mQ2CounterRawFull_East, mQ2CounterRawFull_West;
 
     TVector2 mQ2VecEast, mQ2VecWest, mQ2VecFull, mQ2VecSubA, mQ2VecSubB;
     int mQ2CounterEast, mQ2CounterWest, mQ2CounterFull;

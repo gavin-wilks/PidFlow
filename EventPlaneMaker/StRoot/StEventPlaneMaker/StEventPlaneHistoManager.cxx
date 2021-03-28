@@ -62,29 +62,33 @@ void StEventPlaneHistoManager::initZdcRawEP()
 {
   for(int i_cent = 0; i_cent < 9; ++i_cent)
   {
-    string HistName = Form("h_mZdcRawEast_%d",i_cent);
-    h_mZdcRawEast[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),360,-1.0*TMath::Pi(),TMath::Pi(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5);
-    HistName = Form("h_mZdcRawWest_%d",i_cent);
-    h_mZdcRawWest[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),360,-1.0*TMath::Pi(),TMath::Pi(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5);
-    HistName = Form("h_mZdcRawFull_%d",i_cent);
-    h_mZdcRawFull[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),360,-1.0*TMath::Pi(),TMath::Pi(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5);
+    string HistName = Form("h_mZdcRawEpEast_%d",i_cent);
+    h_mZdcRawEpEast[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
+    HistName = Form("h_mZdcRawEpWest_%d",i_cent);
+    h_mZdcRawEpWest[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
+    HistName = Form("h_mZdcRawEpFull_%d",i_cent);
+    h_mZdcRawEpFull[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
   }
 }
 
-void StEventPlaneHistoManager::fillZdcRawEP(TVector2 QEast, TVector2 QWest, TVector2 QFull, int Cent9, int runIndex)
+void StEventPlaneHistoManager::fillZdcRawSubEP(TVector2 QEast, TVector2 QWest, int Cent9, int runIndex)
 {
-  float PsiEast = TMath::ATan2(QEast.Y(),QEast.X()); h_mZdcRawEast[Cent9]->Fill(PsiEast,runIndex);
-  float PsiWest = TMath::ATan2(QWest.Y(),QWest.X()); h_mZdcRawWest[Cent9]->Fill(PsiWest,runIndex);
-  float PsiFull = TMath::ATan2(QFull.Y(),QFull.X()); h_mZdcRawFull[Cent9]->Fill(PsiFull,runIndex);
+  float PsiEast = TMath::ATan2(QEast.Y(),QEast.X()); h_mZdcRawEpEast[Cent9]->Fill(runIndex,PsiEast);
+  float PsiWest = TMath::ATan2(QWest.Y(),QWest.X()); h_mZdcRawEpWest[Cent9]->Fill(runIndex,PsiWest);
+}
+
+void StEventPlaneHistoManager::fillZdcRawFullEP(TVector2 QFull, int Cent9, int runIndex)
+{
+  float PsiFull = TMath::ATan2(QFull.Y(),QFull.X()); h_mZdcRawEpFull[Cent9]->Fill(runIndex,PsiFull);
 }
 
 void StEventPlaneHistoManager::writeZdcRawEP()
 {
   for(int i_cent = 0; i_cent < 9; ++i_cent)
   {
-    h_mZdcRawEast[i_cent]->Write();
-    h_mZdcRawWest[i_cent]->Write();
-    h_mZdcRawFull[i_cent]->Write();
+    h_mZdcRawEpEast[i_cent]->Write();
+    h_mZdcRawEpWest[i_cent]->Write();
+    h_mZdcRawEpFull[i_cent]->Write();
   }
 }
 //-------------------------------------------------------------------------------------------
@@ -95,25 +99,33 @@ void StEventPlaneHistoManager::initTpcRawEP()
 {
   for(int i_cent = 0; i_cent < 9; ++i_cent)
   {
-    string HistName = Form("h_mTpcRawEast_%d",i_cent);
-    h_mTpcRawEast[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),360,-1.0*TMath::Pi(),TMath::Pi(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5);
-    HistName = Form("h_mTpcRawWest_%d",i_cent);
-    h_mTpcRawWest[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),360,-1.0*TMath::Pi(),TMath::Pi(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5);
+    string HistName = Form("h_mTpcRawEpEast_%d",i_cent);
+    h_mTpcRawEpEast[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
+    HistName = Form("h_mTpcRawEpWest_%d",i_cent);
+    h_mTpcRawEpWest[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
+    HistName = Form("h_mTpcRawEpFull_%d",i_cent);
+    h_mTpcRawEpFull[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
   }
 }
 
-void StEventPlaneHistoManager::fillTpcRawEP(TVector2 QEast, TVector2 QWest, int Cent9, int runIndex)
+void StEventPlaneHistoManager::fillTpcRawSubEP(TVector2 QEast, TVector2 QWest, int Cent9, int runIndex)
 {
-  float PsiEast = TMath::ATan2(QEast.Y(),QEast.X()); h_mTpcRawEast[Cent9]->Fill(PsiEast,runIndex);
-  float PsiWest = TMath::ATan2(QWest.Y(),QWest.X()); h_mTpcRawWest[Cent9]->Fill(PsiWest,runIndex);
+  float PsiEast = 0.5*TMath::ATan2(QEast.Y(),QEast.X()); h_mTpcRawEpEast[Cent9]->Fill(runIndex,PsiEast);
+  float PsiWest = 0.5*TMath::ATan2(QWest.Y(),QWest.X()); h_mTpcRawEpWest[Cent9]->Fill(runIndex,PsiWest);
+}
+
+void StEventPlaneHistoManager::fillTpcRawFullEP(TVector2 QFull, int Cent9, int runIndex)
+{
+  float PsiFull = 0.5*TMath::ATan2(QFull.Y(),QFull.X()); h_mTpcRawEpFull[Cent9]->Fill(runIndex,PsiFull);
 }
 
 void StEventPlaneHistoManager::writeTpcRawEP()
 {
   for(int i_cent = 0; i_cent < 9; ++i_cent)
   {
-    h_mTpcRawEast[i_cent]->Write();
-    h_mTpcRawWest[i_cent]->Write();
+    h_mTpcRawEpEast[i_cent]->Write();
+    h_mTpcRawEpWest[i_cent]->Write();
+    h_mTpcRawEpFull[i_cent]->Write();
   }
 }
 //-------------------------------------------------------------------------------------------

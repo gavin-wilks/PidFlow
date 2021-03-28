@@ -19,13 +19,15 @@ class StEventPlaneHistoManager
     void writeZdcGainCorr();
 
     void initZdcRawEP(); // raw ZDC-SMD EP
-    void fillZdcRawEP(TVector2 QEast, TVector2 QWest, TVector2 QFull, int Cent9, int runIndex);
+    void fillZdcRawSubEP(TVector2 QEast, TVector2 QWest, int Cent9, int runIndex);
+    void fillZdcRawFullEP(TVector2 QFull, int Cent9, int runIndex);
     void writeZdcRawEP();
     //--------------ZDC EP---------------
     
     //--------------TPC EP---------------
     void initTpcRawEP(); // raw TPC EP
-    void fillTpcRawEP(TVector2 QEast, TVector2 QWest, int Cent9, int runIndex);
+    void fillTpcRawSubEP(TVector2 QEast, TVector2 QWest, int Cent9, int runIndex);
+    void fillTpcRawFullEP(TVector2 QFull, int Cent9, int runIndex);
     void writeTpcRawEP();
     //--------------TPC EP---------------
 
@@ -33,14 +35,17 @@ class StEventPlaneHistoManager
     //--------------ZDC EP---------------
     TH2F *h_mZdcGainCorr[2][2][8]; // 0: east/west | 1: vertical(x)/horizontal(y) | 2: 7 slats(x)/8 slats(y); | x-axis: runIndex | y-axis: ADC
 
-    TH2F *h_mZdcRawEast[9]; // raw EP
-    TH2F *h_mZdcRawWest[9];
-    TH2F *h_mZdcRawFull[9]; // Qwest-QEast
+    // x-axis: runIndex | y-axis: EP
+    TH2F *h_mZdcRawEpEast[9]; // raw EP
+    TH2F *h_mZdcRawEpWest[9];
+    TH2F *h_mZdcRawEpFull[9]; // Qwest-QEast
     //--------------ZDC EP---------------
 
     //--------------TPC EP---------------
-    TH2F *h_mTpcRawEast[9]; // raw EP
-    TH2F *h_mTpcRawWest[9];
+    // x-axis: runIndex | y-axis: EP
+    TH2F *h_mTpcRawEpEast[9]; // raw EP
+    TH2F *h_mTpcRawEpWest[9];
+    TH2F *h_mTpcRawEpFull[9];
     //--------------TPC EP---------------
 
   ClassDef(StEventPlaneHistoManager,1)

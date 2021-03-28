@@ -61,6 +61,8 @@ void StTpcEpManager::clearTpcEp()
   
   mQ2VecFullRaw.Set(0.0,0.0);
   mQ2CounterRawFull = 0;
+  mQ2CounterRawFull_East = 0;
+  mQ2CounterRawFull_West = 0;
   mQ2VecFull.Set(0.0,0.0);
   mQ2CounterFull = 0;
   mQ2CounterFull_East = 0;
@@ -89,7 +91,7 @@ bool StTpcEpManager::passTrackEtaEast(StPicoTrack *picoTrack) // neg
   primMom.SetXYZ(primPx,primPy,primPz);
   const double eta = primMom.PseudoRapidity();
 
-  // double eta = picoTrack->pMom().pseudoRapidity();
+  // const double eta = picoTrack->pMom().pseudoRapidity();
 
   // eta cut
   // eta_gap between two sub event plane is 2*mEtaGap
@@ -110,7 +112,7 @@ bool StTpcEpManager::passTrackEtaWest(StPicoTrack *picoTrack) // pos
   primMom.SetXYZ(primPx,primPy,primPz);
   const double eta = primMom.PseudoRapidity();
 
-  // double eta = picoTrack->pMom().pseudoRapidity();
+  // const double eta = picoTrack->pMom().pseudoRapidity();
 
   // eta cut
   // eta_gap between two sub event plane is 2*mEtaGap
@@ -168,7 +170,7 @@ double StTpcEpManager::getWeight(StPicoTrack *picoTrack)
   const double primPz = picoTrack->pMom().z();
   primMom.SetXYZ(primPx,primPy,primPz);
   const double pt = primMom.Perp();
-  // Float_t pt = picoTrack->pMom().perp();
+  // const double pt = picoTrack->pMom().perp();
 
   double wgt;
   if(pt <= recoEP::mPrimPtWeight)
@@ -202,6 +204,22 @@ void StTpcEpManager::addTrackFullRaw(StPicoTrack *picoTrack)
   const double wgt = getWeight(picoTrack);
   mQ2VecFullRaw += wgt*calq2Vector(picoTrack);
   mQ2CounterRawFull++;
+
+  // double eta = picoTrack->pMom().pseudoRapidity();
+  TVector3 primMom; // temp fix for StThreeVectorF & TVector3
+  const double primPx = picoTrack->pMom().x(); // x works for both TVector3 and StThreeVectorF
+  const double primPy = picoTrack->pMom().y();
+  const double primPz = picoTrack->pMom().z();
+  primMom.SetXYZ(primPx,primPy,primPz);
+  const double eta = primMom.PseudoRapidity();
+  if(eta >= 0.0)
+  {
+    mQ2CounterRawFull_West++;
+  }
+  if(eta < 0.0)
+  {
+    mQ2CounterRawFull_East++;
+  }
 }
 //---------------------------------------------------------------------------------
 void StTpcEpManager::initReCenterCorr()
@@ -363,7 +381,7 @@ bool StTpcEpManager::passTrackEtaNumRawCut()
 
 bool StTpcEpManager::passTrackFullNumRawCut()
 {
-  if(!(mQ2CounterRawFull > recoEP::mTrackMinFull))
+  if(!(mQ2CounterRawFull > recoEP::mTrackMinFull && mQ2CounterRawFull_East > recoEP::mTrackMin && mQ2CounterRawFull_West > recoEP::mTrackMin))
   {
     return kFALSE;
   }
@@ -383,7 +401,7 @@ bool StTpcEpManager::passTrackEtaNumCut()
 
 bool StTpcEpManager::passTrackFullNumCut()
 {
-  if(!(mQ2CounterFull > recoEP::mTrackMinFull && mQ2CounterFull_East > 0 && mQ2CounterFull_West > 0))
+  if(!(mQ2CounterFull > recoEP::mTrackMinFull && mQ2CounterFull_East > recoEP::mTrackMin && mQ2CounterFull_West > recoEP::mTrackMin))
   {
     return kFALSE;
   }
