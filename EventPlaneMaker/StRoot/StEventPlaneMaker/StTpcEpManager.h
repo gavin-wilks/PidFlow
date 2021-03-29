@@ -30,7 +30,7 @@ class StTpcEpManager : public TObject
     void addTrackWestRaw(StPicoTrack* picoTrack);
     void addTrackFullRaw(StPicoTrack* picoTrack);
 
-    void initReCenterCorr();
+    void readReCenterCorr();
     TVector2 getReCenterParEast();
     TVector2 getReCenterParWest();
     TVector2 getReCenterParFull();
@@ -50,7 +50,7 @@ class StTpcEpManager : public TObject
     bool passTrackEtaNumCut();
     bool passTrackFullNumCut();
 
-    void initShiftCorr();
+    void readShiftCorr();
     double AngleShift(double Psi2Raw);
 
     double calShiftAngle2East();

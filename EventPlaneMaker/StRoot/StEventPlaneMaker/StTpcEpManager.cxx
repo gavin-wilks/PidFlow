@@ -222,10 +222,10 @@ void StTpcEpManager::addTrackFullRaw(StPicoTrack *picoTrack)
   }
 }
 //---------------------------------------------------------------------------------
-void StTpcEpManager::initReCenterCorr()
+void StTpcEpManager::readReCenterCorr()
 {
-  TString InPutFile = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ReCenterParameter/file_%s_ReCenterPar.root",recoEP::mBeamEnergy[mEnergy].c_str(),recoEP::mBeamEnergy[mEnergy].c_str());
-  mInPutFile_ReCenter = TFile::Open(InPutFile.Data());
+  string InPutFile = Form("StRoot/StEventPlaneUtility/ReCenterParameter/file_%s_ReCenterParameter.root",recoEP::mBeamEnergy[mEnergy].c_str());
+  mInPutFile_ReCenter = TFile::Open(InPutFile.c_str());
 
   string ProName;
   for(int i_vz = 0; i_vz < 2; ++i_vz)
@@ -409,10 +409,10 @@ bool StTpcEpManager::passTrackFullNumCut()
   return kTRUE;
 }
 //---------------------------------------------------------------------------------
-void StTpcEpManager::initShiftCorr()
+void StTpcEpManager::readShiftCorr()
 {
-  TString InPutFile_Shift = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/ShiftParameter/file_%s_ShiftPar.root",recoEP::mBeamEnergy[mEnergy].c_str(),recoEP::mBeamEnergy[mEnergy].c_str());
-  mInPutFile_Shift = TFile::Open(InPutFile_Shift.Data());
+  string InPutFile = Form("StRoot/StEventPlaneUtility/ShiftParameter/file_%s_ShiftParameter.root",recoEP::mBeamEnergy[mEnergy].c_str());
+  mInPutFile_Shift = TFile::Open(InPutFile.c_str());
 
   string ProName;
   for(int i_vz = 0; i_vz < 2; ++i_vz)
@@ -640,26 +640,35 @@ double StTpcEpManager::getRes2Full(int Cent9)
 //---------------------------------------------------------------------------------
 TVector2 StTpcEpManager::getQVector(int nEP) // east/west
 {
-  if(nEP == 0) return mQ2VecEast;
-  if(nEP == 1) return mQ2VecWest;
-  if(nEP == 2) return mQ2VecFull;
-  if(nEP == 3) return mQ2VecSubA;
-  if(nEP == 4) return mQ2VecSubB;
+  TVector2 QVector(-99.9,-99.9);
+  if(nEP == 0) QVector = mQ2VecEast;
+  if(nEP == 1) QVector = mQ2VecWest;
+  if(nEP == 2) QVector = mQ2VecFull;
+  if(nEP == 3) QVector = mQ2VecSubA;
+  if(nEP == 4) QVector = mQ2VecSubB;
+
+  return QVector;
 }
 
 TVector2 StTpcEpManager::getQVectorRaw(int nEP)
 {
-  if(nEP == 0) return mQ2VecEastRaw;
-  if(nEP == 1) return mQ2VecWestRaw;
-  if(nEP == 2) return mQ2VecFullRaw;
+  TVector2 QVector(-99.9,-99.9);
+  if(nEP == 0) QVector = mQ2VecEastRaw;
+  if(nEP == 1) QVector = mQ2VecWestRaw;
+  if(nEP == 2) QVector = mQ2VecFullRaw;
+
+  return QVector;
 }
 
 int StTpcEpManager::getNumTrack(int nEP)
 {
-  if(nEP == 0) return mQ2CounterEast;
-  if(nEP == 1) return mQ2CounterWest;
-  if(nEP == 2) return mQ2CounterFull;
-  if(nEP == 3) return mQ2CounterFull_East;
-  if(nEP == 4) return mQ2CounterFull_West;
+  int Q2Counter = -1;
+  if(nEP == 0) Q2Counter = mQ2CounterEast;
+  if(nEP == 1) Q2Counter = mQ2CounterWest;
+  if(nEP == 2) Q2Counter = mQ2CounterFull;
+  if(nEP == 3) Q2Counter = mQ2CounterFull_East;
+  if(nEP == 4) Q2Counter = mQ2CounterFull_West;
+
+  return Q2Counter;
 }
 //---------------------------------------------------------------------------------

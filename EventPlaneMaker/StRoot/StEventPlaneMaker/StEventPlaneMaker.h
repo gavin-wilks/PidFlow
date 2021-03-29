@@ -47,12 +47,12 @@ class StEventPlaneMaker : public StMaker {
 
     string mOutPut_GainCorr;
     string mOutPut_ReCenterPar;
-    // string mOutPut_ShiftPar;
+    string mOutPut_ShiftPar;
     // string mOutPut_Resolution;
 
     TFile *mFile_GainCorr;
     TFile *mFile_ReCenterPar;
-    // TFile *mFile_ShiftPar;
+    TFile *mFile_ShiftPar;
     // TFile *mFile_Resolution;
 
     int mUsedTrackCounter;

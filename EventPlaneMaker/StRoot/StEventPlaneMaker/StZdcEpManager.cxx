@@ -89,7 +89,8 @@ float StZdcEpManager::getZdcSmd(int eastwest, int verthori, int slat)
 
 void StZdcEpManager::readGainCorr()
 {
-  string InPutFile = Form("StRoot/StEventPlaneUtility/GainCorrPar/file_%s_ZdcGainCorrFac.root",recoEP::mBeamEnergy[mEnergy].c_str());
+  // string InPutFile = Form("StRoot/StEventPlaneUtility/GainCorrPar/file_%s_GainCorrFac.root",recoEP::mBeamEnergy[mEnergy].c_str());
+  string InPutFile = Form("StRoot/StEventPlaneUtility/GainCorrPar/file_%s_ZdcGainCorrFac.root",recoEP::mBeamEnergy[mEnergy].c_str()); // Temp Fix
   mFile_GainCorrPar = TFile::Open(InPutFile.c_str());
   for(int i_eastwest = 0; i_eastwest < 2; ++i_eastwest)
   {
@@ -97,9 +98,10 @@ void StZdcEpManager::readGainCorr()
     {
       for(int i_slat = 0; i_slat < 8; ++i_slat)
       {
-	string HistName = Form("h_mGainCorrFactor%s%s_%d",recoEP::mEastWest[i_eastwest].c_str(),recoEP::mVertHori[i_verthori].c_str(),i_slat);
-	TH1F *h_GainCorrFac = (TH1F*)mFile_GainCorrPar->Get(HistName.c_str());
-	mGainCorrFactor[i_eastwest][i_verthori][i_slat] = h_GainCorrFac->GetBinContent(1);
+	// string HistName = Form("h_mZdcGainCorrFactor%s%s_%d",recoEP::mEastWest[i_eastwest].c_str(),recoEP::mVertHori[i_verthori].c_str(),i_slat);
+	string HistName = Form("h_mGainCorrFactor%s%s_%d",recoEP::mEastWest[i_eastwest].c_str(),recoEP::mVertHori[i_verthori].c_str(),i_slat); // Temp Fix
+	TH1F *h_ZdcGainCorrFac = (TH1F*)mFile_GainCorrPar->Get(HistName.c_str());
+	mGainCorrFactor[i_eastwest][i_verthori][i_slat] = h_ZdcGainCorrFac->GetBinContent(1);
 	// cout << "i_eastwest = " << i_eastwest << ", i_verthori = " << i_verthori << ", i_slat = " << i_slat << ", mGainCorrFactor = " << mGainCorrFactor[i_eastwest][i_verthori][i_slat] << endl;
       }
     }
@@ -198,7 +200,7 @@ TVector2 StZdcEpManager::getQWest(int mode)
 
 void StZdcEpManager::readReCenterCorr()
 {
-  string InPutFile = Form("StRoot/StEventPlaneUtility/ReCenterParameter/file_%s_ZdcReCenterParameter.root",recoEP::mBeamEnergy[mEnergy].c_str());
+  string InPutFile = Form("StRoot/StEventPlaneUtility/ReCenterParameter/file_%s_ReCenterParameter.root",recoEP::mBeamEnergy[mEnergy].c_str());
   mFile_ReCenterPar = TFile::Open(InPutFile.c_str());
 
   string ProName;
@@ -236,7 +238,7 @@ void StZdcEpManager::setZdcSmdCenter()
 
 void StZdcEpManager::readShiftCorr()
 {
-  string InPutFile = Form("StRoot/StEventPlaneUtility/ShiftParameter/file_%s_ZdcShiftParameter.root",recoEP::mBeamEnergy[mEnergy].c_str());
+  string InPutFile = Form("StRoot/StEventPlaneUtility/ShiftParameter/file_%s_ShiftParameter.root",recoEP::mBeamEnergy[mEnergy].c_str());
   mFile_ShiftPar = TFile::Open(InPutFile.c_str());
 
   string ProName;
@@ -329,7 +331,7 @@ float StZdcEpManager::AngleShift(float Psi_raw)
 
 void StZdcEpManager::readShiftCorrFull()
 {
-  string InPutFile = Form("StRoot/StEventPlaneUtility/ShiftParameterFull/file_%s_ZdcShiftParameterFull.root",recoEP::mBeamEnergy[mEnergy].c_str());
+  string InPutFile = Form("StRoot/StEventPlaneUtility/ShiftParameterFull/file_%s_ShiftParameterFull.root",recoEP::mBeamEnergy[mEnergy].c_str());
   mFile_ShiftPar = TFile::Open(InPutFile.c_str());
 
   string ProName;
@@ -383,7 +385,7 @@ TVector2 StZdcEpManager::getQFull(TVector2 QEast, TVector2 QWest)
 
 void StZdcEpManager::readResolution()
 {
-  string InPutFile = Form("StRoot/StEventPlaneUtility/Resolution/file_%s_ZdcResolution.root",recoEP::mBeamEnergy[mEnergy].c_str());
+  string InPutFile = Form("StRoot/StEventPlaneUtility/Resolution/file_%s_Resolution.root",recoEP::mBeamEnergy[mEnergy].c_str());
   mFile_Resolution = TFile::Open(InPutFile.c_str());
   p_mResolution = (TProfile*)mFile_Resolution->Get("p_mResolution");
 }

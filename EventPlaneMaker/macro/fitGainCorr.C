@@ -138,17 +138,17 @@ void fitGainCorr(int energy = 0)
   cout << "}" << endl;
 
   // save to histograms
-  TH1F *h_mGainCorrFactor[2][2][8];
+  TH1F *h_mZdcGainCorrFactor[2][2][8];
   for(int i_eastwest = 0; i_eastwest < 2; ++i_eastwest)
   {
     for(int i_verthori = 0; i_verthori < 2; ++i_verthori)
     {
       for(int i_slat = 0; i_slat < 8; ++i_slat)
       {
-	string HistName = Form("h_mGainCorrFactor%s%s_%d",recoEP::mEastWest[i_eastwest].c_str(),recoEP::mVertHori[i_verthori].c_str(),i_slat);
-	h_mGainCorrFactor[i_eastwest][i_verthori][i_slat] = new TH1F(HistName.c_str(),HistName.c_str(),1,-0.5,0.5);
-	h_mGainCorrFactor[i_eastwest][i_verthori][i_slat]->SetBinContent(1,slope[i_eastwest][i_verthori][0]/slope[i_eastwest][i_verthori][i_slat]);
-	h_mGainCorrFactor[i_eastwest][i_verthori][i_slat]->SetBinError(1,0.1);
+	string HistName = Form("h_mZdcGainCorrFactor%s%s_%d",recoEP::mEastWest[i_eastwest].c_str(),recoEP::mVertHori[i_verthori].c_str(),i_slat);
+	h_mZdcGainCorrFactor[i_eastwest][i_verthori][i_slat] = new TH1F(HistName.c_str(),HistName.c_str(),1,-0.5,0.5);
+	h_mZdcGainCorrFactor[i_eastwest][i_verthori][i_slat]->SetBinContent(1,slope[i_eastwest][i_verthori][0]/slope[i_eastwest][i_verthori][i_slat]);
+	h_mZdcGainCorrFactor[i_eastwest][i_verthori][i_slat]->SetBinError(1,0.1);
       }
     }
   }
@@ -161,7 +161,7 @@ void fitGainCorr(int energy = 0)
     {
       for(int i_slat = 0; i_slat < 8; ++i_slat)
       {
-	h_mGainCorrFactor[i_eastwest][i_verthori][i_slat]->Write();
+	h_mZdcGainCorrFactor[i_eastwest][i_verthori][i_slat]->Write();
       }
     }
   }

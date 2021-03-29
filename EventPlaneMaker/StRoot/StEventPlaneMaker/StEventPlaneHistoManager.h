@@ -22,6 +22,11 @@ class StEventPlaneHistoManager
     void fillZdcRawSubEP(TVector2 QEast, TVector2 QWest, int Cent9, int runIndex);
     void fillZdcRawFullEP(TVector2 QFull, int Cent9, int runIndex);
     void writeZdcRawEP();
+
+    void initZdcReCenterEP(); // recenter ZDC-SMD EP
+    void fillZdcReCenterSubEP(TVector2 QEast, TVector2 QWest, int Cent9, int runIndex);
+    void fillZdcReCenterFullEP(TVector2 QFull, int Cent9, int runIndex);
+    void writeZdcReCenterEP();
     //--------------ZDC EP---------------
     
     //--------------TPC EP---------------
@@ -29,6 +34,11 @@ class StEventPlaneHistoManager
     void fillTpcRawSubEP(TVector2 QEast, TVector2 QWest, int Cent9, int runIndex);
     void fillTpcRawFullEP(TVector2 QFull, int Cent9, int runIndex);
     void writeTpcRawEP();
+
+    void initTpcReCenterEP(); // recenter TPC EP
+    void fillTpcReCenterSubEP(TVector2 QEast, TVector2 QWest, int Cent9, int runIndex);
+    void fillTpcReCenterFullEP(TVector2 QFull, int Cent9, int runIndex);
+    void writeTpcReCenterEP();
     //--------------TPC EP---------------
 
   private:
@@ -39,6 +49,10 @@ class StEventPlaneHistoManager
     TH2F *h_mZdcRawEpEast[9]; // raw EP
     TH2F *h_mZdcRawEpWest[9];
     TH2F *h_mZdcRawEpFull[9]; // Qwest-QEast
+
+    TH2F *h_mZdcReCenterEpEast[9]; // raw EP
+    TH2F *h_mZdcReCenterEpWest[9];
+    TH2F *h_mZdcReCenterEpFull[9]; // Qwest-QEast
     //--------------ZDC EP---------------
 
     //--------------TPC EP---------------
@@ -46,6 +60,10 @@ class StEventPlaneHistoManager
     TH2F *h_mTpcRawEpEast[9]; // raw EP
     TH2F *h_mTpcRawEpWest[9];
     TH2F *h_mTpcRawEpFull[9];
+
+    TH2F *h_mTpcReCenterEpEast[9]; // raw EP
+    TH2F *h_mTpcReCenterEpWest[9];
+    TH2F *h_mTpcReCenterEpFull[9];
     //--------------TPC EP---------------
 
   ClassDef(StEventPlaneHistoManager,1)
