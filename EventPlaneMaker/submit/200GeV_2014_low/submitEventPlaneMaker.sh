@@ -1,21 +1,21 @@
 #!/bin/sh
 
-codePath=/star/u/sunxuhit/WorkSpace/VecMesonSpinAlignment_BESII/EventPlaneMaker
+codePath=/star/u/sunxuhit/WorkSpace/PidFlow/EventPlaneMaker
 
 ##########Energy Selection##########
 energy=0  # 200GeV
 library=SL20a
-listPath=/star/u/sunxuhit/WorkSpace/VecMesonSpinAlignment_BESII/FileList/200GeV_2014
+listPath=/star/u/sunxuhit/WorkSpace/PidFlow/FileList/200GeV_2014
 outPath=/star/data01/pwg/sunxuhit/AuAu200GeV_2014
  
 # energy=1  # 54.0GeV
 # library=SL18c
-# listPath=/star/u/sunxuhit/WorkSpace/VecMesonSpinAlignment_BESII/FileList/54GeV_2017
+# listPath=/star/u/sunxuhit/WorkSpace/PidFlow/FileList/54GeV_2017
 # outPath=/star/data01/pwg/sunxuhit/AuAu54GeV_2017
 
 # energy=2  # 27GeV
 # library=SL19b
-# listPath=/star/u/sunxuhit/WorkSpace/VecMesonSpinAlignment_BESII/FileList/27GeV_2018
+# listPath=/star/u/sunxuhit/WorkSpace/PidFlow/FileList/27GeV_2018
 # outPath=/star/data01/pwg/sunxuhit/AuAu27GeV_2018
 ##########Energy Selection##########
 
