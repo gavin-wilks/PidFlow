@@ -16,11 +16,11 @@
   </SandBox>
 
   <!-- <input URL="filelist:&#38;listPath;/pico_xrootd_production.list" /> -->
-  <!-- <stdout URL="file:&#38;outPath;/Log/&#38;outDir;/$JOBID.out"/> -->
   <input URL="catalog:star.bnl.gov?production=P16id,library=SL18f,filetype=daq_reco_picoDst,trgsetupname=AuAu_200_production_low_2014,storage!=hpss,filename~st_physics" preferStorage="local" singleCopy="true" nFiles="all"/>
 
   <stdout discard="true"/>
-  <stderr URL="file:&outPath;/Log/&outDir;/$JOBID.err"/>
+  <!-- <stdout URL="file:&#38;outPath;/Log/PidFlow/&#38;outDir;/$JOBID.out"/> -->
+  <stderr URL="file:&outPath;/Log/PidFlow/&outDir;/$JOBID.err"/>
 
   <Generator>
     <ReportLocation>./JOBS/report/</ReportLocation>
@@ -28,7 +28,7 @@
     <ListLocation>./JOBS/list/</ListLocation>
   </Generator>
 
-  <output fromScratch="*.root" toURL="file:&outPath;/PidFlow/&outDir;/" />
-  <output fromScratch="*.log" toURL="file:&outPath;/Log/&outDir;/" />
+  <output fromScratch="*.root" toURL="file:&outPath;/OutPut/PidFlow/&outDir;/" />
+  <output fromScratch="*.log" toURL="file:&outPath;/Log/PidFlow/&outDir;/" />
 </job>
 

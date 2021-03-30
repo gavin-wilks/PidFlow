@@ -15,11 +15,11 @@
     </Package>
   </SandBox>
 
-  <!-- <stdout URL="file:&#38;outPath;/Log/&#38;outDir;/$JOBID.out"/> -->
   <input URL="filelist:&listPath;/pico_xrootd_resubmit.list" />
 
   <stdout discard="true"/>
-  <stderr URL="file:&outPath;/Log/&outDir;/$JOBID.err"/>
+  <!-- <stdout URL="file:&#38;outPath;/Log/PidFlow/&#38;outDir;/$JOBID.out"/> -->
+  <stderr URL="file:&outPath;/Log/PidFlow/&outDir;/$JOBID.err"/>
 
   <Generator>
     <ReportLocation>./JOBS/report/</ReportLocation>
@@ -27,7 +27,7 @@
     <ListLocation>./JOBS/list/</ListLocation>
   </Generator>
 
-  <output fromScratch="*.root" toURL="file:&outPath;/PidFlow/&outDir;/" />
-  <output fromScratch="*.log" toURL="file:&outPath;/Log/&outDir;/" />
+  <output fromScratch="*.root" toURL="file:&outPath;/OutPut/PidFlow/&outDir;/" />
+  <output fromScratch="*.log" toURL="file:&outPath;/Log/PidFlow/&outDir;/" />
 </job>
 

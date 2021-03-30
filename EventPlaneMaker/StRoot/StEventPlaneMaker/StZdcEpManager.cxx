@@ -89,8 +89,8 @@ float StZdcEpManager::getZdcSmd(int eastwest, int verthori, int slat)
 
 void StZdcEpManager::readGainCorr()
 {
-  // string InPutFile = Form("StRoot/StEventPlaneUtility/GainCorrPar/file_%s_GainCorrFac.root",recoEP::mBeamEnergy[mEnergy].c_str());
-  string InPutFile = Form("StRoot/StEventPlaneUtility/GainCorrPar/file_%s_ZdcGainCorrFac.root",recoEP::mBeamEnergy[mEnergy].c_str()); // Temp Fix
+  string InPutFile = Form("StRoot/StEventPlaneUtility/GainCorrPar/file_%s_GainCorrFac.root",recoEP::mBeamEnergy[mEnergy].c_str());
+  // string InPutFile = Form("StRoot/StEventPlaneUtility/GainCorrPar/file_%s_ZdcGainCorrFac.root",recoEP::mBeamEnergy[mEnergy].c_str()); // Temp Fix
   mFile_GainCorrPar = TFile::Open(InPutFile.c_str());
   for(int i_eastwest = 0; i_eastwest < 2; ++i_eastwest)
   {
@@ -98,8 +98,8 @@ void StZdcEpManager::readGainCorr()
     {
       for(int i_slat = 0; i_slat < 8; ++i_slat)
       {
-	// string HistName = Form("h_mZdcGainCorrFactor%s%s_%d",recoEP::mEastWest[i_eastwest].c_str(),recoEP::mVertHori[i_verthori].c_str(),i_slat);
-	string HistName = Form("h_mGainCorrFactor%s%s_%d",recoEP::mEastWest[i_eastwest].c_str(),recoEP::mVertHori[i_verthori].c_str(),i_slat); // Temp Fix
+	string HistName = Form("h_mZdcGainCorrFactor%s%s_%d",recoEP::mEastWest[i_eastwest].c_str(),recoEP::mVertHori[i_verthori].c_str(),i_slat);
+	// string HistName = Form("h_mGainCorrFactor%s%s_%d",recoEP::mEastWest[i_eastwest].c_str(),recoEP::mVertHori[i_verthori].c_str(),i_slat); // Temp Fix
 	TH1F *h_ZdcGainCorrFac = (TH1F*)mFile_GainCorrPar->Get(HistName.c_str());
 	mGainCorrFactor[i_eastwest][i_verthori][i_slat] = h_ZdcGainCorrFac->GetBinContent(1);
 	// cout << "i_eastwest = " << i_eastwest << ", i_verthori = " << i_verthori << ", i_slat = " << i_slat << ", mGainCorrFactor = " << mGainCorrFactor[i_eastwest][i_verthori][i_slat] << endl;
