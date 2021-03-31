@@ -8,10 +8,9 @@
 
 void fitGainCorr(int energy = 0)
 {
-  string JobId = "9E5703EB6FAE0E39F93C889E8039552F";
-  // string InPutFile = Form("/star/data01/pwg/sunxuhit/AuAu%s/SpinAlignment/GainCorr/merged_file/file_%s_GainCorrPar_%s.root",recoEP::mBeamEnergy[energy].c_str(),recoEP::mBeamEnergy[energy].c_str(),JobId.c_str());
-  string InPutFile = Form("/star/data01/pwg/sunxuhit/AuAu%s/SpinAlignment/GainCorr/test/file_%s_GainCorr_%s.root",recoEP::mBeamEnergy[energy].c_str(),recoEP::mBeamEnergy[energy].c_str(),JobId.c_str());
-  // string InPutFile = Form("/star/data01/pwg/sunxuhit/AuAu%s/SpinAlignment/GainCorrParameter/test/file_%s_GainCorr_%s.root",recoEP::mBeamEnergy[energy].c_str(),recoEP::mBeamEnergy[energy].c_str(),JobId.c_str());
+  string JobId = "8EECC3EEE8677F3DE1EBB78F5AEBE90E";
+  // string InPutFile = Form("/star/data01/pwg/sunxuhit/AuAu%s/OutPut/PidFlow/GainCorr/merged_file/file_%s_GainCorrPar_%s.root",recoEP::mBeamEnergy[energy].c_str(),recoEP::mBeamEnergy[energy].c_str(),JobId.c_str());
+  string InPutFile = Form("/star/data01/pwg/sunxuhit/AuAu%s/OutPut/PidFlow/GainCorr/test/file_%s_GainCorr_%s.root",recoEP::mBeamEnergy[energy].c_str(),recoEP::mBeamEnergy[energy].c_str(),JobId.c_str());
   TFile *File_InPut = TFile::Open(InPutFile.c_str());
   if(!File_InPut->IsOpen()) cout << "InPutFile: " << InPutFile.c_str() << "is problematic" << endl;
   cout << "InPutFile sets to: " << InPutFile.c_str() << endl;
