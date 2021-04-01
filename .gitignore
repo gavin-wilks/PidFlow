@@ -1,7 +1,7 @@
 # a comment - this is ignored
 # ignore share lib
 */.sl*
-# ignore .consign, *.d, *.so, *.eps, *.swp, all the log file and script in StRoot
+# ignore .consign, *.d, *.so, *.eps, *.swp, *.root, all the log file and script in StRoot
 *.swp
 temp_gccflags.c
 */StRoot/**/.consign
@@ -19,6 +19,8 @@ temp_gccflags.c
 
 FileList/*/*.list
 !FileList/*/runNumber.list
+
+EventPlaneMaker/StRoot/StEventPlaneUtility/*/*.root
 
 */*.root
 */StRoot/CVS/

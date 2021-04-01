@@ -426,7 +426,7 @@ int StEventPlaneMaker::Make()
 	TVector2 vTpcQ2West = mTpcEpManager->getQVector(1); // receter QVec West
 	TVector2 vTpcQ2Full = mTpcEpManager->getQVector(2); // receter QVec Full
 
-	if(mTpcEpManager->passTrackEtaNumRawCut())
+	if(mTpcEpManager->passTrackEtaNumCut())
 	{ // fill shift correction for east/west sub EP
 	  if( !(vTpcQ2East.Mod() < 1e-10 || vTpcQ2West.Mod() < 1e-10) )
 	  {
@@ -435,7 +435,7 @@ int StEventPlaneMaker::Make()
 	    mEventPlaneHistoManager->fillTpcReCenterSubEP(vTpcQ2East,vTpcQ2West,cent9,runIndex);
 	  }
 	}
-	if(mTpcEpManager->passTrackFullNumRawCut())
+	if(mTpcEpManager->passTrackFullNumCut())
 	{ // fill shift correction for full EP
 	  if( !(vTpcQ2Full.Mod() < 1e-10) )
 	  {
