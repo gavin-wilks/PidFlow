@@ -3,10 +3,10 @@
 
 #include <TString.h>
 #include <TVector2.h>
-#include <TProfile2D.h>
 #include "StMessMgr.h"
 
 class TProfile;
+class TProfile2D;
 
 class StEventPlaneProManager
 {
@@ -28,6 +28,10 @@ class StEventPlaneProManager
     void initZdcShiftFull();
     void fillZdcShiftFull(TVector2 qVector, int Cent9, int RunIndex, int VzSign);
     void writeZdcShiftFull();
+
+    void initZdcResolution();
+    void fillZdcResSub(TVector2 QEast, TVector2 QWest, int Cent9, int RunIndex);
+    void writeZdcResolution();
     //--------------ZDC EP---------------
     
     //--------------TPC EP---------------
@@ -42,6 +46,11 @@ class StEventPlaneProManager
     void fillTpcShiftWest(TVector2 qVector, int Cent9, int RunIndex, int VzSign);
     void fillTpcShiftFull(TVector2 qVector, int Cent9, int RunIndex, int VzSign);
     void writeTpcShift();
+
+    void initTpcResolution();
+    void fillTpcResSub(double PsiEast, double PsiWest, int Cent9, int RunIndex);
+    void fillTpcResRan(double PsiRanA, double PsiRanB, int Cent9, int RunIndex);
+    void writeTpcResolution();
     //--------------TPC EP---------------
 
   private:
@@ -59,6 +68,12 @@ class StEventPlaneProManager
     TProfile2D *p_mZdcQ1WestSin[2][20];
     TProfile2D *p_mZdcQ1FullCos[2][20];
     TProfile2D *p_mZdcQ1FullSin[2][20];
+
+    // EP Resolution
+    TProfile2D *p_mZdcSubRes1QA; // 1st Res vs runIndex & cent9
+    TProfile2D *p_mZdcSubRes2QA; // 2nd Res vs runIndex & cent9
+    TProfile *p_mZdcSubRes1; // 1st Res vs cent9
+    TProfile *p_mZdcSubRes2; // 2nd Res vs cent9
     //--------------ZDC EP---------------
 
     //--------------TPC EP---------------
@@ -77,6 +92,12 @@ class StEventPlaneProManager
     TProfile2D *p_mTpcQ2WestSin[2][20];
     TProfile2D *p_mTpcQ2FullCos[2][20];
     TProfile2D *p_mTpcQ2FullSin[2][20];
+
+    // EP Resolution
+    TProfile2D *p_mTpcSubRes2QA; // 2nd Res vs runIndex & cent9
+    TProfile2D *p_mTpcRanRes2QA; // 2nd Res vs runIndex & cent9
+    TProfile *p_mTpcSubRes2; // 2nd Res vs cent9
+    TProfile *p_mTpcRanRes2; // 2nd Res vs cent9
     //--------------TPC EP---------------
 
     ClassDef(StEventPlaneProManager,1)

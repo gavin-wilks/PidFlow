@@ -38,8 +38,8 @@ class StTpcEpManager : public TObject
     void addTrackEast(StPicoTrack* picoTrack); // re-centered EP
     void addTrackWest(StPicoTrack* picoTrack);
     void addTrackFull(StPicoTrack* picoTrack);
-    void addTrackSubA(StPicoTrack* picoTrack); // random sub A
-    void addTrackSubB(StPicoTrack* picoTrack); // random sub B
+    void addTrackRanA(StPicoTrack* picoTrack); // random sub A
+    void addTrackRanB(StPicoTrack* picoTrack); // random sub B
     void Randomization();
 
     void print(TVector2);
@@ -55,8 +55,8 @@ class StTpcEpManager : public TObject
 
     double calShiftAngle2East();
     double calShiftAngle2West();
-    double calShiftAngle2SubA();
-    double calShiftAngle2SubB();
+    double calShiftAngle2RanA();
+    double calShiftAngle2RanB();
     double calShiftAngle2Full();
     double calShiftAngle2Full(StPicoTrack *picoTrack); // subtract self-correlation
 
@@ -74,10 +74,10 @@ class StTpcEpManager : public TObject
     int mQ2CounterRawEast, mQ2CounterRawWest, mQ2CounterRawFull;
     int mQ2CounterRawFull_East, mQ2CounterRawFull_West;
 
-    TVector2 mQ2VecEast, mQ2VecWest, mQ2VecFull, mQ2VecSubA, mQ2VecSubB;
+    TVector2 mQ2VecEast, mQ2VecWest, mQ2VecFull, mQ2VecRanA, mQ2VecRanB;
     int mQ2CounterEast, mQ2CounterWest, mQ2CounterFull;
     int mQ2CounterFull_East, mQ2CounterFull_West;
-    int mQ2CounterSubA, mQ2CounterSubB;
+    int mQ2CounterRanA, mQ2CounterRanB;
 
     int mEnergy;
     int mCent9;

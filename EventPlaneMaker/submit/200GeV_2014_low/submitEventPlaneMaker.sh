@@ -23,14 +23,14 @@ outPath=/star/data01/pwg/sunxuhit/AuAu200GeV_2014
 # mode=0
 # outDir=GainCorr
 
-mode=1
-outDir=ReCenterParameter
+# mode=1
+# outDir=ReCenterParameter
 
 # mode=2
 # outDir=ShiftParameter
 
-# mode=3
-# outDir=ShiftParameterFull
+mode=3
+outDir=ShiftParameterFull
 
 # mode=4
 # outDir=Resolution

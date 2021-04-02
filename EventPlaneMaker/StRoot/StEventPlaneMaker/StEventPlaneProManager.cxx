@@ -1,6 +1,7 @@
 #include <string>
 
 #include <TProfile.h>
+#include <TProfile2D.h>
 #include <TMath.h>
 #include <TString.h>
 
@@ -72,6 +73,7 @@ void StEventPlaneProManager::writeZdcReCenter()
   }
 }
 
+// ZDC-SMD Shift Correction
 void StEventPlaneProManager::initZdcShift()
 {
   string ProName;
@@ -126,6 +128,7 @@ void StEventPlaneProManager::writeZdcShift()
   }
 }
 
+// ZDC-SMD Full Shift Correction
 void StEventPlaneProManager::initZdcShiftFull()
 {
   string ProName;
@@ -161,6 +164,35 @@ void StEventPlaneProManager::writeZdcShiftFull()
       p_mZdcQ1FullSin[i_vz][i_shift]->Write();
     }
   }
+}
+
+// ZDC-SMD Sub EP Resolution
+void StEventPlaneProManager::initZdcResolution()
+{
+  p_mZdcSubRes1QA = new TProfile2D("p_mZdcSubRes1QA","p_mZdcSubRes1QA",recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5,9,-0.5,8.5);
+  p_mZdcSubRes2QA = new TProfile2D("p_mZdcSubRes2QA","p_mZdcSubRes2QA",recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5,9,-0.5,8.5);
+  p_mZdcSubRes1 = new TProfile("p_mZdcSubRes1","p_mZdcRes1",9,-0.5,8.5);
+  p_mZdcSubRes2 = new TProfile("p_mZdcSubRes2","p_mZdcRes2",9,-0.5,8.5);
+}
+
+void StEventPlaneProManager::fillZdcResSub(TVector2 QEast, TVector2 QWest, int Cent9, int RunIndex)
+{
+  double PsiEast = TMath::ATan2(QEast.Y(),QEast.X());
+  double PsiWest = TMath::ATan2(QWest.Y(),QWest.X());
+  double res1 = TMath::Cos(PsiWest-PsiEast+TMath::Pi());
+  double res2 = TMath::Cos(2.0*(PsiWest-PsiEast+TMath::Pi()));
+  p_mZdcSubRes1QA->Fill((double)RunIndex,(double)Cent9,res1);
+  p_mZdcSubRes2QA->Fill((double)RunIndex,(double)Cent9,res2);
+  p_mZdcSubRes1->Fill((double)Cent9,res1);
+  p_mZdcSubRes2->Fill((double)Cent9,res2);
+}
+
+void StEventPlaneProManager::writeZdcResolution()
+{
+  p_mZdcSubRes1QA->Write();
+  p_mZdcSubRes2QA->Write();
+  p_mZdcSubRes1->Write();
+  p_mZdcSubRes2->Write();
 }
 //---------------------------------------------------------------------------------
 
@@ -259,6 +291,7 @@ void StEventPlaneProManager::writeTpcReCenter()
   }
 }
 
+// TPC Shift Correction
 void StEventPlaneProManager::initTpcShift()
 {
   string ProName;
@@ -328,5 +361,36 @@ void StEventPlaneProManager::writeTpcShift()
       p_mTpcQ2FullSin[i_vz][i_shift]->Write();
     }
   }
+}
+
+// TPC Sub/Ran EP Resolution
+void StEventPlaneProManager::initTpcResolution()
+{
+  p_mTpcSubRes2QA = new TProfile2D("p_mTpcSubRes2QA","p_mTpcSubRes2QA",recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5,9,-0.5,8.5);
+  p_mTpcRanRes2QA = new TProfile2D("p_mTpcRanRes2QA","p_mTpcRanRes2QA",recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5,9,-0.5,8.5);
+  p_mTpcSubRes2 = new TProfile("p_mTpcSubRes2","p_mTpcSubRes2",9,-0.5,8.5);
+  p_mTpcRanRes2 = new TProfile("p_mTpcRanRes2","p_mTpcRanRes2",9,-0.5,8.5);
+}
+
+void StEventPlaneProManager::fillTpcResSub(double PsiEast, double PsiWest, int Cent9, int RunIndex)
+{
+  double res2 = TMath::Cos(2.0*(PsiWest-PsiEast));
+  p_mTpcSubRes2QA->Fill((double)RunIndex,(double)Cent9,res2);
+  p_mTpcSubRes2->Fill((double)Cent9,res2);
+}
+
+void StEventPlaneProManager::fillTpcResRan(double PsiRanA, double PsiRanB, int Cent9, int RunIndex)
+{
+  double res2 = TMath::Cos(2.0*(PsiRanB-PsiRanA));
+  p_mTpcRanRes2QA->Fill((double)RunIndex,(double)Cent9,res2);
+  p_mTpcRanRes2->Fill((double)Cent9,res2);
+}
+
+void StEventPlaneProManager::writeTpcResolution()
+{
+  p_mTpcSubRes2QA->Write();
+  p_mTpcRanRes2QA->Write();
+  p_mTpcSubRes2->Write();
+  p_mTpcRanRes2->Write();
 }
 //---------------------------------------------------------------------------------

@@ -68,11 +68,11 @@ void StTpcEpManager::clearTpcEp()
   mQ2CounterFull_East = 0;
   mQ2CounterFull_West = 0;
 
-  mQ2VecSubA.Set(0.0,0.0);
-  mQ2CounterSubA = 0;
+  mQ2VecRanA.Set(0.0,0.0);
+  mQ2CounterRanA = 0;
 
-  mQ2VecSubB.Set(0.0,0.0);
-  mQ2CounterSubB = 0;
+  mQ2VecRanB.Set(0.0,0.0);
+  mQ2CounterRanB = 0;
 }
 
 void StTpcEpManager::initTpcEp(int Cent9, int RunIndex, int VzSign)
@@ -325,20 +325,20 @@ void StTpcEpManager::addTrackFull(StPicoTrack *picoTrack)
   }
 }
 
-void StTpcEpManager::addTrackSubA(StPicoTrack *picoTrack)
+void StTpcEpManager::addTrackRanA(StPicoTrack *picoTrack)
 {
   const double wgt = getWeight(picoTrack);
-  mQ2VecSubA += wgt*(calq2Vector(picoTrack) - getReCenterParFull());
+  mQ2VecRanA += wgt*(calq2Vector(picoTrack) - getReCenterParFull());
 
-  mQ2CounterSubA++;
+  mQ2CounterRanA++;
 }
 
-void StTpcEpManager::addTrackSubB(StPicoTrack *picoTrack)
+void StTpcEpManager::addTrackRanB(StPicoTrack *picoTrack)
 {
   const double wgt = getWeight(picoTrack);
-  mQ2VecSubB += wgt*(calq2Vector(picoTrack) - getReCenterParFull());
+  mQ2VecRanB += wgt*(calq2Vector(picoTrack) - getReCenterParFull());
 
-  mQ2CounterSubB++;
+  mQ2CounterRanB++;
 }
 
 void StTpcEpManager::Randomization()
@@ -351,14 +351,14 @@ void StTpcEpManager::Randomization()
   if(ran < 0.5)
   {
     // switch Event Plane Q Vector
-    Q2Switch_EP = mQ2VecSubA;
-    mQ2VecSubA = mQ2VecSubB;
-    mQ2VecSubB = Q2Switch_EP;
+    Q2Switch_EP = mQ2VecRanA;
+    mQ2VecRanA = mQ2VecRanB;
+    mQ2VecRanB = Q2Switch_EP;
 
     // switch Counter
-    CSwitch = mQ2CounterSubA;
-    mQ2CounterSubA = mQ2CounterSubB;
-    mQ2CounterSubB = CSwitch;
+    CSwitch = mQ2CounterRanA;
+    mQ2CounterRanA = mQ2CounterRanB;
+    mQ2CounterRanB = CSwitch;
   }
 }
 
@@ -498,9 +498,9 @@ double StTpcEpManager::calShiftAngle2West()
   return Psi_Shift;
 }
 
-double StTpcEpManager::calShiftAngle2SubA()
+double StTpcEpManager::calShiftAngle2RanA()
 {
-  double Psi_ReCenter = TMath::ATan2(mQ2VecSubA.Y(),mQ2VecSubA.X())/2.0;
+  double Psi_ReCenter = TMath::ATan2(mQ2VecRanA.Y(),mQ2VecRanA.X())/2.0;
   double delta_Psi = 0.0;
   double Psi_Shift;
 
@@ -521,9 +521,9 @@ double StTpcEpManager::calShiftAngle2SubA()
   return Psi_Shift;
 }
 
-double StTpcEpManager::calShiftAngle2SubB()
+double StTpcEpManager::calShiftAngle2RanB()
 {
-  double Psi_ReCenter = TMath::ATan2(mQ2VecSubB.Y(),mQ2VecSubB.X())/2.0;
+  double Psi_ReCenter = TMath::ATan2(mQ2VecRanB.Y(),mQ2VecRanB.X())/2.0;
   double delta_Psi = 0.0;
   double Psi_Shift;
 
@@ -644,8 +644,8 @@ TVector2 StTpcEpManager::getQVector(int nEP) // east/west
   if(nEP == 0) QVector = mQ2VecEast;
   if(nEP == 1) QVector = mQ2VecWest;
   if(nEP == 2) QVector = mQ2VecFull;
-  if(nEP == 3) QVector = mQ2VecSubA;
-  if(nEP == 4) QVector = mQ2VecSubB;
+  if(nEP == 3) QVector = mQ2VecRanA;
+  if(nEP == 4) QVector = mQ2VecRanB;
 
   return QVector;
 }

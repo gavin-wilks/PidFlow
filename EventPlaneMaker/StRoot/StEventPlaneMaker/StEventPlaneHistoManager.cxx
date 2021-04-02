@@ -126,6 +126,45 @@ void StEventPlaneHistoManager::writeZdcReCenterEP()
     h_mZdcReCenterEpFull[i_cent]->Write();
   }
 }
+
+// shift ZDC-SMD EP
+void StEventPlaneHistoManager::initZdcShiftEP()
+{
+  for(int i_cent = 0; i_cent < 9; ++i_cent)
+  {
+    string HistName = Form("h_mZdcShiftEpEast_%d",i_cent);
+    h_mZdcShiftEpEast[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(double)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
+    HistName = Form("h_mZdcShiftEpWest_%d",i_cent);
+    h_mZdcShiftEpWest[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(double)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
+    HistName = Form("h_mZdcShiftEpDiff_%d",i_cent);
+    h_mZdcShiftEpDiff[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(double)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
+    HistName = Form("h_mZdcShiftEpFull_%d",i_cent);
+    h_mZdcShiftEpFull[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(double)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
+  }
+}
+
+void StEventPlaneHistoManager::fillZdcShiftSubEP(TVector2 QEast, TVector2 QWest, int Cent9, int runIndex)
+{
+  double PsiEast = TMath::ATan2(QEast.Y(),QEast.X()); h_mZdcShiftEpEast[Cent9]->Fill(runIndex,PsiEast);
+  double PsiWest = TMath::ATan2(QWest.Y(),QWest.X()); h_mZdcShiftEpWest[Cent9]->Fill(runIndex,PsiWest);
+}
+
+void StEventPlaneHistoManager::fillZdcShiftFullEP(TVector2 QDiff, TVector2 QFull, int Cent9, int runIndex)
+{
+  double PsiDiff = TMath::ATan2(QDiff.Y(),QDiff.X()); h_mZdcShiftEpDiff[Cent9]->Fill(runIndex,PsiDiff);
+  double PsiFull = TMath::ATan2(QFull.Y(),QFull.X()); h_mZdcShiftEpFull[Cent9]->Fill(runIndex,PsiFull);
+}
+
+void StEventPlaneHistoManager::writeZdcShiftEP()
+{
+  for(int i_cent = 0; i_cent < 9; ++i_cent)
+  {
+    h_mZdcShiftEpEast[i_cent]->Write();
+    h_mZdcShiftEpWest[i_cent]->Write();
+    h_mZdcShiftEpDiff[i_cent]->Write();
+    h_mZdcShiftEpFull[i_cent]->Write();
+  }
+}
 //-------------------------------------------------------------------------------------------
 
 //-------------------------------------------------------------------------------------------
@@ -197,6 +236,53 @@ void StEventPlaneHistoManager::writeTpcReCenterEP()
     h_mTpcReCenterEpEast[i_cent]->Write();
     h_mTpcReCenterEpWest[i_cent]->Write();
     h_mTpcReCenterEpFull[i_cent]->Write();
+  }
+}
+
+// shift TPC EP
+void StEventPlaneHistoManager::initTpcShiftEP()
+{
+  for(int i_cent = 0; i_cent < 9; ++i_cent)
+  {
+    string HistName = Form("h_mTpcShiftEpEast_%d",i_cent);
+    h_mTpcShiftEpEast[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(double)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
+    HistName = Form("h_mTpcShiftEpWest_%d",i_cent);
+    h_mTpcShiftEpWest[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(double)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
+    HistName = Form("h_mTpcShiftEpRanA_%d",i_cent);
+    h_mTpcShiftEpRanA[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(double)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
+    HistName = Form("h_mTpcShiftEpRanB_%d",i_cent);
+    h_mTpcShiftEpRanB[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(double)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
+    HistName = Form("h_mTpcShiftEpFull_%d",i_cent);
+    h_mTpcShiftEpFull[i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(double)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
+  }
+}
+
+void StEventPlaneHistoManager::fillTpcShiftSubEP(double PsiEast, double PsiWest, int Cent9, int runIndex)
+{
+  h_mTpcShiftEpEast[Cent9]->Fill(runIndex,PsiEast);
+  h_mTpcShiftEpWest[Cent9]->Fill(runIndex,PsiWest);
+}
+
+void StEventPlaneHistoManager::fillTpcShiftRanEP(double PsiRanA, double PsiRanB, int Cent9, int runIndex)
+{
+  h_mTpcShiftEpRanA[Cent9]->Fill(runIndex,PsiRanA);
+  h_mTpcShiftEpRanB[Cent9]->Fill(runIndex,PsiRanB);
+}
+
+void StEventPlaneHistoManager::fillTpcShiftFullEP(double PsiFull, int Cent9, int runIndex)
+{
+  h_mTpcShiftEpFull[Cent9]->Fill(runIndex,PsiFull);
+}
+
+void StEventPlaneHistoManager::writeTpcShiftEP()
+{
+  for(int i_cent = 0; i_cent < 9; ++i_cent)
+  {
+    h_mTpcShiftEpEast[i_cent]->Write();
+    h_mTpcShiftEpWest[i_cent]->Write();
+    h_mTpcShiftEpRanA[i_cent]->Write();
+    h_mTpcShiftEpRanB[i_cent]->Write();
+    h_mTpcShiftEpFull[i_cent]->Write();
   }
 }
 //-------------------------------------------------------------------------------------------
