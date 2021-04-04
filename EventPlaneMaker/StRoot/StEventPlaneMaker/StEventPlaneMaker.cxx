@@ -627,7 +627,7 @@ int StEventPlaneMaker::Make()
 	  if( !(vTpcQ2East.Mod() < 1e-10 || vTpcQ2West.Mod() < 1e-10) )
 	  {
 	    double TpcPsiEast = mTpcEpManager->calShiftAngle2East();
-	    double TpcPsiWest = mTpcEpManager->calShiftAngle2East();
+	    double TpcPsiWest = mTpcEpManager->calShiftAngle2West();
 	    mEventPlaneProManager->fillTpcResSub(TpcPsiEast,TpcPsiWest,cent9,runIndex);
 	    mEventPlaneHistoManager->fillTpcShiftSubEP(TpcPsiEast,TpcPsiWest,cent9,runIndex);
 	  }
