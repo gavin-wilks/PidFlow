@@ -194,27 +194,27 @@ bool StEventPlaneCut::passTrackBasic(StPicoTrack *picoTrack)
   // eta cut
   // float eta = picoTrack->pMom().pseudoRapidity();
   // float eta = picoTrack->pMom().PseudoRapidity();
-  TVector3 primMom; // temp fix for StThreeVectorF & TVector3
-  const double primPx    = picoTrack->pMom().x(); // x works for both TVector3 and StThreeVectorF
-  const double primPy    = picoTrack->pMom().y();
-  const double primPz    = picoTrack->pMom().z();
-  primMom.SetXYZ(primPx,primPy,primPz);
+  // TVector3 primMom; // temp fix for StThreeVectorF & TVector3
+  // const double primPx    = picoTrack->pMom().x(); // x works for both TVector3 and StThreeVectorF
+  // const double primPy    = picoTrack->pMom().y();
+  // const double primPz    = picoTrack->pMom().z();
+  // primMom.SetXYZ(primPx,primPy,primPz);
 
-  const double eta = primMom.PseudoRapidity();
-  if(fabs(eta) > recoEP::mEtaMax)
-  {
-    return kFALSE;
-  }
+  // const double eta = primMom.PseudoRapidity();
+  // if(fabs(eta) > recoEP::mEtaMax)
+  // {
+  //   return kFALSE;
+  // }
 
-  if(primMom.Pt() < recoEP::mGlobPtMin) // minimum pT cuts
-  {
-    return kFALSE;
-  }
+  // if(primMom.Pt() < recoEP::mGlobPtMin) // minimum pT cuts
+  // {
+  //   return kFALSE;
+  // }
 
   return kTRUE;
 }
 
-bool StEventPlaneCut::passTrackEP(StPicoTrack *picoTrack, StPicoEvent* picoEvent)
+bool StEventPlaneCut::passTrackEp(StPicoTrack *picoTrack, StPicoEvent* picoEvent)
 {
   if(!passTrackBasic(picoTrack)) return kFALSE;
 
@@ -228,16 +228,137 @@ bool StEventPlaneCut::passTrackEP(StPicoTrack *picoTrack, StPicoEvent* picoEvent
     return kFALSE;
   }
 
-  // pt cut 0.2 - 2.0 GeV/c
   TVector3 primMom; // temp fix for StThreeVectorF & TVector3
   const double primPx    = picoTrack->pMom().x(); // x works for both TVector3 and StThreeVectorF
   const double primPy    = picoTrack->pMom().y();
   const double primPz    = picoTrack->pMom().z();
   primMom.SetXYZ(primPx,primPy,primPz);
 
+  // eta cut [-1.0,1.0]
+  const double eta = primMom.PseudoRapidity();
+  if(fabs(eta) > recoEP::mEtaMax)
+  {
+    return kFALSE;
+  }
+
+  // pt cut 0.2 - 2.0 GeV/c
   const double pt = primMom.Perp();
   const double p  = primMom.Mag();
   if(!(pt > recoEP::mPrimPtMin[mEnergy] && pt < recoEP::mPrimPtMax && p < recoEP::mPrimMomMax))
+  {
+    return kFALSE;
+  }
+
+  return kTRUE;
+}
+
+bool StEventPlaneCut::passTrackChargedFlowEast(StPicoTrack *picoTrack, StPicoEvent* picoEvent)
+{
+  if(!passTrackBasic(picoTrack)) return kFALSE;
+
+  const double vx = picoEvent->primaryVertex().x(); // x works for both TVector3 and StThreeVectorF
+  const double vy = picoEvent->primaryVertex().y();
+  const double vz = picoEvent->primaryVertex().z();
+
+  // dca cut for charged particle flow: 1.0
+  if(picoTrack->gDCA(vx,vy,vz) > recoEP::mDcaTrMax)
+  {
+    return kFALSE;
+  }
+
+  TVector3 primMom; // temp fix for StThreeVectorF & TVector3
+  const double primPx    = picoTrack->pMom().x(); // x works for both TVector3 and StThreeVectorF
+  const double primPy    = picoTrack->pMom().y();
+  const double primPz    = picoTrack->pMom().z();
+  primMom.SetXYZ(primPx,primPy,primPz);
+
+  // eta cut for charged particle flow in East EP [-1.0,0.0)
+  const double eta = primMom.PseudoRapidity();
+  if(!(eta >= -1.0*recoEP::mEtaMax && eta < 0.0))
+  {
+    return kFALSE;
+  }
+
+  // pt and momentum cut: pt > 0.2 GeV/c
+  const double pt = primMom.Perp();
+  const double p  = primMom.Mag();
+  if(!(pt > recoEP::mPrimPtMin[mEnergy] && p < recoEP::mPrimMomMax))
+  {
+    return kFALSE;
+  }
+
+  return kTRUE;
+}
+
+bool StEventPlaneCut::passTrackChargedFlowWest(StPicoTrack *picoTrack, StPicoEvent* picoEvent)
+{
+  if(!passTrackBasic(picoTrack)) return kFALSE;
+
+  const double vx = picoEvent->primaryVertex().x(); // x works for both TVector3 and StThreeVectorF
+  const double vy = picoEvent->primaryVertex().y();
+  const double vz = picoEvent->primaryVertex().z();
+
+  // dca cut for charged particle flow: 1.0
+  if(picoTrack->gDCA(vx,vy,vz) > recoEP::mDcaTrMax)
+  {
+    return kFALSE;
+  }
+
+  TVector3 primMom; // temp fix for StThreeVectorF & TVector3
+  const double primPx    = picoTrack->pMom().x(); // x works for both TVector3 and StThreeVectorF
+  const double primPy    = picoTrack->pMom().y();
+  const double primPz    = picoTrack->pMom().z();
+  primMom.SetXYZ(primPx,primPy,primPz);
+
+  // eta cut for charged particle flow in West TPC [0.0,1.0]
+  const double eta = primMom.PseudoRapidity();
+  if(!(eta >= 0.0 && eta <= recoEP::mEtaMax))
+  {
+    return kFALSE;
+  }
+
+  // pt and momentum cut: pt > 0.2 GeV/c
+  const double pt = primMom.Perp();
+  const double p  = primMom.Mag();
+  if(!(pt > recoEP::mPrimPtMin[mEnergy] && p < recoEP::mPrimMomMax))
+  {
+    return kFALSE;
+  }
+
+  return kTRUE;
+}
+
+bool StEventPlaneCut::passTrackChargedFlowFull(StPicoTrack *picoTrack, StPicoEvent* picoEvent)
+{
+  if(!passTrackBasic(picoTrack)) return kFALSE;
+
+  const double vx = picoEvent->primaryVertex().x(); // x works for both TVector3 and StThreeVectorF
+  const double vy = picoEvent->primaryVertex().y();
+  const double vz = picoEvent->primaryVertex().z();
+
+  // dca cut for charged particle flow: 1.0
+  if(picoTrack->gDCA(vx,vy,vz) > recoEP::mDcaTrMax)
+  {
+    return kFALSE;
+  }
+
+  TVector3 primMom; // temp fix for StThreeVectorF & TVector3
+  const double primPx    = picoTrack->pMom().x(); // x works for both TVector3 and StThreeVectorF
+  const double primPy    = picoTrack->pMom().y();
+  const double primPz    = picoTrack->pMom().z();
+  primMom.SetXYZ(primPx,primPy,primPz);
+
+  // eta cut for charged particle flow in Full TPC [-1.0,1.0]
+  const double eta = primMom.PseudoRapidity();
+  if(fabs(eta) > recoEP::mEtaMax)
+  {
+    return kFALSE;
+  }
+
+  // pt and momentum cut: pt > 0.2 GeV/c
+  const double pt = primMom.Perp();
+  const double p  = primMom.Mag();
+  if(!(pt > recoEP::mPrimPtMin[mEnergy] && p < recoEP::mPrimMomMax))
   {
     return kFALSE;
   }

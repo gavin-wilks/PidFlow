@@ -20,7 +20,11 @@ class StEventPlaneCut : public TObject
     bool passEventCut(StPicoDst*);
 
     bool passTrackBasic(StPicoTrack*);
-    bool passTrackEP(StPicoTrack*, StPicoEvent*);
+    bool passTrackEp(StPicoTrack*, StPicoEvent*);
+
+    bool passTrackChargedFlowEast(StPicoTrack*, StPicoEvent*);
+    bool passTrackChargedFlowWest(StPicoTrack*, StPicoEvent*);
+    bool passTrackChargedFlowFull(StPicoTrack*, StPicoEvent*);
 
     double getBeta(StPicoTrack*, StPicoDst*); // return beta of picoTrack (tof || -999)
     double getPrimaryMass2(StPicoTrack*, StPicoDst*); // return m^2 picoTrack (primary || -999)

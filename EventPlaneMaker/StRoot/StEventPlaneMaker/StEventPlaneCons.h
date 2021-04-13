@@ -23,6 +23,7 @@ namespace recoEP
   // track cut
   const double mSigScaleMap[NumBeamEnergy] = {1.0,1.0,1.0};
   const double mDcaEPMax[NumBeamEnergy] = {3.0,1.0,1.0}; // for event plane reconstruction: 1.0 for BES
+  const double mDcaTrMax = 1.0; // for pion, kaon, proton mDcaTrMax = 1.0 for flow
   const int mHitsDedxMin = 5;
   const int mHitsFitTPCMin = 15;
   const int mHitsMaxTPCMin = 0;
@@ -45,7 +46,6 @@ namespace recoEP
 
   const std::string mVStr[2] = {"pos","neg"};
   const std::string mOrder = "2nd";
-  const double mShiftOrder[5] = {2.0,4.0,6.0,8.0,10.0};
   const int mNumShiftOrder = 20;
 }
 

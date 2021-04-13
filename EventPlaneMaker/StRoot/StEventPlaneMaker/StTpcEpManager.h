@@ -19,9 +19,9 @@ class StTpcEpManager : public TObject
     void initTpcEp(int Cent9, int RunIndex, int VzSign);
 
     // ReCenter Correction
-    bool passTrackEtaEast(StPicoTrack*);
-    bool passTrackEtaWest(StPicoTrack*);
-    bool passTrackEtaFull(StPicoTrack*);
+    bool passTrackEpEast(StPicoTrack*);
+    bool passTrackEpWest(StPicoTrack*);
+    bool passTrackEpFull(StPicoTrack*);
 
     TVector2 calq2Vector(StPicoTrack*);
     double getWeight(StPicoTrack*);
@@ -60,9 +60,11 @@ class StTpcEpManager : public TObject
     double calShiftAngle2Full();
     double calShiftAngle2Full(StPicoTrack *picoTrack); // subtract self-correlation
 
-    void initResolutionCorr();
+    void readResolution();
     double getRes2Sub(int Cent9);
+    double getRes2SubErr(int Cent9);
     double getRes2Full(int Cent9);
+    double getRes2FullErr(int Cent9);
 
     TVector2 getQVector(int nEP); // east/west/full/subA/subB
     TVector2 getQVectorRaw(int nEP);
@@ -83,6 +85,12 @@ class StTpcEpManager : public TObject
     int mCent9;
     int mRunIndex;
     int mVzSign;
+
+    // EP resolution
+    double mTpcSubRes2Val[9];
+    double mTpcSubRes2Err[9];
+    double mTpcFullRes2Val[9];
+    double mTpcFullRes2Err[9];
 
     // TPC ReCenter Correction | x axis is RunIndex, y axis is Centrality
     TProfile2D *p_mTpcq2xEast[2]; // 0 = vertex pos/neg

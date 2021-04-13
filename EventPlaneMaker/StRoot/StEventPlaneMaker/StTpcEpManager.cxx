@@ -36,6 +36,13 @@ StTpcEpManager::StTpcEpManager(Int_t energy)
 {
   mEnergy = energy;
   clearTpcEp();
+  for(int i_cent = 0; i_cent < 9; ++i_cent)
+  {
+    mTpcSubRes2Val[i_cent]  = 0.0;
+    mTpcSubRes2Err[i_cent]  = 0.0;
+    mTpcFullRes2Val[i_cent] = 0.0;
+    mTpcFullRes2Err[i_cent] = 0.0;
+  }
 }
 
 StTpcEpManager::~StTpcEpManager()
@@ -82,7 +89,7 @@ void StTpcEpManager::initTpcEp(int Cent9, int RunIndex, int VzSign)
   mVzSign = VzSign;
 }
 //---------------------------------------------------------------------------------
-bool StTpcEpManager::passTrackEtaEast(StPicoTrack *picoTrack) // neg
+bool StTpcEpManager::passTrackEpEast(StPicoTrack *picoTrack) // neg
 {
   TVector3 primMom; // temp fix for StThreeVectorF & TVector3
   const double primPx = picoTrack->pMom().x(); // x works for both TVector3 and StThreeVectorF
@@ -93,9 +100,9 @@ bool StTpcEpManager::passTrackEtaEast(StPicoTrack *picoTrack) // neg
 
   // const double eta = picoTrack->pMom().pseudoRapidity();
 
-  // eta cut
+  // eta cut for East EP reconstruction: [-1.0,-0.05]
   // eta_gap between two sub event plane is 2*mEtaGap
-  if(!(eta > -1.0*recoEP::mEtaMax && eta < -1.0*recoEP::mEtaGap))
+  if(!(eta >= -1.0*recoEP::mEtaMax && eta <= -1.0*recoEP::mEtaGap))
   {
     return kFALSE;
   }
@@ -103,7 +110,7 @@ bool StTpcEpManager::passTrackEtaEast(StPicoTrack *picoTrack) // neg
   return kTRUE;
 }
 
-bool StTpcEpManager::passTrackEtaWest(StPicoTrack *picoTrack) // pos 
+bool StTpcEpManager::passTrackEpWest(StPicoTrack *picoTrack) // pos 
 {
   TVector3 primMom; // temp fix for StThreeVectorF & TVector3
   const double primPx = picoTrack->pMom().x(); // x works for both TVector3 and StThreeVectorF
@@ -114,9 +121,9 @@ bool StTpcEpManager::passTrackEtaWest(StPicoTrack *picoTrack) // pos
 
   // const double eta = picoTrack->pMom().pseudoRapidity();
 
-  // eta cut
+  // eta cut for West EP reconstruction: [0.05,1.0]
   // eta_gap between two sub event plane is 2*mEtaGap
-  if(!(eta > recoEP::mEtaGap && eta < recoEP::mEtaMax))
+  if(!(eta >= recoEP::mEtaGap && eta <= recoEP::mEtaMax))
   {
     return kFALSE;
   }
@@ -124,7 +131,7 @@ bool StTpcEpManager::passTrackEtaWest(StPicoTrack *picoTrack) // pos
   return kTRUE;
 }
 
-bool StTpcEpManager::passTrackEtaFull(StPicoTrack *picoTrack)
+bool StTpcEpManager::passTrackEpFull(StPicoTrack *picoTrack)
 {
   TVector3 primMom; // temp fix for StThreeVectorF & TVector3
   const double primPx = picoTrack->pMom().x(); // x works for both TVector3 and StThreeVectorF
@@ -133,7 +140,7 @@ bool StTpcEpManager::passTrackEtaFull(StPicoTrack *picoTrack)
   primMom.SetXYZ(primPx,primPy,primPz);
   const double eta = primMom.PseudoRapidity();
 
-  // eta cut
+  // eta cut for Full EP reconstruction: [-1.0,1.0]
   // no eta gap for full EP
   if(fabs(eta) > recoEP::mEtaMax)
   {
@@ -570,7 +577,7 @@ double StTpcEpManager::calShiftAngle2Full()
 double StTpcEpManager::calShiftAngle2Full(StPicoTrack *picoTrack)
 {
   TVector2 QVector_sub = mQ2VecFull;
-  if(passTrackEtaFull(picoTrack))
+  if(passTrackEpFull(picoTrack))
   {
     double wgt = getWeight(picoTrack);
     QVector_sub = mQ2VecFull - wgt*(calq2Vector(picoTrack) - getReCenterParFull());
@@ -596,46 +603,65 @@ double StTpcEpManager::calShiftAngle2Full(StPicoTrack *picoTrack)
   return Psi_Shift;
 }
 //---------------------------------------------------------------------------------
-void StTpcEpManager::initResolutionCorr()
+void StTpcEpManager::readResolution()
 {
-  TString InPutFile_Res = Form("/global/project/projectdirs/starprod/rnc/xusun/OutPut/AuAu%s/SpinAlignment/Resolution/file_%s_Resolution.root",recoEP::mBeamEnergy[mEnergy].c_str(),recoEP::mBeamEnergy[mEnergy].c_str());
-  mInPutFile_Res = TFile::Open(InPutFile_Res.Data());
+  string InPutFile = Form("StRoot/StEventPlaneUtility/Resolution/file_%s_Resolution.root",recoEP::mBeamEnergy[mEnergy].c_str());
+  mInPutFile_Res = TFile::Open(InPutFile.c_str());
+
+  // calculate sub event plane resolution
+  TProfile *p_mTpcSubRes2 = (TProfile*)mInPutFile_Res->Get("p_mTpcSubRes2");
+  for(int i_cent = 0; i_cent < 9; ++i_cent)
+  {
+    const double resRaw = p_mTpcSubRes2->GetBinContent(p_mTpcSubRes2->FindBin(i_cent));
+    const double errRaw = p_mTpcSubRes2->GetBinError(p_mTpcSubRes2->FindBin(i_cent));
+    if(resRaw > 0)
+    {
+      mTpcSubRes2Val[i_cent] = TMath::Sqrt(resRaw);
+      mTpcSubRes2Err[i_cent] = errRaw/(2.0*TMath::Sqrt(resRaw));
+    }
+    // cout << "i_cent = " << i_cent << ", resRaw = " << resRaw << ", resSub = " << mTpcSubRes2Val[i_cent] << " +/- " << mTpcSubRes2Err[i_cent] << endl;
+  }
+
+  // calculate full event plane resolution
+  TProfile *p_mTpcRanRes2 = (TProfile*)mInPutFile_Res->Get("p_mTpcRanRes2");
+  for(int i_cent = 0; i_cent < 9; ++i_cent)
+  {
+    const double resRaw = p_mTpcRanRes2->GetBinContent(p_mTpcRanRes2->FindBin(i_cent));
+    const double errRaw = p_mTpcRanRes2->GetBinError(p_mTpcRanRes2->FindBin(i_cent));
+    if(resRaw > 0)
+    {
+      const double resSub = TMath::Sqrt(resRaw);
+      const double errSub = errRaw/(2.0*TMath::Sqrt(resRaw));
+
+      TF1 *f_res = new TF1("f_res",Resolution_TpcFull,0,10,0);
+      const double chiSub = f_res->GetX(resSub);
+      const double errChiSub = errSub/f_res->Derivative(chiSub);
+      const double chiFull = chiSub*TMath::Sqrt(2.0);
+      mTpcFullRes2Val[i_cent] = f_res->Eval(chiFull);
+      mTpcFullRes2Err[i_cent] = f_res->Derivative(chiFull)*errChiSub*TMath::Sqrt(2.0);
+    }
+    // cout << "i_cent = " << i_cent << ", resRaw = " << resRaw << ", resFull = " << mTpcFullRes2Val[i_cent] << " +/- " << mTpcFullRes2Err[i_cent] << endl;
+  }
 }
 
 double StTpcEpManager::getRes2Sub(int Cent9)
 {
-  TProfile *p_res2 = (TProfile*)mInPutFile_Res->Get("p_mRes2_Sub");
-  const double Res_raw = p_res2->GetBinContent(p_res2->FindBin(Cent9));
-  double Res_sub;
-  if(Res_raw <= 0)
-  {
-    Res_sub = -999.9;
-  }
-  else
-  {
-    Res_sub = TMath::Sqrt(Res_raw);
-  }
-  return Res_sub;
+  return mTpcSubRes2Val[Cent9];
+}
+
+double StTpcEpManager::getRes2SubErr(int Cent9)
+{
+  return mTpcSubRes2Err[Cent9];
 }
 
 double StTpcEpManager::getRes2Full(int Cent9)
 {
-  TProfile *p_res2 = (TProfile*)mInPutFile_Res->Get("p_mRes2_Ran");
-  const double Res_raw = p_res2->GetBinContent(p_res2->FindBin(Cent9));
-  double Res_full;
-  if(Res_raw <= 0)
-  {
-    Res_full = -999.9;
-  }
-  else
-  {
-    double Res_sub = TMath::Sqrt(Res_raw);
-    TF1 *f_res = new TF1("f_res",Resolution_TpcFull,0,10,0);
-    double chi_sub = f_res->GetX(Res_sub);
-    double chi_full = chi_sub*TMath::Sqrt(2.0);
-    Res_full = f_res->Eval(chi_full);
-  }
-  return Res_full;
+  return mTpcFullRes2Val[Cent9];
+}
+
+double StTpcEpManager::getRes2FullErr(int Cent9)
+{
+  return mTpcFullRes2Err[Cent9];
 }
 //---------------------------------------------------------------------------------
 TVector2 StTpcEpManager::getQVector(int nEP) // east/west

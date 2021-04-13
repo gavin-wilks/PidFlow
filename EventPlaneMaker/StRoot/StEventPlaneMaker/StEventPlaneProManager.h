@@ -53,6 +53,15 @@ class StEventPlaneProManager
     void writeTpcResolution();
     //--------------TPC EP---------------
 
+    //--------------Charged Flow---------------
+    void initChargedFlow();
+    void fillChargedV1Pp(double pt, double eta, double v1, double res1, int Cent9, int RunIndex, double reweight);
+    void fillChargedV2Pp(double pt, double v2, double res2, int Cent9, int RunIndex, double reweight);
+    void fillChargedV2Ep(double pt, double v2, double res2, int Cent9, int RunIndex, double reweight);
+    void fillChargedV3Ep(double pt, double v3, double res3, int Cent9, int RunIndex, double reweight);
+    void writeChargedFlow();
+    //--------------Charged Flow---------------
+
   private:
     //--------------ZDC EP---------------
     // ZDC-SMD ReCenter Correction | x axis is RunIndex, y axis is Centrality
@@ -99,6 +108,19 @@ class StEventPlaneProManager
     TProfile *p_mTpcSubRes2; // 2nd Res vs cent9
     TProfile *p_mTpcRanRes2; // 2nd Res vs cent9
     //--------------TPC EP---------------
+
+    //--------------Charged Flow---------------
+    // charged particle flow for different centrality bins: 0-8 cent9, 9 minBias
+    TProfile *p_mChargedV1PpQA[10]; // <v1Pp> vs. runIndex | pt [0.2, 2.0]
+    TProfile *p_mChargedV2EpQA[10]; // <v2Ep> vs. runIndex | pt [0.2, 5.2]
+    TProfile *p_mChargedV2PpQA[10]; // <v2Pp> vs. runIndex | pt [0.2, 5.2]
+    TProfile *p_mChargedV3EpQA[10]; // <v3Ep> vs. runIndex | pt [0.2, 5.2]
+    TProfile *p_mChargedV1Pp[10]; // v1Pp vs. eta
+    TProfile *p_mChargedV2Ep[10]; // v2Ep vs. pt
+    TProfile *p_mChargedV2Pp[10]; // v2Pp vs. pt
+    TProfile *p_mChargedV3Ep[10]; // v3Ep vs. pt
+
+    //--------------Charged Flow---------------
 
     ClassDef(StEventPlaneProManager,1)
 };

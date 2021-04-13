@@ -50,12 +50,14 @@ class StEventPlaneMaker : public StMaker {
     string mOutPut_ShiftPar;
     string mOutPut_ShiftParFull;
     string mOutPut_Resolution;
+    string mOutPut_ChargedFlow;
 
     TFile *mFile_GainCorr;
     TFile *mFile_ReCenterPar;
     TFile *mFile_ShiftPar;
     TFile *mFile_ShiftParFull;
     TFile *mFile_Resolution;
+    TFile *mFile_ChargedFlow;
 
     int mUsedTrackCounter;
 

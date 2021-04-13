@@ -40,8 +40,10 @@ class StZdcEpManager : public TObject
     TVector2 getQFull(TVector2 QEast, TVector2 QWest);
 
     void readResolution();
-    void calResolution();
-    float getResolution(int Cent9);
+    double getRes1Full(int Cent9);
+    double getRes1FullErr(int Cent9);
+    double getRes2Full(int Cent9);
+    double getRes2FullErr(int Cent9);
 
   private:
 
@@ -67,9 +69,11 @@ class StZdcEpManager : public TObject
     TProfile2D *p_mZdcQ1FullCos[2][20];
     TProfile2D *p_mZdcQ1FullSin[2][20];
 
-    // charged hadron v1 calculation
-    TProfile *p_mResolution;
-    float mResolution[9];
+    // EP resolution
+    double mZdcFullRes1Val[9];
+    double mZdcFullRes1Err[9];
+    double mZdcFullRes2Val[9];
+    double mZdcFullRes2Err[9];
 
     TFile *mFile_GainCorrPar;
     TFile *mFile_ReCenterPar;

@@ -9,7 +9,7 @@ class StPicoEvent;
 
 StChain *chain;
 
-void recoEventPlane(const Char_t *inputFile="../FileList/200GeV_2014/pico_xrootd_local.list", const string jobId = "14", const Int_t Mode = 4, const Int_t energy = 0)
+void recoEventPlane(const Char_t *inputFile="../FileList/200GeV_2014/pico_xrootd_local.list", const string jobId = "14", const Int_t Mode = 5, const Int_t energy = 0)
 {
   // mBeamEnergy[NumBeamEnergy] = {"200GeV","54GeV","27GeV"};
   // Mode: 
@@ -18,6 +18,7 @@ void recoEventPlane(const Char_t *inputFile="../FileList/200GeV_2014/pico_xrootd
   // 2 => Shift Correction for ZDC-SMD East/West & TPC East/West/Full;
   // 3 => Chift Correction for Full ZDC-SMD EP;
   // 4 => Resolution Calculation for ZDC-SMD Sub & TPC Sub/Ran;
+  // 5 => Charged Particle Flow w.r.t ZDC-SMD Full & TPC Sub;
 
   TStopwatch *stopWatch = new TStopwatch();
   stopWatch->Start();

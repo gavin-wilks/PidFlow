@@ -36,6 +36,23 @@ StZdcEpManager::StZdcEpManager(int energy)
 {
   mEnergy = energy;
   clearZdcEp();
+  for(int i_eastwest = 0; i_eastwest < 2; ++i_eastwest)
+  {
+    for(int i_verthori = 0; i_verthori < 2; ++i_verthori)
+    {
+      for(int i_slat = 0; i_slat < 8; ++i_slat)
+      {
+	mGainCorrFactor[i_eastwest][i_verthori][i_slat] = -999.9;
+      }
+    }
+  }
+  for(int i_cent = 0; i_cent < 9; ++i_cent) 
+  {
+    mZdcFullRes1Val[i_cent] = 0.0;
+    mZdcFullRes1Err[i_cent] = 0.0;
+    mZdcFullRes2Val[i_cent] = 0.0;
+    mZdcFullRes2Err[i_cent] = 0.0;
+  }
 }
 
 StZdcEpManager::~StZdcEpManager()
@@ -55,7 +72,6 @@ void StZdcEpManager::clearZdcEp()
       for(int i_slat = 0; i_slat < 8; ++i_slat)
       {
 	mZdcSmd[i_eastwest][i_verthori][i_slat] = 0.0;
-	// mGainCorrFactor[i_eastwest][i_verthori][i_slat] = -999.9;
       }
     }
   }
@@ -63,7 +79,6 @@ void StZdcEpManager::clearZdcEp()
   mCenterEastHorizontal = -999.9;
   mCenterWestVertical   = -999.9;
   mCenterWestHorizontal = -999.9;
-  for(int i_cent = 0; i_cent < 9; ++i_cent) mResolution[i_cent] = 0.0;
 }
 
 void StZdcEpManager::initZdcEp(int Cent9, int RunIndex, int VzSign)
@@ -385,42 +400,67 @@ void StZdcEpManager::readResolution()
 {
   string InPutFile = Form("StRoot/StEventPlaneUtility/Resolution/file_%s_Resolution.root",recoEP::mBeamEnergy[mEnergy].c_str());
   mFile_Resolution = TFile::Open(InPutFile.c_str());
-  p_mResolution = (TProfile*)mFile_Resolution->Get("p_mResolution");
-}
 
-void StZdcEpManager::calResolution()
-{
-  TF1 *f_Res_Full = new TF1("f_Res_Full",Resolution_ZdcFull,0,10,0);
-  for(Int_t i_cent = 0; i_cent < 9; i_cent++)
+  TF1 *f_res = new TF1("f_res",Resolution_ZdcFull,0,10,0);
+
+  // calculate 1st full event plane resolution
+  TProfile *p_mZdcSubRes1 = (TProfile*)mFile_Resolution->Get("p_mZdcSubRes1");
+  for(int i_cent = 0; i_cent < 9; ++i_cent)
   {
-    float val_res_full, err_res_full;
-    float val_res_raw = p_mResolution->GetBinContent(i_cent+1);
-    float err_res_raw = p_mResolution->GetBinError(i_cent+1);
-    //    cout << "val_res_raw = " << val_res_raw << ", err_res_raw = " << err_res_raw << endl;
-    if(val_res_raw <= 0)
+    const double resRaw = p_mZdcSubRes1->GetBinContent(p_mZdcSubRes1->FindBin(i_cent));
+    const double errRaw = p_mZdcSubRes1->GetBinError(p_mZdcSubRes1->FindBin(i_cent));
+    if(resRaw > 0)
     {
-      val_res_full = -999.9;
-      err_res_full = 1.0;
-    }
-    else
-    {
-      float val_res_sub = TMath::Sqrt(val_res_raw);
-      float err_res_sub = err_res_raw/(2*val_res_sub);
+      const double resSub = TMath::Sqrt(resRaw);
+      const double errSub = errRaw/(2.0*TMath::Sqrt(resRaw));
 
-      // calculate full event plane resolution
-      float chi_sub = f_Res_Full->GetX(val_res_sub);
-      float chi_full = chi_sub*TMath::Sqrt(2.0);
-      val_res_full = f_Res_Full->Eval(chi_full);
-      // error propagation
-      float err_chi_sub = err_res_sub/f_Res_Full->Derivative(chi_sub);
-      err_res_full = f_Res_Full->Derivative(chi_full)*err_chi_sub*TMath::Sqrt(2.0);
+      const double chiSub = f_res->GetX(resSub);
+      const double errChiSub = errSub/f_res->Derivative(chiSub);
+      const double chiFull = chiSub*TMath::Sqrt(2.0);
+      mZdcFullRes1Val[i_cent] = f_res->Eval(chiFull);
+      mZdcFullRes1Err[i_cent] = f_res->Derivative(chiFull)*errChiSub*TMath::Sqrt(2.0);
     }
-    mResolution[i_cent] = val_res_full;
+    // cout << "i_cent = " << i_cent << ", resRaw = " << resRaw << ", resFull = " << mZdcFullRes1Val[i_cent] << " +/- " << mZdcFullRes1Err[i_cent] << endl;
+  }
+
+  // calculate 2nd full event plane resolution
+  TProfile *p_mZdcSubRes2 = (TProfile*)mFile_Resolution->Get("p_mZdcSubRes2");
+  for(int i_cent = 0; i_cent < 9; ++i_cent)
+  {
+    const double resRaw = p_mZdcSubRes2->GetBinContent(p_mZdcSubRes2->FindBin(i_cent));
+    const double errRaw = p_mZdcSubRes2->GetBinError(p_mZdcSubRes2->FindBin(i_cent));
+    if(resRaw > 0)
+    {
+      const double resSub = TMath::Sqrt(resRaw);
+      const double errSub = errRaw/(2.0*TMath::Sqrt(resRaw));
+
+      const double chiSub = f_res->GetX(resSub);
+      const double errChiSub = errSub/f_res->Derivative(chiSub);
+      const double chiFull = chiSub*TMath::Sqrt(2.0);
+      mZdcFullRes2Val[i_cent] = f_res->Eval(chiFull);
+      mZdcFullRes2Err[i_cent] = f_res->Derivative(chiFull)*errChiSub*TMath::Sqrt(2.0);
+    }
+    // cout << "i_cent = " << i_cent << ", resRaw = " << resRaw << ", resFull = " << mZdcFullRes2Val[i_cent] << " +/- " << mZdcFullRes2Err[i_cent] << endl;
   }
 }
 
-float StZdcEpManager::getResolution(int Cent9)
+double StZdcEpManager::getRes1Full(int Cent9)
 {
-  return mResolution[Cent9];
+  return mZdcFullRes1Val[Cent9];
+}
+
+double StZdcEpManager::getRes1FullErr(int Cent9)
+{
+  return mZdcFullRes1Err[Cent9];
+}
+
+double StZdcEpManager::getRes2Full(int Cent9)
+{
+  return mZdcFullRes2Val[Cent9];
+}
+
+double StZdcEpManager::getRes2FullErr(int Cent9)
+{
+  return mZdcFullRes2Err[Cent9];
 }
 //---------------------------------------------------------------------------------

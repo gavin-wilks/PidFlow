@@ -196,7 +196,6 @@ void StEventPlaneProManager::writeZdcResolution()
 }
 //---------------------------------------------------------------------------------
 
-
 //---------------------------------------------------------------------------------
 // TPC ReCenter Correction
 void StEventPlaneProManager::initTpcReCenter()
@@ -393,4 +392,104 @@ void StEventPlaneProManager::writeTpcResolution()
   p_mTpcSubRes2->Write();
   p_mTpcRanRes2->Write();
 }
+//---------------------------------------------------------------------------------
+
+//---------------------------------------------------------------------------------
+// Charged Particle Flow
+void StEventPlaneProManager::initChargedFlow()
+{
+  string ProName;
+  for(int i_cent = 0; i_cent < 10; ++i_cent)
+  {
+    ProName = Form("p_mChargedV1PpQA_Cent%d",i_cent);
+    p_mChargedV1PpQA[i_cent] = new TProfile(ProName.c_str(),ProName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5);
+    ProName = Form("p_mChargedV2EpQA_Cent%d",i_cent);
+    p_mChargedV2EpQA[i_cent] = new TProfile(ProName.c_str(),ProName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5);
+    ProName = Form("p_mChargedV2PpQA_Cent%d",i_cent);
+    p_mChargedV2PpQA[i_cent] = new TProfile(ProName.c_str(),ProName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5);
+    ProName = Form("p_mChargedV3EpQA_Cent%d",i_cent);
+    p_mChargedV3EpQA[i_cent] = new TProfile(ProName.c_str(),ProName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5);
+    ProName = Form("p_mChargedV1Pp_Cent%d",i_cent);
+    p_mChargedV1Pp[i_cent] = new TProfile(ProName.c_str(),ProName.c_str(),10,-1.0,1.0);
+    ProName = Form("p_mChargedV2Ep_Cent%d",i_cent);
+    p_mChargedV2Ep[i_cent] = new TProfile(ProName.c_str(),ProName.c_str(),25,0.2,4.2);
+    ProName = Form("p_mChargedV2Pp_Cent%d",i_cent);
+    p_mChargedV2Pp[i_cent] = new TProfile(ProName.c_str(),ProName.c_str(),25,0.2,4.2);
+    ProName = Form("p_mChargedV3Ep_Cent%d",i_cent);
+    p_mChargedV3Ep[i_cent] = new TProfile(ProName.c_str(),ProName.c_str(),25,0.2,4.2);
+  }
+}
+
+void StEventPlaneProManager::fillChargedV1Pp(double pt, double eta, double v1, double res1, int Cent9, int RunIndex, double reweight)
+{
+  if(res1 > 0 && pt >= 0.2 && pt <= 2.0)
+  {
+    p_mChargedV1PpQA[Cent9]->Fill(RunIndex,v1/res1,reweight);
+    p_mChargedV1PpQA[9]->Fill(RunIndex,v1/res1,reweight);
+
+    p_mChargedV1Pp[Cent9]->Fill(eta,v1/res1,reweight);
+    p_mChargedV1Pp[9]->Fill(eta,v1/res1,reweight);
+  }
+}
+
+void StEventPlaneProManager::fillChargedV2Pp(double pt, double v2, double res2, int Cent9, int RunIndex, double reweight)
+{
+  if(res2 > 0.0)
+  {
+    if(pt >= 0.2 && pt <= 5.2)
+    {
+      p_mChargedV2PpQA[Cent9]->Fill(RunIndex,v2/res2,reweight);
+      p_mChargedV2PpQA[9]->Fill(RunIndex,v2/res2,reweight);
+    }
+
+    p_mChargedV2Pp[Cent9]->Fill(pt,v2/res2,reweight);
+    p_mChargedV2Pp[9]->Fill(pt,v2/res2,reweight);
+  }
+}
+
+void StEventPlaneProManager::fillChargedV2Ep(double pt, double v2, double res2, int Cent9, int RunIndex, double reweight)
+{
+  if(res2 > 0.0)
+  {
+    if(pt >= 0.2 && pt <= 5.2)
+    {
+      p_mChargedV2EpQA[Cent9]->Fill(RunIndex,v2/res2,reweight);
+      p_mChargedV2EpQA[9]->Fill(RunIndex,v2/res2,reweight);
+    }
+
+    p_mChargedV2Ep[Cent9]->Fill(pt,v2/res2,reweight);
+    p_mChargedV2Ep[9]->Fill(pt,v2/res2,reweight);
+  }
+}
+
+void StEventPlaneProManager::fillChargedV3Ep(double pt, double v3, double res3, int Cent9, int RunIndex, double reweight)
+{
+  if(res3 > 0.0)
+  {
+    if(pt >= 0.2 && pt <= 5.2)
+    {
+      p_mChargedV3EpQA[Cent9]->Fill(RunIndex,v3/res3,reweight);
+      p_mChargedV3EpQA[9]->Fill(RunIndex,v3/res3,reweight);
+    }
+
+    p_mChargedV3Ep[Cent9]->Fill(pt,v3/res3,reweight);
+    p_mChargedV3Ep[9]->Fill(pt,v3/res3,reweight);
+  }
+}
+
+void StEventPlaneProManager::writeChargedFlow()
+{
+  for(int i_cent = 0; i_cent < 10; ++i_cent)
+  {
+    p_mChargedV1PpQA[i_cent]->Write();
+    p_mChargedV2EpQA[i_cent]->Write();
+    p_mChargedV2PpQA[i_cent]->Write();
+    p_mChargedV3EpQA[i_cent]->Write();
+    p_mChargedV1Pp[i_cent]->Write();
+    p_mChargedV2Ep[i_cent]->Write();
+    p_mChargedV2Pp[i_cent]->Write();
+    p_mChargedV3Ep[i_cent]->Write();
+  }
+}
+
 //---------------------------------------------------------------------------------
