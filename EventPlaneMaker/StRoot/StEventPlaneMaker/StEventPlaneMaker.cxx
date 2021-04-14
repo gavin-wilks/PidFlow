@@ -330,6 +330,8 @@ int StEventPlaneMaker::Make()
     { // apply Event Cuts for anlaysis 
       mZdcEpManager->initZdcEp(cent9,runIndex,vzSign); // ZDC-SMD EP
       mTpcEpManager->initTpcEp(cent9,runIndex,vzSign); // TPC EP
+
+      // set ADC for each ZDC-SMD slats
       if(mMode == 0)
       { // fill Gain Correction Factors for BBC & ZDC
 	for(int i_slat = 0; i_slat < 8; ++i_slat) // read in raw ADC value from ZDC-SMD
@@ -339,6 +341,67 @@ int StEventPlaneMaker::Make()
 	  mZdcEpManager->setZdcSmd(1,0,i_slat,mPicoEvent->ZdcSmdWestVertical(i_slat));
 	  mZdcEpManager->setZdcSmd(1,1,i_slat,mPicoEvent->ZdcSmdWestHorizontal(i_slat));
 	}
+      }
+      if(mMode > 0)
+      {
+	for(int i_slat = 0; i_slat < 8; ++i_slat) // read in gain correction factors for ZDC-SMD
+	{
+	  mZdcEpManager->setZdcSmdGainCorr(0,0,i_slat,mPicoEvent->ZdcSmdEastVertical(i_slat));
+	  mZdcEpManager->setZdcSmdGainCorr(0,1,i_slat,mPicoEvent->ZdcSmdEastHorizontal(i_slat));
+	  mZdcEpManager->setZdcSmdGainCorr(1,0,i_slat,mPicoEvent->ZdcSmdWestVertical(i_slat));
+	  mZdcEpManager->setZdcSmdGainCorr(1,1,i_slat,mPicoEvent->ZdcSmdWestHorizontal(i_slat));
+	}
+      }
+
+      // calculate TPC QVector
+      if(mMode == 1)
+      { // raw QVector
+	for(unsigned int i_track = 0; i_track < nTracks; ++i_track)
+	{ // calculate number of tracks used in raw EP reconstruction
+	  StPicoTrack *picoTrack = (StPicoTrack*)mPicoDst->track(i_track); // get picoTrack
+	  if(mEventPlaneCut->passTrackEp(picoTrack,mPicoEvent))
+	  { // track cut for EP reconstruction
+	    if(mTpcEpManager->passTrackEpEast(picoTrack)) // East sub EP 
+	    {
+	      mTpcEpManager->addTrackEastRaw(picoTrack);
+	    }
+	    if(mTpcEpManager->passTrackEpWest(picoTrack)) // West sub EP 
+	    {
+	      mTpcEpManager->addTrackWestRaw(picoTrack);
+	    }
+	    if(mTpcEpManager->passTrackEpFull(picoTrack)) // Full EP 
+	    {
+	      mTpcEpManager->addTrackFullRaw(picoTrack);
+	    }
+	  }
+	}
+      }
+      if(mMode > 1)
+      { // re-centered QVector
+	for(unsigned int i_track = 0; i_track < nTracks; ++i_track)
+	{ // calculate QVector after recenter correction
+	  StPicoTrack *picoTrack = (StPicoTrack*)mPicoDst->track(i_track); // get picoTrack
+	  if(mEventPlaneCut->passTrackEp(picoTrack,mPicoEvent))
+	  { // track cut for EP reconstruction
+	    if(mTpcEpManager->passTrackEpEast(picoTrack)) // East sub EP 
+	    {
+	      mTpcEpManager->addTrackEast(picoTrack);
+	    }
+	    if(mTpcEpManager->passTrackEpWest(picoTrack)) // West sub EP 
+	    {
+	      mTpcEpManager->addTrackWest(picoTrack);
+	    }
+	    if(mTpcEpManager->passTrackEpFull(picoTrack)) // Full EP 
+	    {
+	      mTpcEpManager->addTrackFull(picoTrack);
+	      if(mMode == 4) mUsedTrackCounter++; // used in random EP
+	    }
+	  }
+	}
+      }
+
+      if(mMode == 0)
+      { // fill Gain Correction Factors for BBC & ZDC
 	for(int i_eastwest = 0; i_eastwest < 2; ++i_eastwest) // fill ZDC Gain Correction Histograms
 	{
 	  for(int i_verthori = 0; i_verthori < 2; ++i_verthori)
@@ -357,14 +420,6 @@ int StEventPlaneMaker::Make()
 	// ZDC-SMD: 
 	// apply gain correction 
 	// fill recenter correction parameter & fill raw ZDC-SMD EP
-	for(int i_slat = 0; i_slat < 8; ++i_slat) // read in gain correction factors for ZDC-SMD
-	{
-	  mZdcEpManager->setZdcSmdGainCorr(0,0,i_slat,mPicoEvent->ZdcSmdEastVertical(i_slat));
-	  mZdcEpManager->setZdcSmdGainCorr(0,1,i_slat,mPicoEvent->ZdcSmdEastHorizontal(i_slat));
-	  mZdcEpManager->setZdcSmdGainCorr(1,0,i_slat,mPicoEvent->ZdcSmdWestVertical(i_slat));
-	  mZdcEpManager->setZdcSmdGainCorr(1,1,i_slat,mPicoEvent->ZdcSmdWestHorizontal(i_slat));
-	}
-
 	TVector2 vZdcQ1East = mZdcEpManager->getQEast(mMode);
 	TVector2 vZdcQ1West = mZdcEpManager->getQWest(mMode);
 	TVector2 vZdcQ1Full = vZdcQ1West-vZdcQ1East;
@@ -378,31 +433,6 @@ int StEventPlaneMaker::Make()
 
 	// TPC: 
 	// fill recenter correction parameter & fill raw TPC EP
-	for(unsigned int i_track = 0; i_track < nTracks; ++i_track)
-	{ // calculate number of tracks used in EP reconstruction
-	  StPicoTrack *picoTrack = (StPicoTrack*)mPicoDst->track(i_track); // get picoTrack
-	  if(mEventPlaneCut->passTrackEp(picoTrack,mPicoEvent))
-	  { // track cut for EP reconstruction
-	    TVector3 primMom; // temp fix for StThreeVectorF & TVector3
-	    const double primPx    = picoTrack->pMom().x(); // x works for both TVector3 and StThreeVectorF
-	    const double primPy    = picoTrack->pMom().y();
-	    const double primPz    = picoTrack->pMom().z();
-	    primMom.SetXYZ(primPx,primPy,primPz);
-	    const double primPt = primMom.Perp(); // track pT
-	    if(mTpcEpManager->passTrackEpEast(picoTrack)) // East sub EP 
-	    {
-	      mTpcEpManager->addTrackEastRaw(picoTrack);
-	    }
-	    if(mTpcEpManager->passTrackEpWest(picoTrack)) // West sub EP 
-	    {
-	      mTpcEpManager->addTrackWestRaw(picoTrack);
-	    }
-	    if(mTpcEpManager->passTrackEpFull(picoTrack)) // Full EP 
-	    {
-	      mTpcEpManager->addTrackFullRaw(picoTrack);
-	    }
-	  }
-	}
 	TVector2 vTpcQ2East = mTpcEpManager->getQVectorRaw(0); // raw QVec East
 	TVector2 vTpcQ2West = mTpcEpManager->getQVectorRaw(1); // raw QVec West
 	TVector2 vTpcQ2Full = mTpcEpManager->getQVectorRaw(2); // raw QVec Full
@@ -469,14 +499,6 @@ int StEventPlaneMaker::Make()
 	// ZDC-SMD: 
 	// apply gain correction & apply recenter correction to East/West
 	// fill shift correction paramter East/West & fill recenter ZDC-SMD EP
-	for(int i_slat = 0; i_slat < 8; ++i_slat) // read in gain correction factors for ZDC-SMD
-	{
-	  mZdcEpManager->setZdcSmdGainCorr(0,0,i_slat,mPicoEvent->ZdcSmdEastVertical(i_slat));
-	  mZdcEpManager->setZdcSmdGainCorr(0,1,i_slat,mPicoEvent->ZdcSmdEastHorizontal(i_slat));
-	  mZdcEpManager->setZdcSmdGainCorr(1,0,i_slat,mPicoEvent->ZdcSmdWestVertical(i_slat));
-	  mZdcEpManager->setZdcSmdGainCorr(1,1,i_slat,mPicoEvent->ZdcSmdWestHorizontal(i_slat));
-	}
-
 	TVector2 vZdcQ1East = mZdcEpManager->getQEast(mMode);
 	TVector2 vZdcQ1West = mZdcEpManager->getQWest(mMode);
 	TVector2 vZdcQ1Full = vZdcQ1West-vZdcQ1East;
@@ -491,31 +513,6 @@ int StEventPlaneMaker::Make()
 	// TPC: 
 	// apply recenter correction to East/West/Full
 	// fill shift correction parameter East/West/Full & fill recenter TPC EP
-	for(unsigned int i_track = 0; i_track < nTracks; ++i_track)
-	{ // calculate QVector after recenter correction
-	  StPicoTrack *picoTrack = (StPicoTrack*)mPicoDst->track(i_track); // get picoTrack
-	  if(mEventPlaneCut->passTrackEp(picoTrack,mPicoEvent))
-	  { // track cut for EP reconstruction
-	    TVector3 primMom; // temp fix for StThreeVectorF & TVector3
-	    const double primPx    = picoTrack->pMom().x(); // x works for both TVector3 and StThreeVectorF
-	    const double primPy    = picoTrack->pMom().y();
-	    const double primPz    = picoTrack->pMom().z();
-	    primMom.SetXYZ(primPx,primPy,primPz);
-	    const double primPt = primMom.Perp(); // track pT
-	    if(mTpcEpManager->passTrackEpEast(picoTrack)) // East sub EP 
-	    {
-	      mTpcEpManager->addTrackEast(picoTrack);
-	    }
-	    if(mTpcEpManager->passTrackEpWest(picoTrack)) // West sub EP 
-	    {
-	      mTpcEpManager->addTrackWest(picoTrack);
-	    }
-	    if(mTpcEpManager->passTrackEpFull(picoTrack)) // Full EP 
-	    {
-	      mTpcEpManager->addTrackFull(picoTrack);
-	    }
-	  }
-	}
 	TVector2 vTpcQ2East = mTpcEpManager->getQVector(0); // receter QVec East
 	TVector2 vTpcQ2West = mTpcEpManager->getQVector(1); // receter QVec West
 	TVector2 vTpcQ2Full = mTpcEpManager->getQVector(2); // receter QVec Full
@@ -543,14 +540,6 @@ int StEventPlaneMaker::Make()
 	// ZDC-SMD: 
 	// apply gain correction & apply recenter correction East/West & apply shift correction East/West
 	// fill shift correction paramter Full
-	for(int i_slat = 0; i_slat < 8; ++i_slat) // read in gain correction factors for ZDC-SMD
-	{
-	  mZdcEpManager->setZdcSmdGainCorr(0,0,i_slat,mPicoEvent->ZdcSmdEastVertical(i_slat));
-	  mZdcEpManager->setZdcSmdGainCorr(0,1,i_slat,mPicoEvent->ZdcSmdEastHorizontal(i_slat));
-	  mZdcEpManager->setZdcSmdGainCorr(1,0,i_slat,mPicoEvent->ZdcSmdWestVertical(i_slat));
-	  mZdcEpManager->setZdcSmdGainCorr(1,1,i_slat,mPicoEvent->ZdcSmdWestHorizontal(i_slat));
-	}
-
 	TVector2 vZdcQ1East = mZdcEpManager->getQEast(mMode);
 	TVector2 vZdcQ1West = mZdcEpManager->getQWest(mMode);
 	TVector2 vZdcQ1Full = vZdcQ1West-vZdcQ1East;
@@ -564,14 +553,6 @@ int StEventPlaneMaker::Make()
 	// ZDC-SMD: 
 	// apply gain correction & apply recenter correction & apply Shift to East/West/Full
 	// fill EP Resolution for ZDC-SMD Sub & fill shift ZDC-SMD EP
-	for(int i_slat = 0; i_slat < 8; ++i_slat) // read in gain correction factors for ZDC-SMD
-	{
-	  mZdcEpManager->setZdcSmdGainCorr(0,0,i_slat,mPicoEvent->ZdcSmdEastVertical(i_slat));
-	  mZdcEpManager->setZdcSmdGainCorr(0,1,i_slat,mPicoEvent->ZdcSmdEastHorizontal(i_slat));
-	  mZdcEpManager->setZdcSmdGainCorr(1,0,i_slat,mPicoEvent->ZdcSmdWestVertical(i_slat));
-	  mZdcEpManager->setZdcSmdGainCorr(1,1,i_slat,mPicoEvent->ZdcSmdWestHorizontal(i_slat));
-	}
-
 	TVector2 vZdcQ1East = mZdcEpManager->getQEast(mMode);
 	TVector2 vZdcQ1West = mZdcEpManager->getQWest(mMode);
 	TVector2 vZdcQ1Diff = vZdcQ1West-vZdcQ1East;
@@ -586,33 +567,6 @@ int StEventPlaneMaker::Make()
 	// TPC: 
 	// apply recenter correction & apply shift correction to East/West/Full
 	// fill EP Resolution for Sub/Ran & fill Shift TPC EP
-	for(unsigned int i_track = 0; i_track < nTracks; ++i_track)
-	{ // calculate QVector after recenter correction
-	  StPicoTrack *picoTrack = (StPicoTrack*)mPicoDst->track(i_track); // get picoTrack
-	  if(mEventPlaneCut->passTrackEp(picoTrack,mPicoEvent))
-	  { // track cut for EP reconstruction
-	    TVector3 primMom; // temp fix for StThreeVectorF & TVector3
-	    const double primPx    = picoTrack->pMom().x(); // x works for both TVector3 and StThreeVectorF
-	    const double primPy    = picoTrack->pMom().y();
-	    const double primPz    = picoTrack->pMom().z();
-	    primMom.SetXYZ(primPx,primPy,primPz);
-	    const double primPt = primMom.Perp(); // track pT
-	    if(mTpcEpManager->passTrackEpEast(picoTrack)) // East sub EP 
-	    {
-	      mTpcEpManager->addTrackEast(picoTrack);
-	    }
-	    if(mTpcEpManager->passTrackEpWest(picoTrack)) // West sub EP 
-	    {
-	      mTpcEpManager->addTrackWest(picoTrack);
-	    }
-	    if(mTpcEpManager->passTrackEpFull(picoTrack)) // Full EP 
-	    {
-	      mTpcEpManager->addTrackFull(picoTrack);
-	      mUsedTrackCounter++;
-	    }
-	  }
-	}
-
 	// Random EP
 	int ranTrack[mUsedTrackCounter];
 	double ranCounter = (double)mUsedTrackCounter/2.0 - 1.0;
@@ -684,14 +638,6 @@ int StEventPlaneMaker::Make()
 	// ZDC-SMD: 
 	// apply gain correction & apply recenter correction & apply Shift to East/West/Full
 	// fill v1Pp & v2Pp
-	for(int i_slat = 0; i_slat < 8; ++i_slat) // read in gain correction factors for ZDC-SMD
-	{
-	  mZdcEpManager->setZdcSmdGainCorr(0,0,i_slat,mPicoEvent->ZdcSmdEastVertical(i_slat));
-	  mZdcEpManager->setZdcSmdGainCorr(0,1,i_slat,mPicoEvent->ZdcSmdEastHorizontal(i_slat));
-	  mZdcEpManager->setZdcSmdGainCorr(1,0,i_slat,mPicoEvent->ZdcSmdWestVertical(i_slat));
-	  mZdcEpManager->setZdcSmdGainCorr(1,1,i_slat,mPicoEvent->ZdcSmdWestHorizontal(i_slat));
-	}
-
 	TVector2 vZdcQ1East = mZdcEpManager->getQEast(mMode);
 	TVector2 vZdcQ1West = mZdcEpManager->getQWest(mMode);
 	TVector2 vZdcQ1Full = mZdcEpManager->getQFull(vZdcQ1East,vZdcQ1West);
@@ -724,26 +670,6 @@ int StEventPlaneMaker::Make()
 	// TPC: 
 	// apply recenter correction & apply shift correction to East/West/Full
 	// fill v2Ep & v3Ep (later)
-	for(unsigned int i_track = 0; i_track < nTracks; ++i_track)
-	{ // calculate QVector after recenter correction
-	  StPicoTrack *picoTrack = (StPicoTrack*)mPicoDst->track(i_track); // get picoTrack
-	  if(mEventPlaneCut->passTrackEp(picoTrack,mPicoEvent))
-	  { // track cut for EP reconstruction
-	    if(mTpcEpManager->passTrackEpEast(picoTrack)) // East sub EP 
-	    {
-	      mTpcEpManager->addTrackEast(picoTrack);
-	    }
-	    if(mTpcEpManager->passTrackEpWest(picoTrack)) // West sub EP 
-	    {
-	      mTpcEpManager->addTrackWest(picoTrack);
-	    }
-	    if(mTpcEpManager->passTrackEpFull(picoTrack)) // Full EP 
-	    {
-	      mTpcEpManager->addTrackFull(picoTrack);
-	    }
-	  }
-	}
-
 	TVector2 vTpcQ2East = mTpcEpManager->getQVector(0); // receter QVec East
 	TVector2 vTpcQ2West = mTpcEpManager->getQVector(1); // receter QVec West
 	TVector2 vTpcQ2Full = mTpcEpManager->getQVector(2); // receter QVec Full
