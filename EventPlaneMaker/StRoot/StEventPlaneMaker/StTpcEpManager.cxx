@@ -17,12 +17,12 @@
 #include "StRoot/StEventPlaneMaker/StTpcEpManager.h"
 #include "StRoot/StEventPlaneMaker/StEventPlaneCons.h"
 
-Double_t Resolution_TpcFull(Double_t *x_val, Double_t *par)
+double Resolution_TpcFull(double *x_val, double *par)
 {
-  Double_t y;
-  Double_t chi = x_val[0];
-  Double_t arg = chi*chi/4.0;
-  Double_t norm = TMath::Sqrt(TMath::Pi()/2.0)/2.0;
+  double y;
+  double chi = x_val[0];
+  double arg = chi*chi/4.0;
+  double norm = TMath::Sqrt(TMath::Pi()/2.0)/2.0;
 
   y = norm*chi*TMath::Exp(-1.0*arg)*(TMath::BesselI0(arg)+TMath::BesselI1(arg));
 
