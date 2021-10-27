@@ -16,6 +16,7 @@ temp_gccflags.c
 */temp_gccflags.c
 */*_C.*
 */macro/*_C.*
+*/macro/figures/*
 
 FileList/*/*.list
 !FileList/*/runNumber.list
