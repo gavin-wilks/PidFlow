@@ -177,7 +177,7 @@ void StRunQAProManager::fillRunQA_Track_PID(int triggerBin, int runIdenx, float 
   if(nSigmaP > -2.5 && nSigmaP < 2.5) p_mMass2P[cutSelection][triggerBin]->Fill(runIdenx, mass2);
   if(nSigmaE > -2.5 && nSigmaE < 2.5) p_mMass2E[cutSelection][triggerBin]->Fill(runIdenx, mass2);
 
-  p_mNSigmaP[cutSelection][9]->Fill(runIdenx, nSigmaPi);
+  p_mNSigmaPi[cutSelection][9]->Fill(runIdenx, nSigmaPi);
   p_mNSigmaK[cutSelection][9]->Fill(runIdenx, nSigmaK);
   p_mNSigmaP[cutSelection][9]->Fill(runIdenx, nSigmaP);
   p_mNSigmaE[cutSelection][9]->Fill(runIdenx, nSigmaE);
