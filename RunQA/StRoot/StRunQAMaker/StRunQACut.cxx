@@ -36,16 +36,17 @@ bool StRunQACut::isMinBias(StPicoEvent *picoEvent)
   // std::cout << "year: " << picoEvent->year() << std::endl;
   // std::cout << "day: " << picoEvent->day() << std::endl;
   // std::cout << "triggerIds: " << picoEvent->triggerIds()[0] << std::endl;
-  if(mEnergy == 0 && runQA::mBeamYear[mEnergy] == picoEvent->year() && !( picoEvent->isTrigger(450005) || picoEvent->isTrigger(450015) || picoEvent->isTrigger(450025) || picoEvent->isTrigger(450050) || picoEvent->isTrigger(450060) )) return false; // 200GeV_2014
-  if(mEnergy == 1 && runQA::mBeamYear[mEnergy] == picoEvent->year() && !( picoEvent->isTrigger(580001) || picoEvent->isTrigger(580021) )) return false; // 54GeV_2017 | 580011 ?
-  if(mEnergy == 2 && runQA::mBeamYear[mEnergy] == picoEvent->year() && !( picoEvent->isTrigger(610001) || picoEvent->isTrigger(610011) || picoEvent->isTrigger(610021) || picoEvent->isTrigger(610031) || picoEvent->isTrigger(610041) || picoEvent->isTrigger(610051) )) return false; // 27GeV_2018
-
+  //if(mEnergy == 0 && runQA::mBeamYear[mEnergy] == picoEvent->year() && !( picoEvent->isTrigger(450005) || picoEvent->isTrigger(450015) || picoEvent->isTrigger(450025) || picoEvent->isTrigger(450050) || picoEvent->isTrigger(450060) )) return false; // 200GeV_2014
+  //if(mEnergy == 1 && runQA::mBeamYear[mEnergy] == picoEvent->year() && !( picoEvent->isTrigger(580001) || picoEvent->isTrigger(580021) )) return false; // 54GeV_2017 | 580011 ?
+  if(mEnergy == 0 && runQA::mBeamYear[mEnergy] == picoEvent->year() && !( picoEvent->isTrigger(650001) || picoEvent->isTrigger(650011) || picoEvent->isTrigger(650021) || picoEvent->isTrigger(650031) || picoEvent->isTrigger(650041) || picoEvent->isTrigger(650051) )) return false; // 14p5GeV_2019
+  if(mEnergy == 1 && runQA::mBeamYear[mEnergy] == picoEvent->year() && !( picoEvent->isTrigger(640001) || picoEvent->isTrigger(640011) || picoEvent->isTrigger(640021) || picoEvent->isTrigger(640031) || picoEvent->isTrigger(640041) || picoEvent->isTrigger(640051) )) return false; // 19p6GeV_2019
+  
   return true;
 }
 
 bool StRunQACut::isBES()
 {
-  if(mEnergy == 0) return false; // 200 GeV
+  if(mEnergy == 0 || mEnergy == 1) return false; // 19.6 GeV, 14.5 GeV
 
   return true; // BES
 }
@@ -155,7 +156,7 @@ bool StRunQACut::passEventCut(StPicoDst *picoDst)
     return kFALSE;
   }
   // vr cut
-  if(sqrt(vx*vx+vy*vy) > runQA::mVrMax[mEnergy])
+  if((sqrt(vx*vx+vy*vy) > runQA::mVrMax[mEnergy]) || (sqrt(vx*vx+vy*vy) <= runQA::mVrMin[mEnergy]))
   {
     return kFALSE;
   }
@@ -304,28 +305,38 @@ int StRunQACut::getTriggerBin(StPicoEvent *picoEvent)
   // std::cout << "year: " << picoEvent->year() << std::endl;
   // std::cout << "day: " << picoEvent->day() << std::endl;
   // std::cout << "triggerIds: " << picoEvent->triggerIds()[0] << std::endl;
-  if( mEnergy == 0 && runQA::mBeamYear[mEnergy] == picoEvent->year() )
+  /*if( mEnergy == 0 && runQA::mBeamYear[mEnergy] == picoEvent->year() )
   { // 200GeV_2014
     if( picoEvent->isTrigger(450005) ) return 0; // VPDMB-5-p-nobsmd
     if( picoEvent->isTrigger(450015) ) return 1; // VPDMB-5-p-nobsmd
     if( picoEvent->isTrigger(450025) ) return 2; // VPDMB-5-p-nobsmd
     if( picoEvent->isTrigger(450050) ) return 3; // VPDMB-5-p-nobsmd-hlt
     if( picoEvent->isTrigger(450060) ) return 4; // VPDMB-5-p-nobsmd-hlt
-  }
-  if( mEnergy == 1 && runQA::mBeamYear[mEnergy] == picoEvent->year() )
+  }*/
+  /*if( mEnergy == 1 && runQA::mBeamYear[mEnergy] == picoEvent->year() )
   { // 54GeV_2017
     if( picoEvent->isTrigger(580001) ) return 0; // minBias
     if( picoEvent->isTrigger(580021) ) return 1; // minBias
+  }*/
+  if( mEnergy == 0 && runQA::mBeamYear[mEnergy] == picoEvent->year() )
+  { // 14p5GeV_2019
+    if( picoEvent->isTrigger(650001) ) return 0; // mb
+    if( picoEvent->isTrigger(650011) ) return 1; // mb
+    if( picoEvent->isTrigger(650021) ) return 2; // mb
+    if( picoEvent->isTrigger(650031) ) return 3; // mb
+    if( picoEvent->isTrigger(650041) ) return 4; // mb
+    if( picoEvent->isTrigger(650051) ) return 5; // mb
   }
-  if( mEnergy == 2 && runQA::mBeamYear[mEnergy] == picoEvent->year() )
-  { // 27GeV_2018
-    if( picoEvent->isTrigger(610001) ) return 0; // mb
-    if( picoEvent->isTrigger(610011) ) return 1; // mb
-    if( picoEvent->isTrigger(610021) ) return 2; // mb
-    if( picoEvent->isTrigger(610031) ) return 3; // mb
-    if( picoEvent->isTrigger(610041) ) return 4; // mb
-    if( picoEvent->isTrigger(610051) ) return 5; // mb
+  if( mEnergy == 1 && runQA::mBeamYear[mEnergy] == picoEvent->year() )
+  { // 19p6GeV_2019
+    if( picoEvent->isTrigger(640001) ) return 0; // mb
+    if( picoEvent->isTrigger(640011) ) return 1; // mb
+    if( picoEvent->isTrigger(640021) ) return 2; // mb
+    if( picoEvent->isTrigger(640031) ) return 3; // mb
+    if( picoEvent->isTrigger(640041) ) return 4; // mb
+    if( picoEvent->isTrigger(640051) ) return 5; // mb
   }
+
 
   return -1;
 }
