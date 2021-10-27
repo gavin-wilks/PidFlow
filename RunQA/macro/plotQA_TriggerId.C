@@ -14,41 +14,34 @@ using namespace std;
 
 static const string CutsQA[2] = {"Before","After"};
 
-void plotQA_TriggerId(int energy = 0)
+void plotQA_TriggerId(int energy = 0, string JobId = "0")
 {
   gStyle->SetOptStat(111111);
   gStyle->SetStatX(0.95); gStyle->SetStatY(0.90);
   gStyle->SetStatW(0.35); gStyle->SetStatH(0.20);
-
-  string JobId = "low";
-  // string inputfile = Form("/star/u/sunxuhit/AuAu%s/SpinAlignment/RunQA/merged_file/file_%s_RunQA_%s.root",runQA::mBeamEnergy[energy].c_str(),runQA::mBeamEnergy[energy].c_str(),JobId.c_str());
-  string inputfile = Form("/Users/xusun/WorkSpace/STAR/Data/SpinAlignment/AuAu%s/RunQA/merged_file/file_%s_RunQA_%s.root",runQA::mBeamEnergy[energy].c_str(),runQA::mBeamEnergy[energy].c_str(),JobId.c_str());
-  // string inputfile = Form("/star/u/sunxuhit/AuAu%s/SpinAlignment/RunQA/test/file_%s_RunQA_%s.root",runQA::mBeamEnergy[energy].c_str(),runQA::mBeamEnergy[energy].c_str(),JobId.c_str());
+  
+  string inputfile = Form("/gpfs01/star/pwg/gwilks3/VectorMesonSpinAlignment/AuAu%s/SpinAlignment/file_%s_RunQA_%s.root",runQA::mBeamEnergy[energy].c_str(),runQA::mBeamEnergy[energy].c_str(),JobId.c_str());
 
   vector<string> vecTriggerID;
   vecTriggerID.clear();
-  if(energy == 0) 
+  if(energy == 0)
   {
-    vecTriggerID.push_back("450005");
-    vecTriggerID.push_back("450015");
-    vecTriggerID.push_back("450025");
-    vecTriggerID.push_back("450050");
-    vecTriggerID.push_back("450060");
+    vecTriggerID.push_back("650001");
+    vecTriggerID.push_back("650011");
+    vecTriggerID.push_back("650021");
+    vecTriggerID.push_back("650031");
+    vecTriggerID.push_back("650041");
+    vecTriggerID.push_back("650051");
   }
   if(energy == 1) 
   {
-    vecTriggerID.push_back("580001");
-    vecTriggerID.push_back("580021");
-  }
-  if(energy == 2) 
-  {
-    vecTriggerID.push_back("610001");
-    vecTriggerID.push_back("610011");
-    vecTriggerID.push_back("610021");
-    vecTriggerID.push_back("610031");
-    vecTriggerID.push_back("610041");
-    vecTriggerID.push_back("610051");
-  }
+    vecTriggerID.push_back("640001");
+    vecTriggerID.push_back("640011");
+    vecTriggerID.push_back("640021");
+    vecTriggerID.push_back("640031");
+    vecTriggerID.push_back("640041");
+    vecTriggerID.push_back("640051");
+  } 
 
   TFile *File_InPut = TFile::Open(inputfile.c_str());
   TH1F *h_mTriggerID[2]; // 0: before cuts | 1: after cuts
@@ -83,6 +76,6 @@ void plotQA_TriggerId(int energy = 0)
     h_mTriggerID[i_cut]->Draw();
   }
 
-    string FigName = Form("c_TriggerId_%s_%s.png",runQA::mBeamEnergy[energy].c_str(),JobId.c_str());
+    string FigName = Form("./figures/%s/c_TriggerId_%s_%s.pdf",runQA::mBeamEnergy[energy].c_str(),runQA::mBeamEnergy[energy].c_str(),JobId.c_str());
     c_TriggerId->SaveAs(FigName.c_str());
 }

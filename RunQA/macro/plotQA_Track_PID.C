@@ -6,15 +6,16 @@
 #include "TH2F.h"
 #include "TF1.h"
 #include "TLegend.h"
-#include "../StRoot/StVecMesonMaker/StVecMesonCons.h"
+#include "../StRoot/StRunQAMaker/StRunQACons.h"
 
 using namespace std;
 
-static const string CutsQA[2] = {"Before","After"};
+static const string mCutsQA[2] = {"Before","After"};
 
-void plotQA_Track_PID(int energy = 2)
+void plotQA_Track_PID(int energy = 0, string JobId = "028AC6C12A1F110244470E4CCDFC40FF")
 {
-  string inputfile = Form("/star/u/sunxuhit/AuAu%s/SpinAlignment/QA/file_%s_QA.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str());
+  string inputfile = Form("/gpfs01/star/pwg/gwilks3/VectorMesonSpinAlignment/AuAu%s/SpinAlignment/file_%s_RunQA_%s.root",runQA::mBeamEnergy[energy].c_str(),runQA::mBeamEnergy[energy].c_str(),JobId.c_str()); 
+ 
   TFile *File_InPut = TFile::Open(inputfile.c_str());
   TH2F *h_mDEdxMom[2];
   TH2F *h_mBetaMom[2];
@@ -22,13 +23,13 @@ void plotQA_Track_PID(int energy = 2)
 
   for(int i_cut = 0; i_cut < 2; ++i_cut)
   {
-    std::string HistName = Form("h_mDEdxMom_%s",CutsQA[i_cut].c_str());
+    std::string HistName = Form("h_mDEdxMom%s_trigger9",mCutsQA[i_cut].c_str());
     h_mDEdxMom[i_cut] = (TH2F*)File_InPut->Get(HistName.c_str());
 
-    HistName = Form("h_mMass2Mom_%s",CutsQA[i_cut].c_str());
+    HistName = Form("h_mMass2Mom%s_trigger9",mCutsQA[i_cut].c_str());
     h_mMass2Mom[i_cut] = (TH2F*)File_InPut->Get(HistName.c_str());
 
-    HistName = Form("h_mBetaMom_%s",CutsQA[i_cut].c_str());
+    HistName = Form("h_mBetaMom%s_trigger9",mCutsQA[i_cut].c_str());
     h_mBetaMom[i_cut] = (TH2F*)File_InPut->Get(HistName.c_str());
   }
 
@@ -56,4 +57,8 @@ void plotQA_Track_PID(int energy = 2)
     c_TrackQA_PID->cd(i_cut*3+3);
     h_mBetaMom[i_cut]->Draw("colz");
   }
+
+  string FigName = Form("./figures/%s/c_TrackQA_PID_%s_%s.pdf",runQA::mBeamEnergy[energy].c_str(),runQA::mBeamEnergy[energy].c_str(),JobId.c_str());
+  c_TrackQA_PID->SaveAs(FigName.c_str());
+
 }

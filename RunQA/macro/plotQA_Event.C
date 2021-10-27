@@ -12,12 +12,11 @@ using namespace std;
 
 static const string mCutsQA[2] = {"Before","After"};
 
-void plotQA_Event(int energy = 0)
+void plotQA_Event(int energy = 0, string JobId = "028AC6C12A1F110244470E4CCDFC40FF")
 {
-  string JobId = "EEE0479FEE171BB7ACDE3FBF146413E7";
-  // string inputfile = Form("/star/u/sunxuhit/AuAu%s/SpinAlignment/RunQA/merged_file/file_%s_RunQA_%s.root",runQA::mBeamEnergy[energy].c_str(),runQA::mBeamEnergy[energy].c_str(),JobId.c_str());
-  // string inputfile = Form("/star/u/sunxuhit/AuAu%s/SpinAlignment/RunQA/test/file_%s_RunQA_%s.root",runQA::mBeamEnergy[energy].c_str(),runQA::mBeamEnergy[energy].c_str(),JobId.c_str());
-  string inputfile = Form("/Users/xusun/WorkSpace/STAR/Data/SpinAlignment/AuAu%s/RunQA/merged_file/file_%s_RunQA_%s.root",runQA::mBeamEnergy[energy].c_str(),runQA::mBeamEnergy[energy].c_str(),JobId.c_str());
+  string inputfile = Form("/gpfs01/star/pwg/gwilks3/VectorMesonSpinAlignment/AuAu%s/SpinAlignment/file_%s_RunQA_%s.root",runQA::mBeamEnergy[energy].c_str(),runQA::mBeamEnergy[energy].c_str(),JobId.c_str());
+  
+
   TFile *File_InPut = TFile::Open(inputfile.c_str());
   TH1F *h_mRefMult[2][10]; // 0: before cuts | 1: after cuts
   TH1F *h_mGRefMult[2][10]; // 0-8 for different triggerID | 9 for all triggers
@@ -51,11 +50,11 @@ void plotQA_Event(int energy = 0)
       h_mRefMultGRefMult[i_cut][i_trig]->GetXaxis()->SetTitle("refMult");
       h_mRefMultGRefMult[i_cut][i_trig]->GetYaxis()->SetTitle("gRefMult");
 
-      HistName = Form("h_mCentrality9%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
+      /*HistName = Form("h_mCentrality9%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
       h_mCentrality9[i_cut][i_trig] = (TH1F*)File_InPut->Get(HistName.c_str());
       h_mCentrality9[i_cut][i_trig]->SetLineColor(i_cut+1);
       h_mCentrality9[i_cut][i_trig]->GetXaxis()->SetTitle("centrality");
-
+      */
       HistName = Form("h_mTofMatchRefMult%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
       h_mTofMatchRefMult[i_cut][i_trig] = (TH2F*)File_InPut->Get(HistName.c_str());
       h_mTofMatchRefMult[i_cut][i_trig]->GetXaxis()->SetTitle("tofMatch");
@@ -76,7 +75,7 @@ void plotQA_Event(int energy = 0)
       h_mTofHitsGRefMult[i_cut][i_trig]->GetXaxis()->SetTitle("tofHits");
       h_mTofHitsGRefMult[i_cut][i_trig]->GetYaxis()->SetTitle("gRefMult");
 
-      HistName = Form("h_mVertexXY%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
+      std::string HistName = Form("h_mVertexXY%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
       h_mVertexXY[i_cut][i_trig] = (TH2F*)File_InPut->Get(HistName.c_str());
       h_mVertexXY[i_cut][i_trig]->GetXaxis()->SetTitle("Vx");
       h_mVertexXY[i_cut][i_trig]->GetYaxis()->SetTitle("Vy");
@@ -123,14 +122,14 @@ void plotQA_Event(int energy = 0)
     c_EventQA[i_cut]->cd(2)->SetLogz();
     if(energy == 0)
     {
-      h_mTofMatchRefMult[i_cut][9]->GetXaxis()->SetRangeUser(0.0,800.0);
-      h_mTofMatchRefMult[i_cut][9]->GetYaxis()->SetRangeUser(0.0,800.0);
+      //h_mTofMatchRefMult[i_cut][9]->GetXaxis()->SetRangeUser(0.0,800.0);
+      //h_mTofMatchRefMult[i_cut][9]->GetYaxis()->SetRangeUser(0.0,800.0);
       h_mTofMatchRefMult[i_cut][9]->Draw("colz");
     }
     if(energy != 0)
     {
-      h_mTofMatchRefMult[i_cut][9]->GetXaxis()->SetRangeUser(0.0,800.0);
-      h_mTofMatchRefMult[i_cut][9]->GetYaxis()->SetRangeUser(0.0,800.0);
+      //h_mTofMatchRefMult[i_cut][9]->GetXaxis()->SetRangeUser(0.0,800.0);
+      //h_mTofMatchRefMult[i_cut][9]->GetYaxis()->SetRangeUser(0.0,800.0);
       h_mTofMatchRefMult[i_cut][9]->Draw("colz");
     }
 
@@ -138,18 +137,19 @@ void plotQA_Event(int energy = 0)
     c_EventQA[i_cut]->cd(3)->SetLogz();
     if(energy == 0)
     {
-      h_mTofHitsRefMult[i_cut][9]->GetYaxis()->SetRangeUser(0.0,800.0);
+      //h_mTofHitsRefMult[i_cut][9]->GetYaxis()->SetRangeUser(0.0,800.0);
       h_mTofHitsRefMult[i_cut][9]->Draw("colz");
     }
     if(energy != 0)
     {
-      h_mTofHitsRefMult[i_cut][9]->GetYaxis()->SetRangeUser(0.0,800.0);
+      //h_mTofHitsRefMult[i_cut][9]->GetYaxis()->SetRangeUser(0.0,800.0);
       h_mTofHitsRefMult[i_cut][9]->Draw("colz");
     }
 
-    c_EventQA[i_cut]->cd(4);
+    /*c_EventQA[i_cut]->cd(4);
     c_EventQA[i_cut]->cd(4)->SetLogy();
     h_mCentrality9[i_cut][9]->Draw("hE");
+    */
 
     c_EventQA[i_cut]->cd(5);
     c_EventQA[i_cut]->cd(5)->SetLogz();
@@ -167,7 +167,7 @@ void plotQA_Event(int energy = 0)
     // c_EventQA[i_cut]->cd(8)->SetLogy();
     h_mDiffVzVzVpd[i_cut][9]->Draw();
 
-    string FigName = Form("./figures/c_EventQA_%s_%s_%s.png",mCutsQA[i_cut].c_str(),runQA::mBeamEnergy[energy].c_str(),JobId.c_str());
+    string FigName = Form("./figures/%s/c_EventQA_%s_%s_%s.pdf",runQA::mBeamEnergy[energy].c_str(),mCutsQA[i_cut].c_str(),runQA::mBeamEnergy[energy].c_str(),JobId.c_str());
     c_EventQA[i_cut]->SaveAs(FigName.c_str());
   }
 }

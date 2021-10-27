@@ -6,15 +6,16 @@
 #include "TH2F.h"
 #include "TF1.h"
 #include "TLegend.h"
-#include "../StRoot/StVecMesonMaker/StVecMesonCons.h"
+#include "../StRoot/StRunQAMaker/StRunQACons.h"
 
 using namespace std;
 
-static const string CutsQA[2] = {"Before","After"};
+static const string mCutsQA[2] = {"Before","After"};
 
-void plotQA_Track_Kinematics(int energy = 2)
+void plotQA_Track_Kinematics(int energy = 0, string JobId = "028AC6C12A1F110244470E4CCDFC40FF")
 {
-  string inputfile = Form("/star/u/sunxuhit/AuAu%s/SpinAlignment/QA/file_%s_QA.root",vmsa::mBeamEnergy[energy].c_str(),vmsa::mBeamEnergy[energy].c_str());
+  string inputfile = Form("/gpfs01/star/pwg/gwilks3/VectorMesonSpinAlignment/AuAu%s/SpinAlignment/file_%s_RunQA_%s.root",runQA::mBeamEnergy[energy].c_str(),runQA::mBeamEnergy[energy].c_str(),JobId.c_str());
+
   TFile *File_InPut = TFile::Open(inputfile.c_str());
   TH1F *h_mPrimPt[2]; // 0: before cuts | 1: after cuts
   TH1F *h_mPrimEta[2];
@@ -25,22 +26,22 @@ void plotQA_Track_Kinematics(int energy = 2)
 
   for(int i_cut = 0; i_cut < 2; ++i_cut)
   {
-    std::string HistName = Form("h_mPrimPt_%s",CutsQA[i_cut].c_str());
+    std::string HistName = Form("h_mPrimPt%s_trigger9",mCutsQA[i_cut].c_str());
     h_mPrimPt[i_cut] = (TH1F*)File_InPut->Get(HistName.c_str());
 
-    HistName = Form("h_mPrimEta_%s",CutsQA[i_cut].c_str());
+    HistName = Form("h_mPrimEta%s_trigger9",mCutsQA[i_cut].c_str());
     h_mPrimEta[i_cut] = (TH1F*)File_InPut->Get(HistName.c_str());
 
-    HistName = Form("h_mPrimPhi_%s",CutsQA[i_cut].c_str());
+    HistName = Form("h_mPrimPhi%s_trigger9",mCutsQA[i_cut].c_str());
     h_mPrimPhi[i_cut] = (TH1F*)File_InPut->Get(HistName.c_str());
 
-    HistName = Form("h_mGlobPt_%s",CutsQA[i_cut].c_str());
+    HistName = Form("h_mGlobPt%s_trigger9",mCutsQA[i_cut].c_str());
     h_mGlobPt[i_cut] = (TH1F*)File_InPut->Get(HistName.c_str());
 
-    HistName = Form("h_mGlobEta_%s",CutsQA[i_cut].c_str());
+    HistName = Form("h_mGlobEta%s_trigger9",mCutsQA[i_cut].c_str());
     h_mGlobEta[i_cut] = (TH1F*)File_InPut->Get(HistName.c_str());
 
-    HistName = Form("h_mGlobPhi_%s",CutsQA[i_cut].c_str());
+    HistName = Form("h_mGlobPhi%s_trigger9",mCutsQA[i_cut].c_str());
     h_mGlobPhi[i_cut] = (TH1F*)File_InPut->Get(HistName.c_str());
   }
 
@@ -59,6 +60,7 @@ void plotQA_Track_Kinematics(int energy = 2)
   for(int i_cut = 0; i_cut < 2; ++i_cut)
   {
     c_TrackQA_prim->cd(i_cut*3+1);
+    h_mPrimPt[i_cut]->GetXaxis()->SetRangeUser(0.0,5.0);
     h_mPrimPt[i_cut]->Draw("hE");
 
     c_TrackQA_prim->cd(i_cut*3+2);
@@ -67,6 +69,8 @@ void plotQA_Track_Kinematics(int energy = 2)
     c_TrackQA_prim->cd(i_cut*3+3);
     h_mPrimPhi[i_cut]->Draw("hE");
   }
+  string FigName = Form("./figures/%s/c_TrackQA_Kinematics_prim_%s_%s.pdf",runQA::mBeamEnergy[energy].c_str(),runQA::mBeamEnergy[energy].c_str(), JobId.c_str());
+  c_TrackQA_prim->SaveAs(FigName.c_str());
 
   TCanvas *c_TrackQA_glob = new TCanvas("c_TrackQA_glob","c_TrackQA_glob",10,10,1200,800);
   c_TrackQA_glob->Divide(3,2);
@@ -83,6 +87,7 @@ void plotQA_Track_Kinematics(int energy = 2)
   for(int i_cut = 0; i_cut < 2; ++i_cut)
   {
     c_TrackQA_glob->cd(i_cut*3+1);
+    h_mGlobPt[i_cut]->GetXaxis()->SetRangeUser(0.0,5.0);
     h_mGlobPt[i_cut]->Draw("hE");
 
     c_TrackQA_glob->cd(i_cut*3+2);
@@ -91,4 +96,8 @@ void plotQA_Track_Kinematics(int energy = 2)
     c_TrackQA_glob->cd(i_cut*3+3);
     h_mGlobPhi[i_cut]->Draw("hE");
   }
+
+  string FigName = Form("./figures/%s/c_TrackQA_Kinematics_glob_%s_%s.pdf",runQA::mBeamEnergy[energy].c_str(),runQA::mBeamEnergy[energy].c_str(), JobId.c_str());
+  c_TrackQA_glob->SaveAs(FigName.c_str());
+
 }
