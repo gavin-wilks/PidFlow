@@ -24,6 +24,7 @@ class StRunQAHistoManager
     void fillTrackQA_Kinematics(int triggerBin, TVector3 pMom, TVector3 gMom, int cutSelection);
     void fillTrackQA_Quliaty(int triggerBin, float gDca, int nHitsFit, int nHitsMax, int nHitsDEdx, int cutSelection);
     void fillTrackQA_PID(int triggerBin, float mom, short charge, float dEdx, float beta, float mass2, int cutSelection);
+    void fillTrackQA_PID_Additional(int triggerBin, float nSigmaPi, float nSigmaK, float nSigmaP, float nSigmaE, TVector3 primMom, float charge, float mass2, int cutSelection);
     void writeTrackQA();
     //--------------QA---------------
 
@@ -57,6 +58,22 @@ class StRunQAHistoManager
     TH2F *h_mDEdxMom[2][10];
     TH2F *h_mBetaMom[2][10];
     TH2F *h_mMass2Mom[2][10];
+    TH2F *h_mNSigmaPiRig[2][10];
+    TH2F *h_mNSigmaPiEta[2][10];
+    TH2F *h_mNSigmaPiPhi[2][10];
+    TH2F *h_mNSigmaKRig[2][10];
+    TH2F *h_mNSigmaKEta[2][10];
+    TH2F *h_mNSigmaKPhi[2][10];
+    TH2F *h_mNSigmaPRig[2][10];
+    TH2F *h_mNSigmaPEta[2][10];
+    TH2F *h_mNSigmaPPhi[2][10];
+    TH2F *h_mNSigmaERig[2][10];
+    TH2F *h_mNSigmaEEta[2][10];
+    TH2F *h_mNSigmaEPhi[2][10];
+    TH1F *h_mMass2Pi[2][10];
+    TH1F *h_mMass2K[2][10];
+    TH1F *h_mMass2P[2][10];
+    TH1F *h_mMass2E[2][10];
 
     std::string mCutsQA[2] = {"Before","After"};
 

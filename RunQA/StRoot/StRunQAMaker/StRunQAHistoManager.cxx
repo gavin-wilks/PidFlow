@@ -185,6 +185,55 @@ void StRunQAHistoManager::initTrackQA()
 
       HistName = Form("h_mBetaMom%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
       h_mBetaMom[i_cut][i_trig] = new TH2F(HistName.c_str(),HistName.c_str(),450,-4.5,4.5,300,0.0,3.0);
+      
+      HistName = Form("h_mNSigmaPiRig%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
+      h_mNSigmaPiRig[i_cut][i_trig] = new TH2F(HistName.c_str(),HistName.c_str(),450,-4.5,4.5,300,-10,10);
+      
+      HistName = Form("h_mNSigmaPiEta%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
+      h_mNSigmaPiEta[i_cut][i_trig] = new TH2F(HistName.c_str(),HistName.c_str(),450,-2.05,2.05,300,-10,10);
+
+      HistName = Form("h_mNSigmaPiPhi%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
+      h_mNSigmaPiPhi[i_cut][i_trig] = new TH2F(HistName.c_str(),HistName.c_str(),450,-TMath::TwoPi(),TMath::TwoPi(),300,-10,10);
+  
+      HistName = Form("h_mNSigmaKRig%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
+      h_mNSigmaKRig[i_cut][i_trig] = new TH2F(HistName.c_str(),HistName.c_str(),450,-4.5,4.5,300,-10,10);
+
+      HistName = Form("h_mNSigmaKEta%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
+      h_mNSigmaKEta[i_cut][i_trig] = new TH2F(HistName.c_str(),HistName.c_str(),450,-2.05,2.05,300,-10,10);
+
+      HistName = Form("h_mNSigmaKPhi%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
+      h_mNSigmaKPhi[i_cut][i_trig] = new TH2F(HistName.c_str(),HistName.c_str(),450,-TMath::TwoPi(),TMath::TwoPi(),300,-10,10);
+
+      HistName = Form("h_mNSigmaPRig%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
+      h_mNSigmaPRig[i_cut][i_trig] = new TH2F(HistName.c_str(),HistName.c_str(),450,-4.5,4.5,300,-10,10);
+
+      HistName = Form("h_mNSigmaPEta%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
+      h_mNSigmaPEta[i_cut][i_trig] = new TH2F(HistName.c_str(),HistName.c_str(),450,-2.05,2.05,300,-10,10);
+
+      HistName = Form("h_mNSigmaPPhi%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
+      h_mNSigmaPPhi[i_cut][i_trig] = new TH2F(HistName.c_str(),HistName.c_str(),450,-TMath::TwoPi(),TMath::TwoPi(),300,-10,10);
+
+      HistName = Form("h_mNSigmaERig%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
+      h_mNSigmaERig[i_cut][i_trig] = new TH2F(HistName.c_str(),HistName.c_str(),450,-4.5,4.5,300,-10,10);
+
+      HistName = Form("h_mNSigmaEEta%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
+      h_mNSigmaEEta[i_cut][i_trig] = new TH2F(HistName.c_str(),HistName.c_str(),450,-2.05,2.05,300,-10,10);
+
+      HistName = Form("h_mNSigmaEPhi%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
+      h_mNSigmaEPhi[i_cut][i_trig] = new TH2F(HistName.c_str(),HistName.c_str(),450,-TMath::TwoPi(),TMath::TwoPi(),300,-10,10);
+   
+      HistName = Form("h_mMass2Pi%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
+      h_mMass2Pi[i_cut][i_trig] = new TH1F(HistName.c_str(),HistName.c_str(),300,-0.5,1.5);
+  
+      HistName = Form("h_mMass2K%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
+      h_mMass2K[i_cut][i_trig] = new TH1F(HistName.c_str(),HistName.c_str(),300,-0.5,1.5);  
+
+      HistName = Form("h_mMass2P%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
+      h_mMass2P[i_cut][i_trig] = new TH1F(HistName.c_str(),HistName.c_str(),300,-0.5,1.5);  
+
+      HistName = Form("h_mMass2E%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
+      h_mMass2E[i_cut][i_trig] = new TH1F(HistName.c_str(),HistName.c_str(),300,-0.5,1.5);        
+
     }
   }
 }
@@ -243,6 +292,43 @@ void StRunQAHistoManager::fillTrackQA_PID(int triggerBin, float mom, short charg
   h_mDEdxMom[cutSelection][9]->Fill(mom*charge, dEdx); 
   h_mMass2Mom[cutSelection][9]->Fill(mom*charge, mass2); 
   h_mBetaMom[cutSelection][9]->Fill(mom*charge, 1.0/beta); 
+} 
+
+void StRunQAHistoManager::fillTrackQA_PID_Additional(int triggerBin, float nSigmaPi, float nSigmaK, float nSigmaP, float nSigmaE, TVector3 primMom, float charge, float mass2, int cutSelection)
+{
+  h_mNSigmaPiRig[cutSelection][triggerBin]->Fill(primMom.Mag()*charge, nSigmaPi);
+  h_mNSigmaPiEta[cutSelection][triggerBin]->Fill(primMom.Eta(), nSigmaPi);
+  h_mNSigmaPiPhi[cutSelection][triggerBin]->Fill(primMom.Phi(), nSigmaPi);
+  h_mNSigmaKRig[cutSelection][triggerBin]->Fill(primMom.Mag()*charge, nSigmaK);
+  h_mNSigmaKEta[cutSelection][triggerBin]->Fill(primMom.Eta(), nSigmaK);
+  h_mNSigmaKPhi[cutSelection][triggerBin]->Fill(primMom.Phi(), nSigmaK);
+  h_mNSigmaPRig[cutSelection][triggerBin]->Fill(primMom.Mag()*charge, nSigmaP);
+  h_mNSigmaPEta[cutSelection][triggerBin]->Fill(primMom.Eta(), nSigmaP);
+  h_mNSigmaPPhi[cutSelection][triggerBin]->Fill(primMom.Phi(), nSigmaP);
+  h_mNSigmaERig[cutSelection][triggerBin]->Fill(primMom.Mag()*charge, nSigmaE);
+  h_mNSigmaEEta[cutSelection][triggerBin]->Fill(primMom.Eta(), nSigmaE);
+  h_mNSigmaEPhi[cutSelection][triggerBin]->Fill(primMom.Phi(), nSigmaE);
+  if(nSigmaPi > -2.5 && nSigmaPi < 2.5) h_mMass2Pi[cutSelection][triggerBin]->Fill(mass2); 
+  if(nSigmaK > -2.5 && nSigmaK < 2.5) h_mMass2K[cutSelection][triggerBin]->Fill(mass2); 
+  if(nSigmaP > -2.5 && nSigmaP < 2.5) h_mMass2P[cutSelection][triggerBin]->Fill(mass2); 
+  if(nSigmaE > -2.5 && nSigmaE < 2.5) h_mMass2E[cutSelection][triggerBin]->Fill(mass2);   
+ 
+  h_mNSigmaPiRig[cutSelection][9]->Fill(primMom.Mag()*charge, nSigmaPi);
+  h_mNSigmaPiEta[cutSelection][9]->Fill(primMom.Eta(), nSigmaPi);
+  h_mNSigmaPiPhi[cutSelection][9]->Fill(primMom.Phi(), nSigmaPi);
+  h_mNSigmaKRig[cutSelection][9]->Fill(primMom.Mag()*charge, nSigmaK);
+  h_mNSigmaKEta[cutSelection][9]->Fill(primMom.Eta(), nSigmaK);
+  h_mNSigmaKPhi[cutSelection][9]->Fill(primMom.Phi(), nSigmaK);
+  h_mNSigmaPRig[cutSelection][9]->Fill(primMom.Mag()*charge, nSigmaP);
+  h_mNSigmaPEta[cutSelection][9]->Fill(primMom.Eta(), nSigmaP);
+  h_mNSigmaPPhi[cutSelection][9]->Fill(primMom.Phi(), nSigmaP);
+  h_mNSigmaERig[cutSelection][9]->Fill(primMom.Mag()*charge, nSigmaE);
+  h_mNSigmaEEta[cutSelection][9]->Fill(primMom.Eta(), nSigmaE);
+  h_mNSigmaEPhi[cutSelection][9]->Fill(primMom.Phi(), nSigmaE);
+  if(nSigmaPi > -2.5 && nSigmaPi < 2.5) h_mMass2Pi[cutSelection][9]->Fill(mass2);
+  if(nSigmaK > -2.5 && nSigmaK < 2.5) h_mMass2K[cutSelection][9]->Fill(mass2);
+  if(nSigmaP > -2.5 && nSigmaP < 2.5) h_mMass2P[cutSelection][9]->Fill(mass2);
+  if(nSigmaE > -2.5 && nSigmaE < 2.5) h_mMass2E[cutSelection][9]->Fill(mass2);
 }
 
 void StRunQAHistoManager::writeTrackQA()
@@ -264,6 +350,22 @@ void StRunQAHistoManager::writeTrackQA()
       h_mDEdxMom[i_cut][i_trig]->Write(); 
       h_mMass2Mom[i_cut][i_trig]->Write(); 
       h_mBetaMom[i_cut][i_trig]->Write(); 
+      h_mNSigmaPiRig[i_cut][i_trig]->Write();
+      h_mNSigmaPiEta[i_cut][i_trig]->Write();
+      h_mNSigmaPiPhi[i_cut][i_trig]->Write();
+      h_mNSigmaKRig[i_cut][i_trig]->Write();
+      h_mNSigmaKEta[i_cut][i_trig]->Write();
+      h_mNSigmaKPhi[i_cut][i_trig]->Write();
+      h_mNSigmaPRig[i_cut][i_trig]->Write();
+      h_mNSigmaPEta[i_cut][i_trig]->Write();
+      h_mNSigmaPPhi[i_cut][i_trig]->Write();
+      h_mNSigmaERig[i_cut][i_trig]->Write();
+      h_mNSigmaEEta[i_cut][i_trig]->Write();
+      h_mNSigmaEPhi[i_cut][i_trig]->Write();
+      h_mMass2Pi[i_cut][i_trig]->Write(); 
+      h_mMass2K[i_cut][i_trig]->Write(); 
+      h_mMass2P[i_cut][i_trig]->Write(); 
+      h_mMass2E[i_cut][i_trig]->Write(); 
     }
   }
 }
