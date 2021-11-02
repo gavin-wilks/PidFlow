@@ -46,7 +46,7 @@ bool StRunQACut::isMinBias(StPicoEvent *picoEvent)
 
 bool StRunQACut::isBES()
 {
-  if(mEnergy == 0 || mEnergy == 1) return false; // 19.6 GeV, 14.5 GeV
+  if(mEnergy != 0 || mEnergy != 1) return false; // 19.6 GeV, 14.5 GeV
 
   return true; // BES
 }

@@ -45,7 +45,11 @@ void plotQA_RunbyRun(int energy = 0, string JobId = "028AC6C12A1F110244470E4CCDF
   TProfile *p_mNSigmaK[2][10];
   TProfile *p_mNSigmaP[2][10];
   TProfile *p_mNSigmaE[2][10];
-
+  TProfile *p_mMass2Pi[2][10];
+  TProfile *p_mMass2K[2][10];
+  TProfile *p_mMass2P[2][10];
+  TProfile *p_mMass2E[2][10];
+   
   for(int i_cut = 0; i_cut < 2; ++i_cut)
   {
     for(int i_trig = 0; i_trig < 10; ++i_trig)
@@ -118,6 +122,19 @@ void plotQA_RunbyRun(int energy = 0, string JobId = "028AC6C12A1F110244470E4CCDF
 
       ProName = Form("p_mNSigmaE%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
       p_mNSigmaE[i_cut][i_trig] = (TProfile*)File_InPut->Get(ProName.c_str());
+      
+      ProName = Form("p_mMass2Pi%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
+      p_mMass2Pi[i_cut][i_trig] = (TProfile*)File_InPut->Get(ProName.c_str());
+
+      ProName = Form("p_mMass2K%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
+      p_mMass2K[i_cut][i_trig] = (TProfile*)File_InPut->Get(ProName.c_str());
+
+      ProName = Form("p_mMass2P%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
+      p_mMass2P[i_cut][i_trig] = (TProfile*)File_InPut->Get(ProName.c_str());
+
+      ProName = Form("p_mMass2E%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
+      p_mMass2E[i_cut][i_trig] = (TProfile*)File_InPut->Get(ProName.c_str());
+
 
     }
   }
@@ -217,10 +234,27 @@ void plotQA_RunbyRun(int energy = 0, string JobId = "028AC6C12A1F110244470E4CCDF
     p_mZdcX[1][i_trig]->SetMarkerSize(0.8);
     p_mZdcX[1][i_trig]->SetLineColor(MarkerColor[i_trig]);
     if(p_mZdcX[1][i_trig]->GetEntries() > 0) p_mZdcX[1][i_trig]->Draw("pE same");
-  }
+  } 
 
   leg->Draw("same");
   c_RunQA_ZdcX->SaveAs(Form("./figures/%s/c_RunQA_ZdcX.pdf",runQA::mBeamEnergy[energy].c_str()));
+ 
+  float y_ll[10]={0.0};
+  float y_ul[10]={1000.0,1000.0,1000.0,1000.0,1000.0,1000.0};
+  float x_ll[10]={0.0,50.0,150.0,150.0,550.0,900.0,0.0,0.0,0.0,0.0};
+  float x_ul[10]={100.0,200.0,250.0,550.0,950.0,1200.0,0.0,0.0,0.0,0.0};
+
+  TProfile *p_mZdcX_wLimits[10];
+  for(int i_trig = 0; i_trig < 10; ++i_trig)
+  {
+    c_RunQA_ZdcX->cd()->Clear();
+    p_mZdcX_wLimits[i_trig] = (TProfile*)p_mZdcX[1][i_trig]->Clone(Form("h_ZdcX_wLimits_trig%d", i_trig));
+    p_mZdcX_wLimits[i_trig]->GetXaxis()->SetRangeUser(x_ll[i_trig],x_ul[i_trig]);
+    p_mZdcX_wLimits[i_trig]->GetYaxis()->SetRangeUser(y_ll[i_trig],y_ul[i_trig]);
+    p_mZdcX_wLimits[i_trig]->Draw("pE");
+    if(energy==1&&i_trig<6) c_RunQA_ZdcX->SaveAs(Form("./figures/%s/c_RunQA_ZdcX_Trigger%d.pdf",runQA::mBeamEnergy[energy].c_str(),i_trig));
+  } 
+
   //---------------------
   TCanvas *c_RunQA_Vz = new TCanvas("c_RunQA_Vz","c_RunQA_Vz",10,10,800,400);
   c_RunQA_Vz->cd()->SetLeftMargin(0.1);
@@ -717,7 +751,7 @@ void plotQA_RunbyRun(int energy = 0, string JobId = "028AC6C12A1F110244470E4CCDF
   p_mNSigmaPi[1][9]->SetMarkerSize(1.0);
   p_mNSigmaPi[1][9]->SetLineColor(1);
   p_mNSigmaPi[1][9]->GetXaxis()->SetTitle("runIndex");
-  p_mNSigmaPi[1][9]->GetYaxis()->SetTitle("<nHitsFit/nHitsMax>");
+  p_mNSigmaPi[1][9]->GetYaxis()->SetTitle("<nSigmaPi>");
   //pNSigmaPi_mGlobPhi[1][9]->GetYaxis()->SetRangeUser(-0.1,0.50);
   p_mNSigmaPi[1][9]->Draw("pE");
 
@@ -747,7 +781,7 @@ void plotQA_RunbyRun(int energy = 0, string JobId = "028AC6C12A1F110244470E4CCDF
   p_mNSigmaK[1][9]->SetMarkerSize(1.0);
   p_mNSigmaK[1][9]->SetLineColor(1);
   p_mNSigmaK[1][9]->GetXaxis()->SetTitle("runIndex");
-  p_mNSigmaK[1][9]->GetYaxis()->SetTitle("<nHitsFit/nHitsMax>");
+  p_mNSigmaK[1][9]->GetYaxis()->SetTitle("<nSigmaK>");
   //pNSigmaK_mGlobPhi[1][9]->GetYaxis()->SetRangeUser(-0.1,0.50);
   p_mNSigmaK[1][9]->Draw("pE");
 
@@ -777,7 +811,7 @@ void plotQA_RunbyRun(int energy = 0, string JobId = "028AC6C12A1F110244470E4CCDF
   p_mNSigmaP[1][9]->SetMarkerSize(1.0);
   p_mNSigmaP[1][9]->SetLineColor(1);
   p_mNSigmaP[1][9]->GetXaxis()->SetTitle("runIndex");
-  p_mNSigmaP[1][9]->GetYaxis()->SetTitle("<nHitsFit/nHitsMax>");
+  p_mNSigmaP[1][9]->GetYaxis()->SetTitle("<nSigmaP>");
   //pNSigmaP_mGlobPhi[1][9]->GetYaxis()->SetRangeUser(-0.1,0.50);
   p_mNSigmaP[1][9]->Draw("pE");
 
@@ -807,7 +841,7 @@ void plotQA_RunbyRun(int energy = 0, string JobId = "028AC6C12A1F110244470E4CCDF
   p_mNSigmaE[1][9]->SetMarkerSize(1.0);
   p_mNSigmaE[1][9]->SetLineColor(1);
   p_mNSigmaE[1][9]->GetXaxis()->SetTitle("runIndex");
-  p_mNSigmaE[1][9]->GetYaxis()->SetTitle("<nHitsFit/nHitsMax>");
+  p_mNSigmaE[1][9]->GetYaxis()->SetTitle("<nSigmaE>");
   //pNSigmaE_mGlobPhi[1][9]->GetYaxis()->SetRangeUser(-0.1,0.50);
   p_mNSigmaE[1][9]->Draw("pE");
 
@@ -822,5 +856,124 @@ void plotQA_RunbyRun(int energy = 0, string JobId = "028AC6C12A1F110244470E4CCDF
 
   leg->Draw("same");
   c_RunQA_nSigmaE->SaveAs(Form("./figures/%s/c_RunQA_nSigmaE.pdf",runQA::mBeamEnergy[energy].c_str()));
+  //---------------------
+  TCanvas *c_RunQA_Mass2Pi = new TCanvas("c_RunQA_Mass2Pi","c_RunQA_dEdx",10,10,800,400);
+  c_RunQA_Mass2Pi->cd()->SetLeftMargin(0.1);
+  c_RunQA_Mass2Pi->cd()->SetRightMargin(0.1);
+  c_RunQA_Mass2Pi->cd()->SetBottomMargin(0.1);
+  c_RunQA_Mass2Pi->cd()->SetGrid(0,0);
+  c_RunQA_Mass2Pi->cd()->SetTicks(1,1);
+
+  p_mMass2Pi[1][9]->SetTitle("Mass2Pi vs. runIndex");
+  p_mMass2Pi[1][9]->SetStats(0);
+  p_mMass2Pi[1][9]->SetMarkerColor(1);
+  p_mMass2Pi[1][9]->SetMarkerStyle(20);
+  p_mMass2Pi[1][9]->SetMarkerSize(1.0);
+  p_mMass2Pi[1][9]->SetLineColor(1);
+  p_mMass2Pi[1][9]->GetXaxis()->SetTitle("runIndex");
+  p_mMass2Pi[1][9]->GetYaxis()->SetTitle("<Mass2Pi>");
+  //pMass2Pi_mGlobPhi[1][9]->GetYaxis()->SetRangeUser(-0.1,0.50);
+  p_mMass2Pi[1][9]->Draw("pE");
+
+  for(int i_trig = 0; i_trig < numOfTriggers; ++i_trig)
+  {
+    p_mMass2Pi[1][i_trig]->SetMarkerColor(MarkerColor[i_trig]);
+    p_mMass2Pi[1][i_trig]->SetMarkerStyle(24);
+    p_mMass2Pi[1][i_trig]->SetMarkerSize(0.8);
+    p_mMass2Pi[1][i_trig]->SetLineColor(MarkerColor[i_trig]);
+    if(p_mMass2Pi[1][i_trig]->GetEntries() > 0) p_mMass2Pi[1][i_trig]->Draw("pE same");
+  }
+
+  leg->Draw("same");
+  c_RunQA_Mass2Pi->SaveAs(Form("./figures/%s/c_RunQA_Mass2Pi.pdf",runQA::mBeamEnergy[energy].c_str()));
+  //---------------------
+  TCanvas *c_RunQA_Mass2K = new TCanvas("c_RunQA_Mass2K","c_RunQA_dEdx",10,10,800,400);
+  c_RunQA_Mass2K->cd()->SetLeftMargin(0.1);
+  c_RunQA_Mass2K->cd()->SetRightMargin(0.1);
+  c_RunQA_Mass2K->cd()->SetBottomMargin(0.1);
+  c_RunQA_Mass2K->cd()->SetGrid(0,0);
+  c_RunQA_Mass2K->cd()->SetTicks(1,1);
+
+  p_mMass2K[1][9]->SetTitle("Mass2K vs. runIndex");
+  p_mMass2K[1][9]->SetStats(0);
+  p_mMass2K[1][9]->SetMarkerColor(1);
+  p_mMass2K[1][9]->SetMarkerStyle(20);
+  p_mMass2K[1][9]->SetMarkerSize(1.0);
+  p_mMass2K[1][9]->SetLineColor(1);
+  p_mMass2K[1][9]->GetXaxis()->SetTitle("runIndex");
+  p_mMass2K[1][9]->GetYaxis()->SetTitle("<Mass2K>");
+  //pMass2K_mGlobPhi[1][9]->GetYaxis()->SetRangeUser(-0.1,0.50);
+  p_mMass2K[1][9]->Draw("pE");
+
+  for(int i_trig = 0; i_trig < numOfTriggers; ++i_trig)
+  {
+    p_mMass2K[1][i_trig]->SetMarkerColor(MarkerColor[i_trig]);
+    p_mMass2K[1][i_trig]->SetMarkerStyle(24);
+    p_mMass2K[1][i_trig]->SetMarkerSize(0.8);
+    p_mMass2K[1][i_trig]->SetLineColor(MarkerColor[i_trig]);
+    if(p_mMass2K[1][i_trig]->GetEntries() > 0) p_mMass2K[1][i_trig]->Draw("pE same");
+  }
+
+  leg->Draw("same");
+  c_RunQA_Mass2K->SaveAs(Form("./figures/%s/c_RunQA_Mass2K.pdf",runQA::mBeamEnergy[energy].c_str()));
+  //---------------------
+  TCanvas *c_RunQA_Mass2P = new TCanvas("c_RunQA_Mass2P","c_RunQA_dEdx",10,10,800,400);
+  c_RunQA_Mass2P->cd()->SetLeftMargin(0.1);
+  c_RunQA_Mass2P->cd()->SetRightMargin(0.1);
+  c_RunQA_Mass2P->cd()->SetBottomMargin(0.1);
+  c_RunQA_Mass2P->cd()->SetGrid(0,0);
+  c_RunQA_Mass2P->cd()->SetTicks(1,1);
+
+  p_mMass2P[1][9]->SetTitle("Mass2P vs. runIndex");
+  p_mMass2P[1][9]->SetStats(0);
+  p_mMass2P[1][9]->SetMarkerColor(1);
+  p_mMass2P[1][9]->SetMarkerStyle(20);
+  p_mMass2P[1][9]->SetMarkerSize(1.0);
+  p_mMass2P[1][9]->SetLineColor(1);
+  p_mMass2P[1][9]->GetXaxis()->SetTitle("runIndex");
+  p_mMass2P[1][9]->GetYaxis()->SetTitle("<Mass2P>");
+  //pMass2P_mGlobPhi[1][9]->GetYaxis()->SetRangeUser(-0.1,0.50);
+  p_mMass2P[1][9]->Draw("pE");
+
+  for(int i_trig = 0; i_trig < numOfTriggers; ++i_trig)
+  {
+    p_mMass2P[1][i_trig]->SetMarkerColor(MarkerColor[i_trig]);
+    p_mMass2P[1][i_trig]->SetMarkerStyle(24);
+    p_mMass2P[1][i_trig]->SetMarkerSize(0.8);
+    p_mMass2P[1][i_trig]->SetLineColor(MarkerColor[i_trig]);
+    if(p_mMass2P[1][i_trig]->GetEntries() > 0) p_mMass2P[1][i_trig]->Draw("pE same");
+  }
+
+  leg->Draw("same");
+  c_RunQA_Mass2P->SaveAs(Form("./figures/%s/c_RunQA_Mass2P.pdf",runQA::mBeamEnergy[energy].c_str()));
+  //---------------------
+  TCanvas *c_RunQA_Mass2E = new TCanvas("c_RunQA_Mass2E","c_RunQA_dEdx",10,10,800,400);
+  c_RunQA_Mass2E->cd()->SetLeftMargin(0.1);
+  c_RunQA_Mass2E->cd()->SetRightMargin(0.1);
+  c_RunQA_Mass2E->cd()->SetBottomMargin(0.1);
+  c_RunQA_Mass2E->cd()->SetGrid(0,0);
+  c_RunQA_Mass2E->cd()->SetTicks(1,1);
+
+  p_mMass2E[1][9]->SetTitle("Mass2E vs. runIndex");
+  p_mMass2E[1][9]->SetStats(0);
+  p_mMass2E[1][9]->SetMarkerColor(1);
+  p_mMass2E[1][9]->SetMarkerStyle(20);
+  p_mMass2E[1][9]->SetMarkerSize(1.0);
+  p_mMass2E[1][9]->SetLineColor(1);
+  p_mMass2E[1][9]->GetXaxis()->SetTitle("runIndex");
+  p_mMass2E[1][9]->GetYaxis()->SetTitle("<Mass2E>");
+  //pMass2E_mGlobPhi[1][9]->GetYaxis()->SetRangeUser(-0.1,0.50);
+  p_mMass2E[1][9]->Draw("pE");
+
+  for(int i_trig = 0; i_trig < numOfTriggers; ++i_trig)
+  {
+    p_mMass2E[1][i_trig]->SetMarkerColor(MarkerColor[i_trig]);
+    p_mMass2E[1][i_trig]->SetMarkerStyle(24);
+    p_mMass2E[1][i_trig]->SetMarkerSize(0.8);
+    p_mMass2E[1][i_trig]->SetLineColor(MarkerColor[i_trig]);
+    if(p_mMass2E[1][i_trig]->GetEntries() > 0) p_mMass2E[1][i_trig]->Draw("pE same");
+  }
+
+  leg->Draw("same");
+  c_RunQA_Mass2E->SaveAs(Form("./figures/%s/c_RunQA_Mass2E.pdf",runQA::mBeamEnergy[energy].c_str()));  
 }
- 

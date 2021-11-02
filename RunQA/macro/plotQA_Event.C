@@ -25,11 +25,14 @@ void plotQA_Event(int energy = 0, string JobId = "028AC6C12A1F110244470E4CCDFC40
   TH2F *h_mTofMatchRefMult[2][10];
   TH2F *h_mTofHitsRefMult[2][10];
   TH2F *h_mTofMatchGRefMult[2][10];
+  TH1F *h_mTofHits[2][10];
+  TH1F *h_mTofMatch[2][10];
   TH2F *h_mTofHitsGRefMult[2][10];
   TH2F *h_mVzVzVpd[2][10];
   TH1F *h_mDiffVzVzVpd[2][10];
   TH1F *h_mVertexZ[2][10];
-  TH2F *h_mVertexXY[2][10];
+  TH2F *h_mVertexXY[2][10];  
+
 
   for(int i_cut = 0; i_cut < 2; ++i_cut)
   {
@@ -65,6 +68,9 @@ void plotQA_Event(int energy = 0, string JobId = "028AC6C12A1F110244470E4CCDFC40
       h_mTofHitsRefMult[i_cut][i_trig]->GetXaxis()->SetTitle("tofHits");
       h_mTofHitsRefMult[i_cut][i_trig]->GetYaxis()->SetTitle("refMult");
 
+      h_mTofHits[i_cut][i_trig] = (TH1F*) h_mTofHitsRefMult[i_cut][i_trig]->ProjectionX();
+      h_mTofMatch[i_cut][i_trig] = (TH1F*) h_mTofMatchRefMult[i_cut][i_trig]->ProjectionX();
+    
       HistName = Form("h_mTofMatchGRefMult%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
       h_mTofMatchGRefMult[i_cut][i_trig] = (TH2F*)File_InPut->Get(HistName.c_str());;
       h_mTofMatchGRefMult[i_cut][i_trig]->GetXaxis()->SetTitle("tofMatch");
@@ -101,9 +107,9 @@ void plotQA_Event(int energy = 0, string JobId = "028AC6C12A1F110244470E4CCDFC40
   for(int i_cut = 0; i_cut < 2; ++i_cut)
   {
     string CanName = Form("c_EventQA_%s",mCutsQA[i_cut].c_str());
-    c_EventQA[i_cut] = new TCanvas(CanName.c_str(),CanName.c_str(),10,10,1600,800);
-    c_EventQA[i_cut]->Divide(4,2);
-    for(int i_pad = 0; i_pad < 8; ++i_pad)
+    c_EventQA[i_cut] = new TCanvas(CanName.c_str(),CanName.c_str(),10,10,2000,800);
+    c_EventQA[i_cut]->Divide(5,2);
+    for(int i_pad = 0; i_pad < 10; ++i_pad)
     {
       c_EventQA[i_cut]->cd(i_pad+1);
       c_EventQA[i_cut]->cd(i_pad+1)->SetLeftMargin(0.1);
@@ -145,25 +151,33 @@ void plotQA_Event(int energy = 0, string JobId = "028AC6C12A1F110244470E4CCDFC40
       //h_mTofHitsRefMult[i_cut][9]->GetYaxis()->SetRangeUser(0.0,800.0);
       h_mTofHitsRefMult[i_cut][9]->Draw("colz");
     }
+    
+    c_EventQA[i_cut]->cd(4);
+    c_EventQA[i_cut]->cd(4)->SetLogy();
+    h_mTofMatch[i_cut][9]->Draw("hE");
+   
+    c_EventQA[i_cut]->cd(5);
+    c_EventQA[i_cut]->cd(5)->SetLogy();
+    h_mTofHits[i_cut][9]->Draw("hE");
 
     /*c_EventQA[i_cut]->cd(4);
     c_EventQA[i_cut]->cd(4)->SetLogy();
     h_mCentrality9[i_cut][9]->Draw("hE");
     */
 
-    c_EventQA[i_cut]->cd(5);
-    c_EventQA[i_cut]->cd(5)->SetLogz();
+    c_EventQA[i_cut]->cd(7);
+    c_EventQA[i_cut]->cd(7)->SetLogz();
     h_mVertexXY[i_cut][9]->Draw("colz");
 
-    c_EventQA[i_cut]->cd(6);
+    c_EventQA[i_cut]->cd(8);
     // c_EventQA[i_cut]->cd(6)->SetLogy();
     h_mVertexZ[i_cut][9]->Draw();
 
-    c_EventQA[i_cut]->cd(7);
-    c_EventQA[i_cut]->cd(7)->SetLogz();
+    c_EventQA[i_cut]->cd(9);
+    c_EventQA[i_cut]->cd(9)->SetLogz();
     h_mVzVzVpd[i_cut][9]->Draw("colz");
 
-    c_EventQA[i_cut]->cd(8);
+    c_EventQA[i_cut]->cd(10);
     // c_EventQA[i_cut]->cd(8)->SetLogy();
     h_mDiffVzVzVpd[i_cut][9]->Draw();
 

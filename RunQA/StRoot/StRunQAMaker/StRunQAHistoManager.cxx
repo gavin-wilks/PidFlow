@@ -66,7 +66,7 @@ void StRunQAHistoManager::initEventQA()
       h_mVzVzVpd[i_cut][i_trig] = new TH2F(HistName.c_str(),HistName.c_str(),301,-150.5,150.5,301,-150.5,150.5);
 
       HistName = Form("h_mDiffVzVzVpd%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
-      h_mDiffVzVzVpd[i_cut][i_trig] = new TH1F(HistName.c_str(),HistName.c_str(),201,-10.05,10.05);
+      h_mDiffVzVzVpd[i_cut][i_trig] = new TH1F(HistName.c_str(),HistName.c_str(),301,-150.5,150.5);
     }
   }
 }
