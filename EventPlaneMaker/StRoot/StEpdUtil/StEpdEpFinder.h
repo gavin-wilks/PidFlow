@@ -2,7 +2,6 @@
 #define _StEpdEpFinder
 
 class TVector3;
-//class TH2D;
 class TFile;
 class TProfile;
 class TProfile2D;

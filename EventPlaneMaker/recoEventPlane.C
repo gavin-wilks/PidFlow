@@ -9,7 +9,7 @@ class StPicoEvent;
 
 StChain *chain;
 
-void recoEventPlane(const Char_t *inputFile="../FileList/200GeV_2014/pico_xrootd_local.list", const string jobId = "14", const Int_t Mode = 5, const Int_t energy = 0)
+void recoEventPlane(const Char_t *inputFile="../FileList/19p6GeV_2019/pico_prod_random_test.list", const string jobId = "1", const Int_t Mode = 0, const Int_t EpdMode = 0, const Int_t energy = 1)
 {
   // mBeamEnergy[NumBeamEnergy] = {"200GeV","54GeV","27GeV"};
   // Mode: 
@@ -24,9 +24,7 @@ void recoEventPlane(const Char_t *inputFile="../FileList/200GeV_2014/pico_xrootd
   stopWatch->Start();
 
   string SL_version = "pro";
-  if(energy == 0) SL_version = "SL20a"; // 200GeV_2014
-  if(energy == 1) SL_version = "SL18c"; // 54GeV_2017
-  if(energy == 2) SL_version = "SL19b"; // 27GeV_2018
+  if(energy == 0||energy==1) SL_version = "SL21c";
   string env_SL = getenv ("STAR");
   if (env_SL.find(SL_version)==string::npos) 
   {
@@ -44,11 +42,12 @@ void recoEventPlane(const Char_t *inputFile="../FileList/200GeV_2014/pico_xrootd
   gSystem->Load("StPicoDstMaker");
   gSystem->Load("StRefMultCorr");
   gSystem->Load("StEventPlaneMaker");
+  gSystem->Load("StEpdUtil");
 
   chain = new StChain();
   StPicoDstMaker *picoMaker = new StPicoDstMaker(2,inputFile,"picoDst");
 
-  StEventPlaneMaker *EventPlaneMaker = new StEventPlaneMaker("EventPlane",picoMaker,jobId,Mode,energy);
+  StEventPlaneMaker *EventPlaneMaker = new StEventPlaneMaker("EventPlane",picoMaker,jobId,Mode,EpdMode,energy,0.3,2.0);
 
   if( chain->Init()==kStErr ){ 
     cout<<"chain->Init();"<<endl;

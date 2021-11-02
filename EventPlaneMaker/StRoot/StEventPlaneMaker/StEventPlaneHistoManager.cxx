@@ -1,10 +1,12 @@
 #include <TH2F.h>
 #include <TH1F.h>
+#include <TProfile.h>
 #include <TMath.h>
 #include <TString.h>
 
 #include "StRoot/StEventPlaneMaker/StEventPlaneHistoManager.h"
 #include "StRoot/StEventPlaneMaker/StEventPlaneCons.h"
+#include "StEpdUtil/StEpdEpInfo.h"
 
 ClassImp(StEventPlaneHistoManager)
 
@@ -285,4 +287,54 @@ void StEventPlaneHistoManager::writeTpcShiftEP()
     h_mTpcShiftEpFull[i_cent]->Write();
   }
 }
+
+void StEventPlaneHistoManager::initEpdEpResults()
+{
+  // histograms and profiles of event planes
+  // EPD "correction level" (last index):  0=raw; 1=shifted
+  for (int order=1; order<=recoEP::mEpdEpOrder; order++)
+  {
+    double PhiMax = 2.0*TMath::Pi()/((double)order);
+    h_mEpdEwPsi[order-1][0]  = new TH2F(Form("EpdEwPsi%draw",order),  Form("EPD raw #Psi_{%d,W} vs #Psi_{%d,E}",order,order),  100,0.0,PhiMax,100,0.0,PhiMax);
+    h_mEpdEwPsi[order-1][1]  = new TH2F(Form("EpdEwPsi%dshift",order),Form("EPD shift #Psi_{%d,W} vs #Psi_{%d,E}",order,order),100,0.0,PhiMax,100,0.0,PhiMax);
+    //
+    //h_mEpdEwPsi_midCentral[order-1][0]  = new TH2F(Form("EpdEwPsi%drawMidCent",order),  Form("MidCentral EPD raw #Psi_{%d,W} vs #Psi_{%d,E}",order,order),  100,0.0,PhiMax,100,0.0,PhiMax);
+    //h_mEpdEwPsi_midCentral[order-1][1]  = new TH2F(Form("EpdEwPsi%dshiftMidCent",order),Form("MidCentral EPD shift #Psi_{%d,W} vs #Psi_{%d,E}",order,order),100,0.0,PhiMax,100,0.0,PhiMax);
+    for (int icor=0; icor<2; icor++){
+      h_mEpdEwPsi[order-1][icor]->GetXaxis()->SetTitle(Form("#Psi_{%d,E}",order));                 h_mEpdEwPsi[order-1][icor]->GetYaxis()->SetTitle(Form("#Psi_{%d,W}",order));
+      //h_mEpdEwPsi_midCentral[order-1][icor]->GetXaxis()->SetTitle(Form("#Psi_{%d,E}",order));      h_mEpdEwPsi_midCentral[order-1][icor]->GetYaxis()->SetTitle(Form("#Psi_{%d,W}",order));
+    } 
+    //
+    h_mEpdAveCos[order-1][0] = new TProfile(Form("EpdCos%draw",order),  Form("EPD raw #LT cos(%d#Psi_{%d,W}-%d#Psi_{%d,E}) #GT",order,order,order,order)  ,9,-0.5,8.5);
+    h_mEpdAveCos[order-1][1] = new TProfile(Form("EpdCos%dshift",order),Form("EPD shift #LT cos(%d#Psi_{%d,W}-%d#Psi_{%d,E}) #GT",order,order,order,order),9,-0.5,8.5);
+  }
+}
+ 
+void StEventPlaneHistoManager::fillEpdEpResults(StEpdEpInfo result, int CentId)
+{
+  for (int order=1; order<=recoEP::mEpdEpOrder; order++){
+    h_mEpdAveCos[order-1][0]->Fill(double(CentId),cos((double)order*(result.EastRawPsi(order)-result.WestRawPsi(order))));
+    h_mEpdAveCos[order-1][1]->Fill(double(CentId),cos((double)order*(result.EastPhiWeightedAndShiftedPsi(order)-result.WestPhiWeightedAndShiftedPsi(order))));
+    h_mEpdEwPsi[order-1][0]->Fill(result.EastRawPsi(order),result.WestRawPsi(order));
+    h_mEpdEwPsi[order-1][1]->Fill(result.EastPhiWeightedAndShiftedPsi(order),result.WestPhiWeightedAndShiftedPsi(order));
+    //if ((CentId<=6)&&(CentId>=4)){
+    //  h_mEpdEwPsi_midCentral[order-1][0]->Fill(result.EastRawPsi(order),result.WestRawPsi(order));
+    //  h_mEpdEwPsi_midCentral[order-1][1]->Fill(result.EastPhiWeightedAndShiftedPsi(order),result.WestPhiWeightedAndShiftedPsi(order));
+    //}
+  }
+}
+
+void StEventPlaneHistoManager::writeEpdEpResults()
+{
+  for (int order=1; order<=recoEP::mEpdEpOrder; order++)
+  {
+    for (int icor=0; icor<2; icor++)
+    {
+      h_mEpdEwPsi[order-1][icor]->Write();
+      //h_mEpdEwPsi_midCentral[order-1][icor]->Write();
+      h_mEpdAveCos[order-1][icor]->Write();
+    }
+  } 
+}
+
 //-------------------------------------------------------------------------------------------

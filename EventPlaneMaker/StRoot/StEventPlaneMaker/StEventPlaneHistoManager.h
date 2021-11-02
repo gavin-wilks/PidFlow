@@ -3,9 +3,13 @@
 
 #include "StMessMgr.h"
 #include "TVector2.h"
+#include "StRoot/StEventPlaneMaker/StEventPlaneCons.h"
+#include "StEpdUtil/StEpdEpInfo.h"
 
 class TH1F;
 class TH2F;
+class TProfile;
+class StEpdEpInfo;
 
 class StEventPlaneHistoManager
 {
@@ -51,7 +55,13 @@ class StEventPlaneHistoManager
     void fillTpcShiftFullEP(double PsiFull, int Cent9, int runIndex);
     void writeTpcShiftEP();
     //--------------TPC EP---------------
-
+    
+    //--------------EPD EP---------------
+    void initEpdEpResults();
+    void fillEpdEpResults(StEpdEpInfo result, int CentId);
+    void writeEpdEpResults();
+    //--------------EPD EP---------------
+ 
   private:
     //--------------ZDC EP---------------
     TH2F *h_mZdcGainCorr[2][2][8]; // 0: east/west | 1: vertical(x)/horizontal(y) | 2: 7 slats(x)/8 slats(y); | x-axis: runIndex | y-axis: ADC
@@ -87,6 +97,12 @@ class StEventPlaneHistoManager
     TH2F *h_mTpcShiftEpRanB[9];
     TH2F *h_mTpcShiftEpFull[9];
     //--------------TPC EP---------------
+    
+    //--------------EPD EP---------------
+    TH2F *h_mEpdEwPsi[recoEP::mEpdEpOrder][2];
+    //TH2F *h_mEpdEwPsi_midCentral[recoEP::mEpdEpOrder][2];
+    TProfile *h_mEpdAveCos[recoEP::mEpdEpOrder][2];
+    //--------------EPD EP---------------
 
   ClassDef(StEventPlaneHistoManager,1)
 };

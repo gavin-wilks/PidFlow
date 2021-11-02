@@ -4,6 +4,8 @@
 #include "StPicoEvent/StPicoTrack.h"
 #include "StRefMultCorr/StRefMultCorr.h"
 #include "StRefMultCorr/CentralityMaker.h"
+#include "StEpdUtil/StEpdEpFinder.h"
+#include "StEpdUtil/StEpdEpInfo.h"
 #include "StThreeVectorF.hh"
 #include "StMessMgr.h"
 
@@ -27,15 +29,23 @@
 ClassImp(StEventPlaneMaker)
 
 //-----------------------------------------------------------------------------
-StEventPlaneMaker::StEventPlaneMaker(const char* name, StPicoDstMaker *picoMaker, const string jobId, const int Mode, const int energy) : StMaker(name)
+StEventPlaneMaker::StEventPlaneMaker(const char* name, StPicoDstMaker *picoMaker, const string jobId, const int Mode, const int EpdMode, const int energy, float mipThresh = 0.3, float maxTile = 2.0) : StMaker(name)
 {
   mPicoDstMaker = picoMaker;
   mPicoDst = NULL;
   mRefMultCorr = NULL;
+  mEpFinder = NULL;
   mMode = Mode;
+  mEpdMode = EpdMode;
   mEnergy = energy;
+  mMipThresh = mipThresh;
+  mMaxTile = maxTile;
 
-  if(mMode == 0) // fill Gain Correction Parameters for ZDC-SMD
+  mOutPut_EpdResults = Form("file_%s_EpdResults_%d_%s.root",recoEP::mBeamEnergy[energy].c_str(),mEpdMode,jobId.c_str());  
+  mInPut_EpdCorrections = Form("file_%s_EpdCorrections_%d_INPUT.root",recoEP::mBeamEnergy[energy].c_str(),mEpdMode);
+  mOutPut_EpdCorrections = Form("file_%s_EpdCorrections_%d_%s_OUTPUT.root",recoEP::mBeamEnergy[energy].c_str(),mEpdMode,jobId.c_str());
+
+  /*if(mMode == 0) // fill Gain Correction Parameters for ZDC-SMD
   {
     mOutPut_GainCorr = Form("./file_%s_GainCorr_%s.root",recoEP::mBeamEnergy[energy].c_str(),jobId.c_str());
   }
@@ -58,7 +68,7 @@ StEventPlaneMaker::StEventPlaneMaker(const char* name, StPicoDstMaker *picoMaker
   if(mMode == 5) // fill Charged Flow
   {
     mOutPut_ChargedFlow = Form("./file_%s_ChargedFlow_%s.root",recoEP::mBeamEnergy[energy].c_str(),jobId.c_str());
-  }
+  }*/
 }
 
 //----------------------------------------------------------------------------- 
@@ -73,16 +83,46 @@ int StEventPlaneMaker::Init()
   mEventPlaneUtility = new StEventPlaneUtility(mEnergy);
   mEventPlaneUtility->initRunIndex(); // initialize std::map for run index
   mEventPlaneProManager = new StEventPlaneProManager();
-  mZdcEpManager = new StZdcEpManager(mEnergy); // initialize ZDC EP Manager
-  mTpcEpManager = new StTpcEpManager(mEnergy); // initialize TPC EP Manager
+  //mZdcEpManager = new StZdcEpManager(mEnergy); // initialize ZDC EP Manager
+  //mTpcEpManager = new StTpcEpManager(mEnergy); // initialize TPC EP Manager
+  
+  mEpdHits = new TClonesArray("StPicoEpdHit");
+  //mBbcHits = new TClonesArray("StPicoBbcHit");
+  //mTracks  = new TClonesArray("StPicoTrack");
+  //mEventClonesArray = new TClonesArray("StPicoEvent");
 
-  if(!mRefMultCorr)
+  mPicoDstChain = mPicoDstMaker->chain(); 
+
+  //mPicoDstChain->SetBranchStatus("*",0);         // turns OFF all branches  (speeds it up :-)
+  unsigned int found;
+  mPicoDstChain->SetBranchStatus("EpdHit*",1,&found);   // note you need the asterisk
+  cout << "EpdHit Branch returned found= " << found << endl;
+  mPicoDstChain->SetBranchAddress("EpdHit",&mEpdHits);
+
+  //mPicoDstChain->SetBranchStatus("Event*",1,&found);
+  //cout << "Event Branch returned found= " << found << endl;
+  //mPicoDstChain->SetBranchAddress("Event",&mEventClonesArray);
+
+  //mPicoDstChain->SetBranchStatus("Track*",1,&found);
+  //cout << "Track Branch returned found= " << found << endl;
+  //mPicoDstChain->SetBranchAddress("Track",&mTracks);
+   
+  mEpFinder = new StEpdEpFinder(1,mOutPut_EpdCorrections.c_str(),mInPut_EpdCorrections.c_str()); // Set the nEventType to 1, since we do not have separation for centrality yet 
+  mEpFinder->SetnMipThreshold(mMipThresh);  // recommended by EPD group
+  mEpFinder->SetMaxTileWeight(mMaxTile);    // recommended by EPD group
+  mEpFinder->SetEpdHitFormat(2);           // 2=pico
+  
+  mFile_EpdResults = new TFile(mOutPut_EpdResults.c_str(),"RECREATE");
+  mEventPlaneHistoManager->initEpdEpResults(); 
+
+  return kStOK; 
+  /*if(!mRefMultCorr)
   {
     if(!mEventPlaneCut->isBES()) mRefMultCorr = CentralityMaker::instance()->getgRefMultCorr_Run14_AuAu200_VpdMB5_P16id(); // 200GeV_2014
     if(mEventPlaneCut->isBES()) mRefMultCorr = CentralityMaker::instance()->getRefMultCorr(); // BESII
-  }
+  }*/
 
-  if(mMode == 0)
+  /*if(mMode == 0)
   { // fill Gain Correction Factors for ZDC-SMD
     mFile_GainCorr = new TFile(mOutPut_GainCorr.c_str(),"RECREATE");
     mEventPlaneHistoManager->initZdcGainCorr();
@@ -156,14 +196,19 @@ int StEventPlaneMaker::Init()
     mTpcEpManager->readShiftCorr(); // read in Shift Correction Parameters
     mTpcEpManager->readResolution(); // read in EP Resolution
   }
-
-  return kStOK;
+  */
 }
 
 //----------------------------------------------------------------------------- 
 int StEventPlaneMaker::Finish() 
 {
-  if(mMode == 0)
+  mEpFinder->Finish();
+  
+  mFile_EpdResults->cd();
+  mEventPlaneHistoManager->writeEpdEpResults();  
+  mFile_EpdResults->Close();
+
+  /*if(mMode == 0)
   {
     if(mOutPut_GainCorr != "")
     {
@@ -239,7 +284,7 @@ int StEventPlaneMaker::Finish()
       mFile_ChargedFlow->Close();
     }
   }
-
+  */
   return kStOK;
 }
 
@@ -249,7 +294,7 @@ void StEventPlaneMaker::Clear(Option_t *opt) {
 
 //----------------------------------------------------------------------------- 
 int StEventPlaneMaker::Make() 
-{
+{ 
   if(!mPicoDstMaker) 
   {
     LOG_ERROR << " No PicoDstMaker! Skip! " << endm;
@@ -268,8 +313,8 @@ int StEventPlaneMaker::Make()
   {
     LOG_ERROR << "Error opening picoDst Event, skip!" << endm;
     return kStErr;
-  }
-
+  } 
+     
   // MinBias trigger
   if( mEventPlaneCut->isMinBias(mPicoEvent) )
   {
@@ -278,9 +323,10 @@ int StEventPlaneMaker::Make()
     const int eventId = mPicoEvent->eventId();
     const int refMult = mPicoEvent->refMult();
     const int grefMult = mPicoEvent->grefMult();
-    const float vx    = mPicoEvent->primaryVertex().x(); // x works for both TVector3 and StThreeVectorF
-    const float vy    = mPicoEvent->primaryVertex().y();
-    const float vz    = mPicoEvent->primaryVertex().z();
+    const TVector3 pv = mPicoEvent->primaryVertex();
+    const float vx    = pv.x(); // x works for both TVector3 and StThreeVectorF
+    const float vy    = pv.y();
+    const float vz    = pv.z();
     const float vzVpd = mPicoEvent->vzVpd();
     const float zdcX  = mPicoEvent->ZDCx();
     const unsigned int numOfBTofHits = mPicoDst->numberOfBTofHits(); // get number of tof hits
@@ -289,28 +335,27 @@ int StEventPlaneMaker::Make()
     const unsigned int nTracks = mPicoDst->numberOfTracks(); // get number of tracks
 
     // StRefMultCorr Cut & centrality
-    if(!mRefMultCorr)
-    {
-      LOG_WARN << " No mRefMultCorr! Skip! " << endl;
-      return kStErr;
-    }
+    //if(!mRefMultCorr)
+    //{
+    //  LOG_WARN << " No mRefMultCorr! Skip! " << endl;
+    //  return kStErr;
+    //}
 
-    mRefMultCorr->init(runId);
-    if(!mEventPlaneCut->isBES()) mRefMultCorr->initEvent(grefMult,vz,zdcX); // 200GeV_2014
-    if(mEventPlaneCut->isBES()) mRefMultCorr->initEvent(refMult,vz,zdcX); // BES-II might need Luminosity corrections
-
+    //mRefMultCorr->init(runId);
+    //if(!mEventPlaneCut->isBES()) mRefMultCorr->initEvent(grefMult,vz,zdcX); // 200GeV_2014
+    //if(mEventPlaneCut->isBES()) mRefMultCorr->initEvent(refMult,vz,zdcX); // BES-II might need Luminosity corrections
+    
     // if(mRefMultCorr->isBadRun(runId))
     // {
     //   LOG_ERROR << "Bad Run from StRefMultCorr! Skip!" << endm;
     //   return kStErr;
     // }
-
     // vz sign
-    int vzSign = 0; // 0 for -vz || 1 for vz
-    vz > 0.0 ? vzSign = 1 : vzSign = 0;
+    //int vzSign = 0; // 0 for -vz || 1 for vz
+    //vz > 0.0 ? vzSign = 1 : vzSign = 0;
 
-    const int cent9 = mRefMultCorr->getCentralityBin9(); // get Centrality9
-    const double reweight = mRefMultCorr->getWeight(); // get weight
+    //const int cent9 = mRefMultCorr->getCentralityBin9(); // get Centrality9
+    //const double reweight = mRefMultCorr->getWeight(); // get weight
     const int runIndex = mEventPlaneUtility->findRunIndex(runId); // find run index for a specific run
     // const int triggerBin = mEventPlaneCut->getTriggerBin(mPicoEvent);
     // cout << "runId = " << runId << ", runIndex = " << runIndex << endl;
@@ -320,17 +365,23 @@ int StEventPlaneMaker::Make()
       return kStErr;
     }
 
-    bool isPileUpEventStEventPlaneCut = mEventPlaneCut->isPileUpEvent(grefMult,numOfBTofMatch,numOfBTofHits); // 200GeV
-    if(mEventPlaneCut->isBES()) isPileUpEventStEventPlaneCut = mEventPlaneCut->isPileUpEvent(refMult,numOfBTofMatch,numOfBTofHits); // 54 GeV | always return false for 27 GeV
-    bool isPileUpEventStRefMultCorr = !mRefMultCorr->passnTofMatchRefmultCut(1.0*refMult, 1.0*numOfBTofMatch); // 27 GeV | always return !true for other energies
-    bool isPileUpEvent = isPileUpEventStEventPlaneCut || isPileUpEventStRefMultCorr;
+    //bool isPileUpEventStEventPlaneCut = mEventPlaneCut->isPileUpEvent(grefMult,numOfBTofMatch,numOfBTofHits); // 200GeV
+    //if(mEventPlaneCut->isBES()) isPileUpEventStEventPlaneCut = mEventPlaneCut->isPileUpEvent(refMult,numOfBTofMatch,numOfBTofHits); // 54 GeV | always return false for 27 GeV
+    //bool isPileUpEventStRefMultCorr = !mRefMultCorr->passnTofMatchRefmultCut(1.0*refMult, 1.0*numOfBTofMatch); // 27 GeV | always return !true for other energies
+    //bool isPileUpEvent = isPileUpEventStEventPlaneCut || isPileUpEventStRefMultCorr;
     // cout << "isPileUpEvent = " << isPileUpEvent << ", isPileUpEventStEventPlaneCut = " << isPileUpEventStEventPlaneCut << ", isPileUpEventStRefMultCorr = " << isPileUpEventStRefMultCorr << endl;
 
-    if(mEventPlaneCut->passEventCut(mPicoDst) && !isPileUpEvent && cent9 > -0.5)
+    //if(mEventPlaneCut->passEventCut(mPicoDst) && !isPileUpEvent && cent9 > -0.5)
+    if(mEventPlaneCut->passEventCut(mPicoDst))
     { // apply Event Cuts for anlaysis 
-      mZdcEpManager->initZdcEp(cent9,runIndex,vzSign); // ZDC-SMD EP
-      mTpcEpManager->initTpcEp(cent9,runIndex,vzSign); // TPC EP
-
+      //mZdcEpManager->initZdcEp(cent9,runIndex,vzSign); // ZDC-SMD EP
+      //mTpcEpManager->initTpcEp(cent9,runIndex,vzSign); // TPC EP
+      
+      int CentId = 0;
+      StEpdEpInfo result = mEpFinder->Results(mEpdHits,pv,CentId); // Centrality bin 0 
+      mEventPlaneHistoManager->fillEpdEpResults(result,CentId);
+        
+      /*
       // set ADC for each ZDC-SMD slats
       if(mMode == 0)
       { // fill Gain Correction Factors for BBC & ZDC
@@ -708,7 +759,7 @@ int StEventPlaneMaker::Make()
       }
 
       mZdcEpManager->clearZdcEp();
-      mTpcEpManager->clearTpcEp();
+      mTpcEpManager->clearTpcEp();*/
     }
   }
 

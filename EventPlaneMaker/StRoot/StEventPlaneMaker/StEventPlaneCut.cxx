@@ -35,17 +35,15 @@ bool StEventPlaneCut::isMinBias(StPicoEvent *picoEvent)
 {
   // std::cout << "year: " << picoEvent->year() << std::endl;
   // std::cout << "day: " << picoEvent->day() << std::endl;
-  // std::cout << "triggerIds: " << picoEvent->triggerIds()[0] << std::endl;
-  if(mEnergy == 0 && recoEP::mBeamYear[mEnergy] == picoEvent->year() && !( picoEvent->isTrigger(450005) || picoEvent->isTrigger(450015) || picoEvent->isTrigger(450025) || picoEvent->isTrigger(450050) || picoEvent->isTrigger(450060) )) return false; // 200GeV_2014
-  if(mEnergy == 1 && recoEP::mBeamYear[mEnergy] == picoEvent->year() && !( picoEvent->isTrigger(580001) || picoEvent->isTrigger(580021) )) return false; // 54GeV_2017 | 580011 ?
-  if(mEnergy == 2 && recoEP::mBeamYear[mEnergy] == picoEvent->year() && !( picoEvent->isTrigger(610001) || picoEvent->isTrigger(610011) || picoEvent->isTrigger(610021) || picoEvent->isTrigger(610031) || picoEvent->isTrigger(610041) || picoEvent->isTrigger(610051) )) return false; // 27GeV_2018
-
+  // std::cout << "triggerIds: " << picoEvent->triggerIds()[0] << std::endl;  
+  if(mEnergy == 0 && recoEP::mBeamYear[mEnergy] == picoEvent->year() && !( picoEvent->isTrigger(650001) || picoEvent->isTrigger(650011) || picoEvent->isTrigger(650021) || picoEvent->isTrigger(650031) || picoEvent->isTrigger(650041) || picoEvent->isTrigger(650051) )) return false; // 14p5GeV_2019
+  if(mEnergy == 1 && recoEP::mBeamYear[mEnergy] == picoEvent->year() && !( picoEvent->isTrigger(640001) || picoEvent->isTrigger(640011) || picoEvent->isTrigger(640021) || picoEvent->isTrigger(640031) || picoEvent->isTrigger(640041) || picoEvent->isTrigger(640051) )) return false; // 19p6GeV_2019
   return true;
 }
 
 bool StEventPlaneCut::isBES()
 {
-  if(mEnergy == 0) return false; // 200 GeV
+  if(mEnergy == 0||mEnergy==1) return false; // 14.5 GeV, 19.6 GeV
 
   return true; // BES
 }
@@ -155,7 +153,7 @@ bool StEventPlaneCut::passEventCut(StPicoDst *picoDst)
     return kFALSE;
   }
   // vr cut
-  if(sqrt(vx*vx+vy*vy) > recoEP::mVrMax[mEnergy])
+  if(sqrt(vx*vx+vy*vy) > recoEP::mVrMax[mEnergy] || sqrt(vx*vx+vy*vy) <= recoEP::mVrMin[mEnergy])
   {
     return kFALSE;
   }

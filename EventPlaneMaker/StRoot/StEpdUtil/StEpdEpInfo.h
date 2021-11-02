@@ -1,7 +1,7 @@
 #ifndef StEpdEpInfo_H
 #define StEpdEpInfo_H
 
-#define _EpOrderMax 2   // maximum order of EP to worry about.
+#define _EpOrderMax 3   // maximum order of EP to worry about.
 
 #include "TVector2.h"
 
