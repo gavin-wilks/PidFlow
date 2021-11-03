@@ -170,10 +170,10 @@ int StRunQAMaker::Make()
       return kStErr;
     }
 
-    //bool isPileUpEventStRunQACut = mRunQACut->isPileUpEvent(grefMult,numOfBTofMatch,numOfBTofHits); // 200GeV
+    bool isPileUpEventStRunQACut = mRunQACut->isPileUpEvent(grefMult,numOfBTofMatch,numOfBTofHits); // 200GeV
     //if(mRunQACut->isBES()) isPileUpEventStRunQACut = mRunQACut->isPileUpEvent(refMult,numOfBTofMatch,numOfBTofHits); // 54 GeV | always return false for 27 GeV
     //bool isPileUpEventStRefMultCorr = !mRefMultCorr->passnTofMatchRefmultCut(1.0*refMult, 1.0*numOfBTofMatch); // 27 GeV | always return !true for other energies
-    //bool isPileUpEvent = isPileUpEventStRunQACut || isPileUpEventStRefMultCorr;
+    bool isPileUpEvent = isPileUpEventStRunQACut; //|| isPileUpEventStRefMultCorr;
     // cout << "isPileUpEvent = " << isPileUpEvent << ", isPileUpEventStRunQACut = " << isPileUpEventStRunQACut << ", isPileUpEventStRefMultCorr = " << isPileUpEventStRefMultCorr << endl;
 
     if(mMode == 0)
@@ -184,8 +184,7 @@ int StRunQAMaker::Make()
       mRunQAHistoManager->fillEventQA_Vertex(triggerBin,vx,vy,vz,vzVpd,0);
       mRunQAHistoManager->fillEventQA_Trigger(triggerBin,0);
       
-      if(mRunQACut->passEventCut(mPicoDst))
-      //if(mRunQACut->passEventCut(mPicoDst) && !isPileUpEvent)
+      if(mRunQACut->passEventCut(mPicoDst) && !isPileUpEvent)
       { // apply Event Cuts for anlaysis 
 	mRunQAProManager->fillRunQA_Event(triggerBin,runIndex,refMult,grefMult,zdcX,vx,vy,vz,1);
 	//mRunQAHistoManager->fillEventQA_RefMult(triggerBin,refMult,grefMult,cent9,reweight,numOfBTofHits,numOfBTofMatch,1); // with event cut
