@@ -308,10 +308,10 @@ void StRunQAHistoManager::fillTrackQA_PID_Additional(int triggerBin, float nSigm
   h_mNSigmaERig[cutSelection][triggerBin]->Fill(primMom.Mag()*charge, nSigmaE);
   h_mNSigmaEEta[cutSelection][triggerBin]->Fill(primMom.Eta(), nSigmaE);
   h_mNSigmaEPhi[cutSelection][triggerBin]->Fill(primMom.Phi(), nSigmaE);
-  if(nSigmaPi > -2.5 && nSigmaPi < 2.5) h_mMass2Pi[cutSelection][triggerBin]->Fill(mass2); 
-  if(nSigmaK > -2.5 && nSigmaK < 2.5) h_mMass2K[cutSelection][triggerBin]->Fill(mass2); 
-  if(nSigmaP > -2.5 && nSigmaP < 2.5) h_mMass2P[cutSelection][triggerBin]->Fill(mass2); 
-  if(nSigmaE > -2.5 && nSigmaE < 2.5) h_mMass2E[cutSelection][triggerBin]->Fill(mass2);   
+  if(nSigmaPi > -2.5 && nSigmaPi < 2.5 && mass2 > 0.00 && mass2 < 0.10) h_mMass2Pi[cutSelection][triggerBin]->Fill(mass2); 
+  if(nSigmaK > -2.5 && nSigmaK < 2.5 && mass2 > 0.15 && mass2 < 0.35) h_mMass2K[cutSelection][triggerBin]->Fill(mass2); 
+  if(nSigmaP > -2.5 && nSigmaP < 2.5 && mass2 > 0.70 && mass2 < 1.10) h_mMass2P[cutSelection][triggerBin]->Fill(mass2); 
+  if(nSigmaE > -2.5 && nSigmaE < 2.5 && mass2 > 0.00 && mass2 < 0.01) h_mMass2E[cutSelection][triggerBin]->Fill(mass2);   
  
   h_mNSigmaPiRig[cutSelection][9]->Fill(primMom.Mag()*charge, nSigmaPi);
   h_mNSigmaPiEta[cutSelection][9]->Fill(primMom.Eta(), nSigmaPi);
@@ -325,10 +325,10 @@ void StRunQAHistoManager::fillTrackQA_PID_Additional(int triggerBin, float nSigm
   h_mNSigmaERig[cutSelection][9]->Fill(primMom.Mag()*charge, nSigmaE);
   h_mNSigmaEEta[cutSelection][9]->Fill(primMom.Eta(), nSigmaE);
   h_mNSigmaEPhi[cutSelection][9]->Fill(primMom.Phi(), nSigmaE);
-  if(nSigmaPi > -2.5 && nSigmaPi < 2.5) h_mMass2Pi[cutSelection][9]->Fill(mass2);
-  if(nSigmaK > -2.5 && nSigmaK < 2.5) h_mMass2K[cutSelection][9]->Fill(mass2);
-  if(nSigmaP > -2.5 && nSigmaP < 2.5) h_mMass2P[cutSelection][9]->Fill(mass2);
-  if(nSigmaE > -2.5 && nSigmaE < 2.5) h_mMass2E[cutSelection][9]->Fill(mass2);
+  if(nSigmaPi > -2.5 && nSigmaPi < 2.5 && mass2 > 0.00 && mass2 < 0.10) h_mMass2Pi[cutSelection][9]->Fill(mass2);
+  if(nSigmaK > -2.5 && nSigmaK < 2.5 && mass2 > 0.15 && mass2 < 0.35) h_mMass2K[cutSelection][9]->Fill(mass2);
+  if(nSigmaP > -2.5 && nSigmaP < 2.5 && mass2 > 0.70 && mass2 < 1.10) h_mMass2P[cutSelection][9]->Fill(mass2);
+  if(nSigmaE > -2.5 && nSigmaE < 2.5 && mass2 > 0.00 && mass2 < 0.01) h_mMass2E[cutSelection][9]->Fill(mass2);
 }
 
 void StRunQAHistoManager::writeTrackQA()

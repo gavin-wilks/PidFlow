@@ -172,19 +172,19 @@ void StRunQAProManager::fillRunQA_Track_PID(int triggerBin, int runIdenx, float 
   p_mNSigmaK[cutSelection][triggerBin]->Fill(runIdenx, nSigmaK);
   p_mNSigmaP[cutSelection][triggerBin]->Fill(runIdenx, nSigmaP);
   p_mNSigmaE[cutSelection][triggerBin]->Fill(runIdenx, nSigmaE);
-  if(nSigmaPi > -2.5 && nSigmaPi < 2.5) p_mMass2Pi[cutSelection][triggerBin]->Fill(runIdenx, mass2);
-  if(nSigmaK > -2.5 && nSigmaK < 2.5) p_mMass2K[cutSelection][triggerBin]->Fill(runIdenx, mass2);
-  if(nSigmaP > -2.5 && nSigmaP < 2.5) p_mMass2P[cutSelection][triggerBin]->Fill(runIdenx, mass2);
-  if(nSigmaE > -2.5 && nSigmaE < 2.5) p_mMass2E[cutSelection][triggerBin]->Fill(runIdenx, mass2);
+  if(nSigmaPi > -2.5 && nSigmaPi < 2.5 && mass2 > 0.00 && mass2 < 0.10) p_mMass2Pi[cutSelection][triggerBin]->Fill(runIdenx, mass2);
+  if(nSigmaK > -2.5 && nSigmaK < 2.5 && mass2 > 0.15 && mass2 < 0.35) p_mMass2K[cutSelection][triggerBin]->Fill(runIdenx, mass2);
+  if(nSigmaP > -2.5 && nSigmaP < 2.5 && mass2 > 0.70 && mass2 < 1.10) p_mMass2P[cutSelection][triggerBin]->Fill(runIdenx, mass2);
+  if(nSigmaE > -2.5 && nSigmaE < 2.5 && mass2 > 0.00 && mass2 < 0.01) p_mMass2E[cutSelection][triggerBin]->Fill(runIdenx, mass2);
 
   p_mNSigmaPi[cutSelection][9]->Fill(runIdenx, nSigmaPi);
   p_mNSigmaK[cutSelection][9]->Fill(runIdenx, nSigmaK);
   p_mNSigmaP[cutSelection][9]->Fill(runIdenx, nSigmaP);
   p_mNSigmaE[cutSelection][9]->Fill(runIdenx, nSigmaE);
-  if(nSigmaPi > -2.5 && nSigmaPi < 2.5) p_mMass2Pi[cutSelection][9]->Fill(runIdenx, mass2);
-  if(nSigmaK > -2.5 && nSigmaK < 2.5) p_mMass2K[cutSelection][9]->Fill(runIdenx, mass2);
-  if(nSigmaP > -2.5 && nSigmaP < 2.5) p_mMass2P[cutSelection][9]->Fill(runIdenx, mass2);
-  if(nSigmaE > -2.5 && nSigmaE < 2.5) p_mMass2E[cutSelection][9]->Fill(runIdenx, mass2);
+  if(nSigmaPi > -2.5 && nSigmaPi < 2.5 && mass2 > 0.00 && mass2 < 0.10) p_mMass2Pi[cutSelection][9]->Fill(runIdenx, mass2);
+  if(nSigmaK > -2.5 && nSigmaK < 2.5 && mass2 > 0.15 && mass2 < 0.35) p_mMass2K[cutSelection][9]->Fill(runIdenx, mass2);
+  if(nSigmaP > -2.5 && nSigmaP < 2.5 && mass2 > 0.70 && mass2 < 1.10) p_mMass2P[cutSelection][9]->Fill(runIdenx, mass2);
+  if(nSigmaE > -2.5 && nSigmaE < 2.5 && mass2 > 0.00 && mass2 < 0.01) p_mMass2E[cutSelection][9]->Fill(runIdenx, mass2);
 }
 
 void StRunQAProManager::writeRunQA()
