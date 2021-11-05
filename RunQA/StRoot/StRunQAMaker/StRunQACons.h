@@ -18,7 +18,7 @@ namespace runQA
   float const mVzMaxMap[NumBeamEnergy] = {70.0,70.0}; // 0: 19p6GeV_2019 | 1: 54GeV_2017  
   float const mVrMax[NumBeamEnergy] = {2.0,2.0};
   float const mVrMin[NumBeamEnergy] = {0.0,0.0};
-  float const mVzVpdDiffMax[NumBeamEnergy] = {100.0,100.0};
+  float const mVzVpdDiffMax[NumBeamEnergy] = {10.0,10.0};
   int const mMatchedToFMin[NumBeamEnergy] = {0,0}; 
 
   // track cut

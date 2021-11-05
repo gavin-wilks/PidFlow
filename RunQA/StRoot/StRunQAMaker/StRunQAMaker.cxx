@@ -170,8 +170,8 @@ int StRunQAMaker::Make()
       return kStErr;
     }
 
-    bool isPileUpEventStRunQACut = mRunQACut->isPileUpEvent(grefMult,numOfBTofMatch,numOfBTofHits); // 200GeV
-    //if(mRunQACut->isBES()) isPileUpEventStRunQACut = mRunQACut->isPileUpEvent(refMult,numOfBTofMatch,numOfBTofHits); // 54 GeV | always return false for 27 GeV
+    bool isPileUpEventStRunQACut; //= mRunQACut->isPileUpEvent(grefMult,numOfBTofMatch,numOfBTofHits); // 200GeV
+    if(mRunQACut->isBES()) isPileUpEventStRunQACut = mRunQACut->isPileUpEvent(refMult,numOfBTofMatch,numOfBTofHits); // 54 GeV | always return false for 27 GeV
     //bool isPileUpEventStRefMultCorr = !mRefMultCorr->passnTofMatchRefmultCut(1.0*refMult, 1.0*numOfBTofMatch); // 27 GeV | always return !true for other energies
     bool isPileUpEvent = isPileUpEventStRunQACut; //|| isPileUpEventStRefMultCorr;
     // cout << "isPileUpEvent = " << isPileUpEvent << ", isPileUpEventStRunQACut = " << isPileUpEventStRunQACut << ", isPileUpEventStRefMultCorr = " << isPileUpEventStRefMultCorr << endl;

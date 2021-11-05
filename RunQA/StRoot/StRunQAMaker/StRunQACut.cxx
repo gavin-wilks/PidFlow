@@ -105,7 +105,7 @@ bool StRunQACut::passEventCut(StPicoDst *picoDst)
     return kFALSE;
   }
   // vz-vzVpd cut only for 200 GeV
-  if(!isBES() && fabs(vz-vzVpd) > runQA::mVzVpdDiffMax[mEnergy])
+  if(fabs(vz-vzVpd) > runQA::mVzVpdDiffMax[mEnergy])
   {
     return kFALSE;
   }
