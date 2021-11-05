@@ -9,7 +9,7 @@ class StPicoEvent;
 
 StChain *chain;
 
-void recoEventPlane(const Char_t *inputFile="../FileList/19p6GeV_2019/pico_prod_random_test.list", const string jobId = "1", const Int_t Mode = 0, const Int_t EpdMode = 0, const Int_t energy = 1)
+void recoEventPlane(const Char_t *inputFile="../FileList/19p6GeV_2019/pico_prod_random_test.list", const string jobId = "1", const char *inputDir = "./", const Int_t Mode = 0, const Int_t inputEpdMode = 1, const Int_t EpdMode = 2, const Int_t energy = 1)
 {
   // mBeamEnergy[NumBeamEnergy] = {"200GeV","54GeV","27GeV"};
   // Mode: 
@@ -40,6 +40,7 @@ void recoEventPlane(const Char_t *inputFile="../FileList/19p6GeV_2019/pico_prod_
 
   gSystem->Load("StPicoEvent");
   gSystem->Load("StPicoDstMaker");
+
   gSystem->Load("StRefMultCorr");
   gSystem->Load("StEventPlaneMaker");
   gSystem->Load("StEpdUtil");
@@ -47,7 +48,7 @@ void recoEventPlane(const Char_t *inputFile="../FileList/19p6GeV_2019/pico_prod_
   chain = new StChain();
   StPicoDstMaker *picoMaker = new StPicoDstMaker(2,inputFile,"picoDst");
 
-  StEventPlaneMaker *EventPlaneMaker = new StEventPlaneMaker("EventPlane",picoMaker,jobId,Mode,EpdMode,energy,0.3,2.0);
+  StEventPlaneMaker *EventPlaneMaker = new StEventPlaneMaker("EventPlane",picoMaker,jobId,inputDir,Mode,inputEpdMode,EpdMode,energy,0.3,2.0);
 
   if( chain->Init()==kStErr ){ 
     cout<<"chain->Init();"<<endl;
