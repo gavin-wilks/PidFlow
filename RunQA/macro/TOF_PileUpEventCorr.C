@@ -16,14 +16,14 @@ void TOF_PileUpEventCorr(int energy = 0, string JobId = "028AC6C12A1F110244470E4
   TFile  weightFile(Form("/gpfs01/star/pwg/gwilks3/VectorMesonSpinAlignment/AuAu%s/SpinAlignment/file_%s_RunQA_%s.root",runQA::mBeamEnergy[energy].c_str(),runQA::mBeamEnergy[energy].c_str(),JobId.c_str()), "READ");
 
   for(int i=0; i<1; i++){
-      sprintf(hname,"h_mTofMatchRefMultAfter_trigger9"); // load in RunQA file with TOF Match vs TPC Mult
+      sprintf(hname,"h_mTofMatchRefMultAfter_trigger9"); // load in RunQA file with TPC Mult vs TPC Match
       TH2F *htmp = (TH2F*)weightFile.Get(hname);
       Multd[i] = (TH2F*)htmp->Clone(hname);
       Multd[i]->GetXaxis()->SetRangeUser(-0.5, 999.5);
       Multd[i]->GetYaxis()->SetRangeUser(-0.5, 999.5);
       Multd[i]->SetDirectory(0);
 
-      Multd1[i] = Multd[i]->ProjectionX(); // project onto y-axis for TPC reference multiplicity
+      Multd1[i] = Multd[i]->ProjectionX(); // project onto x-axis for TOF Match
   }
   //--------------------------------------------------------------------------------
   //--------------------------------------------------------------------------------
@@ -33,25 +33,25 @@ void TOF_PileUpEventCorr(int energy = 0, string JobId = "028AC6C12A1F110244470E4
   //--------------------------------------------------------------------------------
   for(int i=0; i<tofmu; i++){ // loop of 18 TOF multiplicity bins defined at top of file
 
-      count[i] = 0; // initialize count for specific TOF Bin
+      count[i] = 0; // initialize count for specific TPC RefMult bin
       int xBinsp = Multd[0]->GetNbinsX(); // grab number of x and y bins for 2D histogram
       int yBinsp = Multd[0]->GetNbinsY();
 
-      for(int y = 1 ; y< yBinsp+1 ; y += 1){ // loop over x bins
+      for(int y = 1 ; y< yBinsp+1 ; y += 1){ // loop over y bins (TPC RefMult)
           //----------------------------------------------------------------------
           //----------------------------------------------------------------------
-          float Yaxis = Multd[0]->GetYaxis()->GetBinCenter(y); // grab x bin center
+          float Yaxis = Multd[0]->GetYaxis()->GetBinCenter(y); // grab y bin center (TPC RefMult)
           //----------------------------------------------------------------------
           float Bincont=0.0,Binerro=0.0,Binwigh=0.0; // initialize the bin error, weight and content
-          for(int x = 1 ; x< yBinsp+1 ; x+= 1){ // loop over y bins
+          for(int x = 1 ; x< xBinsp+1 ; x+= 1){ // loop over x bins (TOF Match)
               //------------------------------------------------------------------
-              float Xaxis = Multd[0]->GetXaxis()->GetBinCenter(x); // get y bin center
+              float Xaxis = Multd[0]->GetXaxis()->GetBinCenter(x); // get x bin center (TOF Match)
               //------------------------------------------------------------------
-              if(fabs(Xaxis) >= tofmult[i] && fabs(Xaxis) < tofmult[i+1]){ // if the absolute value of bin center is within TOF mult bin values defined at top of file 
+              if(fabs(Xaxis) >= tofmult[i] && fabs(Xaxis) < tofmult[i+1]){ // if the absolute value of the TOF Match bin is within TOF Match bin values defined at top of file 
                   //--------------------------------------------------------------
                   if(Multd[0]->GetBinContent(x,y) < 1.0) continue; // if the bin content is less than one, continue
 
-                  Bincont  +=  Multd[0]->GetBinContent(x,y); // add the bin content to a running total for this x bin
+                  Bincont  +=  Multd[0]->GetBinContent(x,y); // add the bin content to a running total for this y bin (TPC RefMult)
                   Binerro  +=  pow(Multd[0]->GetBinError(x,y),2); // add the bin error^2 to running total for this x bin for adding in quadrature later
                   Binwigh  +=  1.0; // add a count for the number of bins that meet the current if statement
                   //---------------------------------------------------------------
@@ -61,10 +61,10 @@ void TOF_PileUpEventCorr(int energy = 0, string JobId = "028AC6C12A1F110244470E4
           //-----------------------------------------------------------------------
           if(Binwigh < 1.0 || Bincont < 1.0) continue; // if the total weight or content are less than one, continue
           //-----------------------------------------------------------------------
-          PR[i][count[i]]  =  Bincont/Binwigh; // for specific tofmult & x bin, set the mean count of the bins
-          ER[i][count[i]]  =  sqrt(Binerro)/Binwigh; // calculate error of tofmult & x bin
-          XX[i][count[i]]  =  Yaxis; // set the bin center for this x bin that has content
-          count[i] ++; // add a count to the number of x bins that contain bin content
+          PR[i][count[i]]  =  Bincont/Binwigh; // for specific tofmult & y (TPC RefMult bin), set the mean count of the bins
+          ER[i][count[i]]  =  sqrt(Binerro)/Binwigh; // calculate error of tofmult & y bin 
+          XX[i][count[i]]  =  Yaxis; // set the bin center for this y (TPC RefMult) bin that has content
+          count[i] ++; // add a count to the number of y bins that contain bin content
           //-----------------------------------------------------------------------
           //if(Binwigh > 0.0){
           //}
@@ -72,7 +72,7 @@ void TOF_PileUpEventCorr(int energy = 0, string JobId = "028AC6C12A1F110244470E4
       }
       //---------------------------------------------------------------------------
       Multd1[0]->GetXaxis()->SetRangeUser( tofmult[i] , tofmult[i+1] ); // set the range of this histogram to the tofmult bin range
-      XXX[i]    =  double (Multd1[0]->GetMean()); // get the mean of this histogram to plot the cut values at later 
+      XXX[i]    =  double (Multd1[0]->GetMean()); // get the mean of this histogram to plot the cut values at later (sets location of point on TPC RefMult vs TOFMatch cut)
 
       cout<<XXX[i]<<"\n"; // spit out the mean
   }
@@ -99,6 +99,11 @@ void TOF_PileUpEventCorr(int energy = 0, string JobId = "028AC6C12A1F110244470E4
 
   double CutMax[1000],CutMin[1000];
 
+  string outputname = Form("./figures/%s_%s/PileUpEventCuts_%s_%s.pdf",runQA::mBeamEnergy[energy].c_str(),JobId.c_str(),runQA::mBeamEnergy[energy].c_str(),JobId.c_str()); 
+  string outputstart = Form("%s[",outputname.c_str());
+  string outputstop = Form("%s]",outputname.c_str());
+  c1->Print(outputstart.c_str());  
+
   for(int xx=0; xx<tofmu; xx++){ // loop over tofbins
     sprintf(hname,"TOFMatch=[%d-%d]",tofmult[xx],tofmult[xx+1]); // set histogram title to be the tofmatch range for this bin
 
@@ -118,7 +123,7 @@ void TOF_PileUpEventCorr(int energy = 0, string JobId = "028AC6C12A1F110244470E4
       c5->cd(xx-6-6-6-5);
       c5->cd(xx-6-6-6-5)->SetLogy();
     }
-    
+
 
     TGraphErrors *Rhist = new TGraphErrors(count[xx],XX[xx],PR[xx],0,ER[xx]); // initialize a TGraph with errors
     Rhist->SetTitle(hname);
@@ -169,13 +174,29 @@ void TOF_PileUpEventCorr(int energy = 0, string JobId = "028AC6C12A1F110244470E4
     fx->SetLineColor(kBlue); 
     fx->SetLineWidth(4);
     Rhist->Fit("fx","R");
-
+  
     Sig[xx] = fx ->GetParameter(2); // grab sigma
     Ma[xx]  = fx ->GetParameter(1); // grab mean
 
-     CutMax[xx] =  4.*(fx ->GetParameter(2)) + (fx ->GetParameter(1)); // cut on mean + 4*sigma
-     CutMin[xx] = -4.*(fx ->GetParameter(2)) + (fx ->GetParameter(1)); // cut on mean - 4*sigma
-
+     CutMax[xx] =  4.*(fx ->GetParameter(2)) + (fx ->GetParameter(1)); // cut on mean + 4*sigma for TPC RefMult
+     CutMin[xx] = -4.*(fx ->GetParameter(2)) + (fx ->GetParameter(1)); // cut on mean - 4*sigma for TPC RefMult
+  
+    if(xx == 5){
+      c1->Update();
+      c1->Print(outputname.c_str());
+    }else if(xx == 11){
+      c2->Update();
+      c2->Print(outputname.c_str());
+    }else if(xx == 17){ 
+      c3->Update();
+      c3->Print(outputname.c_str());
+    }else if(xx == 23){
+      c4->Update();
+      c4->Print(outputname.c_str());
+    }else if(xx == 29){ 
+      c5->Update();
+      c5->Print(outputname.c_str());
+    }
   }
   
   // !!!!!!!!!!!! I do not understand manually setting the min, max, and x value for the tofmu+1 bin !!!!!!!!!!!!!!!!!!!!!!!11   
@@ -218,8 +239,8 @@ void TOF_PileUpEventCorr(int energy = 0, string JobId = "028AC6C12A1F110244470E4
   fx1->SetLineWidth(4);
   Rhistxx->Fit("fx1","M S E R","0"); // M = TMinuit | S = fit returned as TFitResultPtr | E = Error estimation using Minos technique | R = use range specified in the function range
 
-
-
+  cx8->Update();
+  cx8->Print(outputname.c_str());
 
   TCanvas * cx9 = new TCanvas("v9", "v9", 1500, 500); // for minimum cuts
   cx9->Divide(1);
@@ -251,13 +272,45 @@ void TOF_PileUpEventCorr(int energy = 0, string JobId = "028AC6C12A1F110244470E4
   fx2->SetLineColor(kBlue) ;
   fx2->SetLineWidth(4);
   Rhistxy->Fit("fx2","M S E R","0");
-
+  
+  cx9->Update();
+  cx9->Print(outputname.c_str());
 
   for(int xx=0; xx<tofmu; xx++){ // spit out min and max cuts
     cout<<xx<<"  "<<XXX[xx]<<" "<<CutMax[xx]<<" "<<CutMin[xx]<<"\n";
   }
   
+  TCanvas * cx2d = new TCanvas("2d", "2d", 1500, 500); 
+  cx2d->Divide(1);
+  cx2d->cd(1);
+  //Multd[0]->SetMinimum( 0.0);
+  //Multd[0]->SetMaximum( 6.8e+2);
+  //Multd[0]->SetLineColor(kRed);
+  //Multd[0]->SetLineWidth(1);
+  //Multd[0]->SetMarkerStyle(20);
+  //Multd[0]->SetMarkerSize(1);
+  //Multd[0]->SetMarkerColor(kRed);
+  Multd[0]->GetXaxis()->SetTitle(" ");
+  Multd[0]->GetXaxis()->SetLabelFont(22);
+  Multd[0]->GetXaxis()->SetLabelSize(0.04);
+  Multd[0]->GetXaxis()->SetTitleSize(0.07);
+  Multd[0]->GetXaxis()->SetTitleOffset(0.67);
+  Multd[0]->GetXaxis()->SetTitleFont(22);
+  Multd[0]->GetYaxis()->SetTitle(" ");
+  Multd[0]->GetYaxis()->SetLabelFont(22);
+  Multd[0]->GetYaxis()->SetLabelSize(0.04);
+  Multd[0]->GetYaxis()->SetTitleSize(0.07);
+  Multd[0]->GetYaxis()->SetTitleOffset(0.47);
+  Multd[0]->GetYaxis()->SetTitleFont(22);
+  Multd[0]->Draw("colz");
 
+  fx1->Draw("same");
+  fx2->Draw("same");
+
+  cx2d->Update();
+  cx2d->Print(outputname.c_str());
+  
+  c1->Print(outputstop.c_str());
 
 //return 0;
 }
