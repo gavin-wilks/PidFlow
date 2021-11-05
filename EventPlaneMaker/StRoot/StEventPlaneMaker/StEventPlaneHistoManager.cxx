@@ -295,45 +295,85 @@ void StEventPlaneHistoManager::initEpdEpResults()
   for (int order=1; order<=recoEP::mEpdEpOrder; order++)
   {
     double PhiMax = 2.0*TMath::Pi()/((double)order);
-    h_mEpdEwPsi[order-1][0]  = new TH2F(Form("EpdEwPsi%draw",order),  Form("EPD raw #Psi_{%d,W} vs #Psi_{%d,E}",order,order),  100,0.0,PhiMax,100,0.0,PhiMax);
-    h_mEpdEwPsi[order-1][1]  = new TH2F(Form("EpdEwPsi%dshift",order),Form("EPD shift #Psi_{%d,W} vs #Psi_{%d,E}",order,order),100,0.0,PhiMax,100,0.0,PhiMax);
-    //
+    h_mEpdEwPsi[order-1][0]  = new TH2F(Form("EpdEwPsi%dRaw",order),  Form("EPD Raw #Psi_{%d,W} vs #Psi_{%d,E}",order,order),  100,0.0,PhiMax,100,0.0,PhiMax);
+    h_mEpdEwPsi[order-1][1]  = new TH2F(Form("EpdEwPsi%dPw",order),Form("EPD #phi-weighted #Psi_{%d,W} vs #Psi_{%d,E}",order,order),100,0.0,PhiMax,100,0.0,PhiMax);
+    h_mEpdEwPsi[order-1][2]  = new TH2F(Form("EpdEwPsi%dPwS",order),Form("EPD #phi-weighted & Shifted #Psi_{%d,W} vs #Psi_{%d,E}",order,order),100,0.0,PhiMax,100,0.0,PhiMax);    
+
     //h_mEpdEwPsi_midCentral[order-1][0]  = new TH2F(Form("EpdEwPsi%drawMidCent",order),  Form("MidCentral EPD raw #Psi_{%d,W} vs #Psi_{%d,E}",order,order),  100,0.0,PhiMax,100,0.0,PhiMax);
     //h_mEpdEwPsi_midCentral[order-1][1]  = new TH2F(Form("EpdEwPsi%dshiftMidCent",order),Form("MidCentral EPD shift #Psi_{%d,W} vs #Psi_{%d,E}",order,order),100,0.0,PhiMax,100,0.0,PhiMax);
-    for (int icor=0; icor<2; icor++){
+    for (int icor=0; icor<3; icor++){
       h_mEpdEwPsi[order-1][icor]->GetXaxis()->SetTitle(Form("#Psi_{%d,E}",order));                 h_mEpdEwPsi[order-1][icor]->GetYaxis()->SetTitle(Form("#Psi_{%d,W}",order));
       //h_mEpdEwPsi_midCentral[order-1][icor]->GetXaxis()->SetTitle(Form("#Psi_{%d,E}",order));      h_mEpdEwPsi_midCentral[order-1][icor]->GetYaxis()->SetTitle(Form("#Psi_{%d,W}",order));
     } 
     //
-    h_mEpdAveCos[order-1][0] = new TProfile(Form("EpdCos%draw",order),  Form("EPD raw #LT cos(%d#Psi_{%d,W}-%d#Psi_{%d,E}) #GT",order,order,order,order)  ,9,-0.5,8.5);
-    h_mEpdAveCos[order-1][1] = new TProfile(Form("EpdCos%dshift",order),Form("EPD shift #LT cos(%d#Psi_{%d,W}-%d#Psi_{%d,E}) #GT",order,order,order,order),9,-0.5,8.5);
+    h_mEpdAveCos[order-1][0] = new TProfile(Form("EpdCos%dRaw",order),  Form("EPD Raw #LT cos(%d#Psi_{%d,W}-%d#Psi_{%d,E}) #GT",order,order,order,order)  ,9,-0.5,8.5);
+    h_mEpdAveCos[order-1][1] = new TProfile(Form("EpdCos%dPw",order),Form("EPD #phi-weighted #LT cos(%d#Psi_{%d,W}-%d#Psi_{%d,E}) #GT",order,order,order,order),9,-0.5,8.5);
+    h_mEpdAveCos[order-1][2] = new TProfile(Form("EpdCos%dPwS",order),Form("EPD #phi-weighted & Shifted #LT cos(%d#Psi_{%d,W}-%d#Psi_{%d,E}) #GT",order,order,order,order),9,-0.5,8.5);
+
   }
+  
+  h_mEpdAveCosD12[0] = new TProfile("EpdD12CosRaw","EPD D12 Raw #LT cos(2#Psi_{1^{st}}-2#Psi_{2^{nd}}) #GT",9,-0.5,8.5); 
+  h_mEpdAveCosD12[1] = new TProfile("EpdD12CosPw" ,"EPD D12 #phi-weighted #LT cos(2#Psi_{1^{st}}-2#Psi_{2^{nd}}) #GT",9,-0.5,8.5);
+  h_mEpdAveCosD12[2] = new TProfile("EpdD12CosPwS","EPD D12 #phi-weighted & Shifted #LT cos(2#Psi_{1^{st}}-2#Psi_{2^{nd}}) #GT",9,-0.5,8.5);
+
+  h_mEpdFullPsi21[0] = new TH2F("EpdFullPsi21Raw","EPD Raw #Psi_{2} vs #Psi_{1}",100,0.0,2.0*TMath::Pi(),100,0.0,2.0*TMath::Pi());
+  h_mEpdFullPsi21[1] = new TH2F("EpdFullPsi21Pw" ,"EPD #phi-weighted #Psi_{2} vs #Psi_{1}",100,0.0,2.0*TMath::Pi(),100,0.0,2.0*TMath::Pi());
+  h_mEpdFullPsi21[2] = new TH2F("EpdFullPsi21PwS","EPD #phi-weighted & Shifted #Psi_{2} vs #Psi_{1}",100,0.0,2.0*TMath::Pi(),100,0.0,2.0*TMath::Pi()); 
+
+  h_mEpdFullPsi31[0] = new TH2F("EpdFullPsi31Raw","EPD Raw #Psi_{3} vs #Psi_{1}",100,0.0,2.0*TMath::Pi(),100,0.0,2.0*TMath::Pi());
+  h_mEpdFullPsi31[1] = new TH2F("EpdFullPsi31Pw" ,"EPD #phi-weighted #Psi_{3} vs #Psi_{1}",100,0.0,2.0*TMath::Pi(),100,0.0,2.0*TMath::Pi());
+  h_mEpdFullPsi31[2] = new TH2F("EpdFullPsi31PwS","EPD #phi-weighted & Shifted #Psi_{3} vs #Psi_{1}",100,0.0,2.0*TMath::Pi(),100,0.0,2.0*TMath::Pi()); 
+
+  h_mEpdFullPsi32[0] = new TH2F("EpdFullPsi32Raw","EPD Raw #Psi_{3} vs #Psi_{2}",100,0.0,2.0*TMath::Pi(),100,0.0,2.0*TMath::Pi());
+  h_mEpdFullPsi32[1] = new TH2F("EpdFullPsi32Pw" ,"EPD #phi-weighted #Psi_{3} vs #Psi_{2}",100,0.0,2.0*TMath::Pi(),100,0.0,2.0*TMath::Pi());
+  h_mEpdFullPsi32[2] = new TH2F("EpdFullPsi32PwS","EPD #phi-weighted & Shifted #Psi_{3} vs #Psi_{2}",100,0.0,2.0*TMath::Pi(),100,0.0,2.0*TMath::Pi()); 
 }
  
 void StEventPlaneHistoManager::fillEpdEpResults(StEpdEpInfo result, int CentId)
 {
   for (int order=1; order<=recoEP::mEpdEpOrder; order++){
     h_mEpdAveCos[order-1][0]->Fill(double(CentId),cos((double)order*(result.EastRawPsi(order)-result.WestRawPsi(order))));
-    h_mEpdAveCos[order-1][1]->Fill(double(CentId),cos((double)order*(result.EastPhiWeightedAndShiftedPsi(order)-result.WestPhiWeightedAndShiftedPsi(order))));
+    h_mEpdAveCos[order-1][1]->Fill(double(CentId),cos((double)order*(result.EastPhiWeightedPsi(order)-result.WestPhiWeightedPsi(order))));
+    h_mEpdAveCos[order-1][2]->Fill(double(CentId),cos((double)order*(result.EastPhiWeightedAndShiftedPsi(order)-result.WestPhiWeightedAndShiftedPsi(order))));
     h_mEpdEwPsi[order-1][0]->Fill(result.EastRawPsi(order),result.WestRawPsi(order));
-    h_mEpdEwPsi[order-1][1]->Fill(result.EastPhiWeightedAndShiftedPsi(order),result.WestPhiWeightedAndShiftedPsi(order));
+    h_mEpdEwPsi[order-1][1]->Fill(result.EastPhiWeightedPsi(order),result.WestPhiWeightedPsi(order));
+    h_mEpdEwPsi[order-1][2]->Fill(result.EastPhiWeightedAndShiftedPsi(order),result.WestPhiWeightedAndShiftedPsi(order));
     //if ((CentId<=6)&&(CentId>=4)){
     //  h_mEpdEwPsi_midCentral[order-1][0]->Fill(result.EastRawPsi(order),result.WestRawPsi(order));
     //  h_mEpdEwPsi_midCentral[order-1][1]->Fill(result.EastPhiWeightedAndShiftedPsi(order),result.WestPhiWeightedAndShiftedPsi(order));
     //}
   }
+  h_mEpdAveCosD12[0]->Fill(double(CentId),cos((double)2.0*(result.FullRawPsi(1)-result.FullRawPsi(2))));
+  h_mEpdAveCosD12[1]->Fill(double(CentId),cos((double)2.0*(result.FullPhiWeightedPsi(1)-result.FullPhiWeightedPsi(2))));
+  h_mEpdAveCosD12[2]->Fill(double(CentId),cos((double)2.0*(result.FullPhiWeightedAndShiftedPsi(1)-result.FullPhiWeightedAndShiftedPsi(2))));
+
+  h_mEpdFullPsi21[0]->Fill(result.FullRawPsi(1),result.FullRawPsi(2));
+  h_mEpdFullPsi21[1]->Fill(result.FullPhiWeightedPsi(1),result.FullPhiWeightedPsi(2));
+  h_mEpdFullPsi21[2]->Fill(result.FullPhiWeightedAndShiftedPsi(1),result.FullPhiWeightedAndShiftedPsi(2));
+
+  h_mEpdFullPsi31[0]->Fill(result.FullRawPsi(1),result.FullRawPsi(3));
+  h_mEpdFullPsi31[1]->Fill(result.FullPhiWeightedPsi(1),result.FullPhiWeightedPsi(3));
+  h_mEpdFullPsi31[2]->Fill(result.FullPhiWeightedAndShiftedPsi(1),result.FullPhiWeightedAndShiftedPsi(3));
+
+  h_mEpdFullPsi32[0]->Fill(result.FullRawPsi(2),result.FullRawPsi(3));
+  h_mEpdFullPsi32[1]->Fill(result.FullPhiWeightedPsi(2),result.FullPhiWeightedPsi(3));
+  h_mEpdFullPsi32[2]->Fill(result.FullPhiWeightedAndShiftedPsi(2),result.FullPhiWeightedAndShiftedPsi(3));
 }
 
 void StEventPlaneHistoManager::writeEpdEpResults()
 {
-  for (int order=1; order<=recoEP::mEpdEpOrder; order++)
+  for (int icor=0; icor<3; icor++)
   {
-    for (int icor=0; icor<2; icor++)
-    {
+    for (int order=1; order<=recoEP::mEpdEpOrder; order++)
+    { 
       h_mEpdEwPsi[order-1][icor]->Write();
       //h_mEpdEwPsi_midCentral[order-1][icor]->Write();
       h_mEpdAveCos[order-1][icor]->Write();
     }
+    h_mEpdAveCosD12[icor]->Write();
+    h_mEpdFullPsi21[icor]->Write();
+    h_mEpdFullPsi31[icor]->Write();
+    h_mEpdFullPsi32[icor]->Write();
   } 
 }
 

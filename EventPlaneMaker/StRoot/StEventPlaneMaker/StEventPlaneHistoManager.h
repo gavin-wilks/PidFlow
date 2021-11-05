@@ -60,6 +60,10 @@ class StEventPlaneHistoManager
     void initEpdEpResults();
     void fillEpdEpResults(StEpdEpInfo result, int CentId);
     void writeEpdEpResults();
+   
+    //void initEpdFlowResults();
+    //void fillEpdFlowResults();
+    //void writeEpdFlowResults();
     //--------------EPD EP---------------
  
   private:
@@ -99,10 +103,18 @@ class StEventPlaneHistoManager
     //--------------TPC EP---------------
     
     //--------------EPD EP---------------
-    TH2F *h_mEpdEwPsi[recoEP::mEpdEpOrder][2];
+    TH2F *h_mEpdEwPsi[recoEP::mEpdEpOrder][3]; // Psi east vs Psi west for each order of event plane
+    TH2F *h_mEpdFullPsi21[3]; // Full Psi 2 vs Full Psi 1
+    TH2F *h_mEpdFullPsi31[3]; // Full Psi 3 vs Full Psi 1
+    TH2F *h_mEpdFullPsi32[3]; // Full Psi 3 vs Full Psi 2
     //TH2F *h_mEpdEwPsi_midCentral[recoEP::mEpdEpOrder][2];
-    TProfile *h_mEpdAveCos[recoEP::mEpdEpOrder][2];
+    TProfile *h_mEpdAveCos[recoEP::mEpdEpOrder][3];
+    TProfile *h_mEpdAveCosD12[3];
     //--------------EPD EP---------------
+
+    //--------------EPD Flow-------------
+    
+    //--------------EPD Flow------------
 
   ClassDef(StEventPlaneHistoManager,1)
 };
