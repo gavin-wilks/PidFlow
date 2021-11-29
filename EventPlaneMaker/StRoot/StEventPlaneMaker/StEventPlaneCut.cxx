@@ -43,88 +43,42 @@ bool StEventPlaneCut::isMinBias(StPicoEvent *picoEvent)
 
 bool StEventPlaneCut::isBES()
 {
-  if(mEnergy == 0||mEnergy==1) return false; // 14.5 GeV, 19.6 GeV
+  if(mEnergy == 0|| mEnergy == 1) return true; // is BES for 14.5 GeV, 19.6 GeV
 
-  return true; // BES
+  return false; // not BES
 }
 
 bool StEventPlaneCut::isPileUpEvent(int refMult, int numOfBTofMatch, int numOfBTofHits)
 {
   if(mEnergy == 0)
+  {        
+    if(numOfBTofMatch > recoEP::mMatchedToFMin[mEnergy]) return kFALSE;         
+  }
+
+  if(mEnergy == 1)
   {
-    // numOfBTofHits Cuts
-    const double h0Lower = -10.6691; // Lower Band
-    const double h1Lower = 0.131997;
-    const double h2Lower = 0.000108037;
-    const double h3Lower = -8.93329e-08;
-    const double h4Lower = 3.23579e-11;
-    const double h5Lower = -4.66919e-15;
-    const double h0LowerExt = 210.652; // pol1 when numOfBTofHits > 2650.0
-    const double h1LowerExt = 0.0789303;
-    const double h0Upper = 9.03081; // Upper Band
-    const double h1Upper = 0.387506;
-    const double h2Upper = -0.000141825;
-    const double h3Upper = 9.97792e-08;
-    const double h4Upper = -3.97333e-11;
-    const double h5Upper = 5.42501e-15;
-    const double h0UpperExt = 361.012; // pol1 when numOfBTofHits > 2650.0
-    const double h1UpperExt = 0.107772;
+    if(numOfBTofMatch <= recoEP::mMatchedToFMin[mEnergy]) return kTRUE; 
+        
+    // 5th order polynomial coefficients for lower cut, l
+    double p0l = -13.11    ;   
+    double p1l = 0.8207    ;   
+    double p2l = -4.241e-3 ;
+    double p3l = 2.81e-5   ;   
+    double p4l = -6.434e-8 ;
+    double p5l = 4.833e-11 ;
+    // 5th order polynomial coefficients for higher cut, h
+    double p0h = 10.07     ;   
+    double p1h = 1.417     ;   
+    double p2h = 1.979e-4  ;
+    double p3h = -4.87e-6  ;
+    double p4h = 1.109e-8  ;
+    double p5h = -1.111e-11;
 
-    double refmultTofHitsLower = h0Lower+h1Lower*(numOfBTofHits)+h2Lower*pow(numOfBTofHits,2)+h3Lower*pow(numOfBTofHits,3)+h4Lower*pow(numOfBTofHits,4)+h5Lower*pow(numOfBTofHits,5);
-    double refmultTofHitsUpper = h0Upper+h1Upper*(numOfBTofHits)+h2Upper*pow(numOfBTofHits,2)+h3Upper*pow(numOfBTofHits,3)+h4Upper*pow(numOfBTofHits,4)+h5Upper*pow(numOfBTofHits,5);
-    if(numOfBTofHits > 2650)
-    {
-      refmultTofHitsLower = h0LowerExt+h1LowerExt*(numOfBTofHits);
-      refmultTofHitsUpper = h0UpperExt+h1UpperExt*(numOfBTofHits);
-    }
-
-    // numOfBTofMatch Cuts
-    const double m0Lower = -6.35447;
-    const double m1Lower = 0.471171;
-    const double m2Lower = 0.00242705;
-    const double m3Lower = -7.70005e-06;
-    const double m4Lower = 8.47891e-09;
-    const double m5Lower = 1.18207e-12;
-    const double m0LowerExt = -175.356;
-    const double m1LowerExt = 1.20386;
-    const double m0Upper = 10.7104;
-    const double m1Upper = 1.2943;
-    const double m2Upper = 0.00132705;
-    const double m3Upper = -1.87584e-05;
-    const double m4Upper = 7.54871e-08;
-    const double m5Upper = -8.80916e-11;
-    const double m0UpperExt = 378.139;
-    const double m1UpperExt = 0.518849;
-
-    double refmultTofMatchLower = m0Lower+m1Lower*(numOfBTofMatch)+m2Lower*pow(numOfBTofMatch,2)+m3Lower*pow(numOfBTofMatch,3)+m4Lower*pow(numOfBTofMatch,4)+m5Lower*pow(numOfBTofMatch,5);
-    double refmultTofMatchUpper = m0Upper+m1Upper*(numOfBTofMatch)+m2Upper*pow(numOfBTofMatch,2)+m3Upper*pow(numOfBTofMatch,3)+m4Upper*pow(numOfBTofMatch,4)+m5Upper*pow(numOfBTofMatch,5);
-    if(numOfBTofMatch > 420)
-    {
-      refmultTofMatchLower = m0LowerExt+m1LowerExt*(numOfBTofMatch);
-      refmultTofMatchUpper = m0UpperExt+m1UpperExt*(numOfBTofMatch);
-    }
-    if(numOfBTofMatch > 800)
-    {
-      refmultTofMatchLower = m0LowerExt+m1LowerExt*(numOfBTofMatch);
-      refmultTofMatchUpper = refmultTofMatchLower + 50; // only consider the lower limit when numOfBTofMatch > 800 || just for completeness
-    }
-
-    // good events: numOfBTofMatch > 2 && refMult within numOfBTofHits Cuts && refMult within numOfBTofMatch Cuts
-    if( (numOfBTofMatch > recoEP::mMatchedToFMin[mEnergy]) && (refMult >= refmultTofHitsLower && refMult <= refmultTofHitsUpper) && (refMult >= refmultTofMatchLower && refMult <= refmultTofMatchUpper) ) return kFALSE;
-  }
-
-  if(mEnergy == 1) // ToF Hits vs RefMult cut for 54 GeV
-  { // from Shaowei Lan
-    double tofHits_low = (double)refMult*2.88 - 155.0;
-
-    // good events: numOfBTofMatch > 2 && refMult within numOfBTofHits Cuts
-    if( (numOfBTofMatch > recoEP::mMatchedToFMin[mEnergy]) && (numOfBTofHits >= tofHits_low) ) return kFALSE;
-  }
-
-  if(mEnergy == 2)
-  { // will use StRefMultCorr
-    return kFALSE;
-  }
+    double refLow  = p0l + p1l*numOfBTofMatch + p2l*pow(numOfBTofMatch,2) + p3l*pow(numOfBTofMatch,3) + p4l*pow(numOfBTofMatch,4) + p5l*pow(numOfBTofMatch,5);
+    double refHigh = p0h + p1h*numOfBTofMatch + p2h*pow(numOfBTofMatch,2) + p3h*pow(numOfBTofMatch,3) + p4h*pow(numOfBTofMatch,4) + p5h*pow(numOfBTofMatch,5); 
+   
+    if(refMult > refLow && refMult < refHigh) return kFALSE;
+  }     
 
   return kTRUE;
 }
@@ -158,7 +112,7 @@ bool StEventPlaneCut::passEventCut(StPicoDst *picoDst)
     return kFALSE;
   }
   // vz-vzVpd cut only for 200 GeV
-  if(!isBES() && fabs(vz-vzVpd) > recoEP::mVzVpdDiffMax[mEnergy])
+  if(fabs(vz-vzVpd) > recoEP::mVzVpdDiffMax[mEnergy])
   {
     return kFALSE;
   }

@@ -23,16 +23,21 @@ StRunQAHistoManager::~StRunQAHistoManager()
 
 //-------------------------------------------------------------------------------------------
 //Event QA
-void StRunQAHistoManager::initEventQA()
+void StRunQAHistoManager::initEventQA(int Energy)
 {
+  mEnergy = Energy;
+
+  for(int i_cut = 0; i_cut < 9; ++i_cut)
+  {
+    std::string HistName = Form("h_mTriggerID_%d",i_cut);
+    h_mTriggerID[i_cut] = new TH1F(HistName.c_str(),HistName.c_str(),10,-0.5,9.5);
+  }
+  
   for(int i_cut = 0; i_cut < 2; ++i_cut)
   {
-    std::string HistName = Form("h_mTriggerID_%s",mCutsQA[i_cut].c_str());
-    h_mTriggerID[i_cut] = new TH1F(HistName.c_str(),HistName.c_str(),10,-0.5,9.5);
-
     for(int i_trig = 0; i_trig < 10; ++i_trig)
     {
-      HistName = Form("h_mRefMult%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
+      std::string HistName = Form("h_mRefMult%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
       h_mRefMult[i_cut][i_trig] = new TH1F(HistName.c_str(),HistName.c_str(),2000,-0.5,1999.5);
 
       HistName = Form("h_mGRefMult%s_trigger%d",mCutsQA[i_cut].c_str(),i_trig);
@@ -109,16 +114,68 @@ void StRunQAHistoManager::fillEventQA_Vertex(int triggerBin, float vx, float vy,
   h_mDiffVzVzVpd[cutSelection][9]->Fill(vz-vzVpd);
 }
 
-void StRunQAHistoManager::fillEventQA_Trigger(int triggerBin, int cutSelection)
+void StRunQAHistoManager::fillEventQA_Trigger(const int triggerBin, const float vx, const float vy, const float vz, const float vzVpd, const int numOfBTofHits, const bool isPileUpEvent, const int cutSelection)
 {
-  h_mTriggerID[cutSelection]->Fill(triggerBin);
+  if(cutSelection == 0)
+  {
+    //no cut
+    h_mTriggerID[0]->Fill(triggerBin);
+    //numOfBTofHits cut
+    if(numOfBTofHits < runQA::mMatchedToFMin[mEnergy])
+    {
+      return; 
+    }
+    h_mTriggerID[1]->Fill(triggerBin);
+    //isPileUpEvent cut
+    if(isPileUpEvent)
+    {
+      return;
+    }
+    h_mTriggerID[2]->Fill(triggerBin);
+    // vz cut
+    if(fabs(vz) > runQA::mVzMaxMap[mEnergy])
+    {
+      return;
+    }
+    h_mTriggerID[3]->Fill(triggerBin);  
+    // vr cut high
+    if(sqrt(vx*vx+vy*vy) > runQA::mVrMax[mEnergy])
+    {
+      return; 
+    }
+    h_mTriggerID[4]->Fill(triggerBin);
+    // vr cut low
+    if(sqrt(vx*vx+vy*vy) <= runQA::mVrMin[mEnergy])
+    {
+      return;
+    }
+    h_mTriggerID[5]->Fill(triggerBin);
+
+    // vz-vzVpd cut 
+    if(fabs(vz-vzVpd) > runQA::mVzVpdDiffMax[mEnergy])
+    {
+      return;
+    }
+    h_mTriggerID[6]->Fill(triggerBin);
+  }
+ /* if(cutSelection == 1)
+  {
+    h_mTriggerID[7]->Fill(triggerBin);
+  }  
+  if(cutSelection == 2)
+  {
+    h_mTriggerID[8]->Fill(triggerBin);
+  }*/
 }
 
 void StRunQAHistoManager::writeEventQA()
 {
-  for(int i_cut = 0; i_cut < 2; ++i_cut)
+  for(int i_cut = 0; i_cut < 9; ++i_cut)
   {
     h_mTriggerID[i_cut]->Write();
+  }
+  for(int i_cut = 0; i_cut < 2; ++i_cut)
+  {
     for(int i_trig = 0; i_trig < 10; ++i_trig)
     {
       h_mRefMult[i_cut][i_trig]->Write();

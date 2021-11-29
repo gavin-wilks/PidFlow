@@ -167,7 +167,11 @@ void TOF_PileUpEventCorr(int energy = 0, string JobId = "028AC6C12A1F110244470E4
       NMM1 = 100;
       NMM2 = 450;
     }
-
+   
+    if (xx == 11){
+      NMM1=20;
+      NMM2=220;
+    }
 
 
     TF1* fx = new TF1("fx", "gaus" ,  NMM1, NMM2); // initialize gaussian fit

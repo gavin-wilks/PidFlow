@@ -14,10 +14,11 @@ class StRunQAHistoManager
     virtual ~StRunQAHistoManager();
 
     //--------------QA---------------
-    void initEventQA();
+    void initEventQA(int Energy);
     void fillEventQA_RefMult(int triggerBin, int refMult, int grefMult, int cent9, double reweight, int tofHits, int tofMatch, int cutSelection);
     void fillEventQA_Vertex(int triggerBin, float vx, float vy, float vz, float vzVpd, int cutSelection);
     void fillEventQA_Trigger(int triggerBin, int cutSelection);
+    void fillEventQA_Trigger(const int triggerBin, const float vx, const float vy, const float vz, const float vzVpd, const int numOfBTofHits, const bool isPileUpEvent, const int cutSelection);
     void writeEventQA();
 
     void initTrackQA();
@@ -31,7 +32,7 @@ class StRunQAHistoManager
   private:
     // QA Histograms
     // Event Level:
-    TH1F *h_mTriggerID[2];
+    TH1F *h_mTriggerID[9]; 
     TH1F *h_mRefMult[2][10]; // 0: before cuts | 1: after cuts
     TH1F *h_mGRefMult[2][10]; // 0-8 for different triggerID | 9 for all triggers
     TH2F *h_mRefMultGRefMult[2][10];
@@ -76,6 +77,7 @@ class StRunQAHistoManager
     TH1F *h_mMass2E[2][10];
 
     std::string mCutsQA[2] = {"Before","After"};
+    int mEnergy;
 
   ClassDef(StRunQAHistoManager,1)
 };

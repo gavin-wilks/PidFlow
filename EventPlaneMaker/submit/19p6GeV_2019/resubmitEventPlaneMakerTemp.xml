@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+
+<job minFilesPerProcess="10" filesPerHour="5" maxFilesPerProcess="25" fileListSyntax="xrootd" simulateSubmission="false">
+
+  <command>
+    starver &library;
+    root4star -l -b -q recoEventPlane.C\(\"$FILELIST\",\"$JOBID\",&mode;,&energy;\)&gt;&amp; ${JOBID}.log
+  </command>
+
+  <SandBox installer="ZIP">
+    <Package>
+      <File>file:&codePath;/recoEventPlane.C</File>
+      <File>file:&codePath;/.sl73_gcc485/</File>
+      <File>file:&codePath;/StRoot/</File>
+    </Package>
+  </SandBox>
+
+  <input URL="filelist:&listPath;/pico_xrootd_resubmit.list" />
+
+  <stdout discard="true"/>
+  <!-- <stdout URL="file:&#38;outPath;/Log/PidFlow/&#38;outDir;/$JOBID.out"/> -->
+  <stderr URL="file:&outPath;/Log/PidFlow/&outDir;/$JOBID.err"/>
+
+  <Generator>
+    <ReportLocation>./JOBS/report/</ReportLocation>
+    <ScriptLocation>./JOBS/csh/</ScriptLocation>
+    <ListLocation>./JOBS/list/</ListLocation>
+  </Generator>
+
+  <output fromScratch="*.root" toURL="file:&outPath;/OutPut/PidFlow/&outDir;/" />
+  <output fromScratch="*.log" toURL="file:&outPath;/Log/PidFlow/&outDir;/" />
+</job>
+

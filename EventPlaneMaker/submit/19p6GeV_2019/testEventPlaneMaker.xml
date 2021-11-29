@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!--
+<job minFilesPerProcess="10" filesPerHour="10" maxFilesPerProcess="10" fileListSyntax="paths" simulateSubmission="false">
+-->
+<job minFilesPerProcess="5" filesPerHour="10" maxFilesPerProcess="5" fileListSyntax="paths" simulateSubmission="false">
+
+
+  <command>
+    starver &library;
+    root4star -l -b -q recoEventPlane.C\(\"$FILELIST\",\"$JOBID\",\"&outPath;/OutPut/PidFlow/\",&mode;,&inputEpdMode;,&epdMode;,&energy;\)&gt;&amp; ${JOBID}.log
+  </command>
+
+  <SandBox installer="ZIP">
+    <Package>
+      <File>file:&codePath;/recoEventPlane.C</File>
+      <File>file:&codePath;/.sl73_gcc485/</File>
+      <File>file:&codePath;/StRoot/</File>
+    </Package>
+  </SandBox>
+
+  <input URL="filelist:&listPath;/pico_prod_random.list" />
+  <!--input URL="filelist:/star/u/gwilks3/Workspace/VectorMesonSpinAlignment/PidFlow/EventPlaneMaker/submit/19p6GeV_2019/resubmit.list" /-->
+  <!--input URL="catalog:star.bnl.gov?production=P16id,library=SL18f,filetype=daq_reco_picoDst,trgsetupname=AuAu_200_production_low_2014,storage=nfs,filename~st_physics" preferStorage="local" singleCopy="true" nFiles="1024"/>
+  -->
+  <stdout URL="file:&outPath;/Log/PidFlow/&outDir;/$JOBID.out"/>
+  <!-- <stdout URL="file:&#38;outPath;/Log/PidFlow/&#38;outDir;/$JOBID.out"/> -->
+  <stderr URL="file:&outPath;/Log/PidFlow/&outDir;/$JOBID.err"/>
+
+  <Generator>
+    <ReportLocation>./JOBS/report/</ReportLocation>
+    <ScriptLocation>./JOBS/csh/</ScriptLocation>
+    <ListLocation>./JOBS/list/</ListLocation>
+  </Generator>
+
+  <output fromScratch="*.root" toURL="file:&outPath;/OutPut/PidFlow/&outDir;/" />
+  <output fromScratch="*.log" toURL="file:&outPath;/Log/PidFlow/&outDir;/" />
+</job>
+

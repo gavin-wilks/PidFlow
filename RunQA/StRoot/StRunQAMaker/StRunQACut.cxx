@@ -46,31 +46,41 @@ bool StRunQACut::isMinBias(StPicoEvent *picoEvent)
 
 bool StRunQACut::isBES()
 {
-  if(mEnergy != 0 || mEnergy != 1) return false; // 19.6 GeV, 14.5 GeV
+  if(mEnergy == 0 || mEnergy == 1) return true; // is BES for 14.5 GeV, 19.6 GeV
 
-  return true; // BES
+  return false; // not BES
 }
 
 bool StRunQACut::isPileUpEvent(int refMult, int numOfBTofMatch, int numOfBTofHits)
 {
   if(mEnergy == 0)
   {    
-    if(numOfBTofMatch > runQA::mMatchedToFMin[mEnergy]) return kFALSE;  
-
-    //double tofLow  = 1.0 + 1.0*refMult + 1.0*pow(refMult,2) + 1.0*pow(refMult,3) + 1.0*pow(refMult,4) + 1.0*pow(refMult,5);
-    //double tofHigh = 1.0 + 1.0*refMult + 1.0*pow(refMult,2) + 1.0*pow(refMult,3) + 1.0*pow(refMult,4) + 1.0*pow(refMult,5); 
-   
-    //if(numOfBTofMatch > tofLow && numBTofMatch < tofHigh) return kFALSE;
+    if(numOfBTofMatch > runQA::mMatchedToFMin[mEnergy]) return kFALSE;     
   }
 
   if(mEnergy == 1)
   {
-    if(numOfBTofMatch > runQA::mMatchedToFMin[mEnergy]) return kFALSE; 
+    if(numOfBTofMatch <= runQA::mMatchedToFMin[mEnergy]) return kTRUE; 
     
-    //double tofLow  = 1.0 + 1.0*refMult + 1.0*pow(refMult,2) + 1.0*pow(refMult,3) + 1.0*pow(refMult,4) + 1.0*pow(refMult,5);
-    //double tofHigh = 1.0 + 1.0*refMult + 1.0*pow(refMult,2) + 1.0*pow(refMult,3) + 1.0*pow(refMult,4) + 1.0*pow(refMult,5); 
+    // 5th order polynomial coefficients for lower cut, l
+    double p0l = -13.11    ; 
+    double p1l = 0.8207    ;
+    double p2l = -4.241e-3 ;
+    double p3l = 2.81e-5   ;
+    double p4l = -6.434e-8 ;
+    double p5l = 4.833e-11 ;
+    // 5th order polynomial coefficients for higher cut, h
+    double p0h = 10.07     ;
+    double p1h = 1.417     ;
+    double p2h = 1.979e-4  ;
+    double p3h = -4.87e-6  ;
+    double p4h = 1.109e-8  ;
+    double p5h = -1.111e-11;
+
+    double refLow  = p0l + p1l*numOfBTofMatch + p2l*pow(numOfBTofMatch,2) + p3l*pow(numOfBTofMatch,3) + p4l*pow(numOfBTofMatch,4) + p5l*pow(numOfBTofMatch,5);
+    double refHigh = p0h + p1h*numOfBTofMatch + p2h*pow(numOfBTofMatch,2) + p3h*pow(numOfBTofMatch,3) + p4h*pow(numOfBTofMatch,4) + p5h*pow(numOfBTofMatch,5); 
    
-    //if(numOfBTofMatch > tofLow && numBTofMatch < tofHigh) return kFALSE;
+    if(refMult > refLow && refMult < refHigh) return kFALSE; 
   } 
 
   return kTRUE;

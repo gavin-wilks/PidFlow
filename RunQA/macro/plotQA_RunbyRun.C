@@ -586,14 +586,14 @@ void plotQA_RunbyRun(int energy = 0, string JobId = "028AC6C12A1F110244470E4CCDF
   leg->Draw("same");
   c_RunQA_dEdx->SaveAs(Form("./figures/%s/c_RunQA_dEdx.pdf",runQA::mBeamEnergy[energy].c_str()));
   //---------------------
-  /*TCanvas *c_RunQA_BetaInv = new TCanvas("c_RunQA_BetaInv","c_RunQA_BetaInv",10,10,800,400);
+  TCanvas *c_RunQA_BetaInv = new TCanvas("c_RunQA_BetaInv","c_RunQA_BetaInv",10,10,800,400);
   c_RunQA_BetaInv->cd()->SetLeftMargin(0.1);
   c_RunQA_BetaInv->cd()->SetRightMargin(0.1);
   c_RunQA_BetaInv->cd()->SetBottomMargin(0.1);
   c_RunQA_BetaInv->cd()->SetGrid(0,0);
   c_RunQA_BetaInv->cd()->SetTicks(1,1);
 
-  p_mBetaInv[1][9]->SetTitle("#beta vs. runIndex");
+  p_mBetaInv[1][9]->SetTitle("1/#beta vs. runIndex");
   p_mBetaInv[1][9]->SetStats(0);
   p_mBetaInv[1][9]->SetMarkerColor(1);
   p_mBetaInv[1][9]->SetMarkerStyle(20);
@@ -615,7 +615,7 @@ void plotQA_RunbyRun(int energy = 0, string JobId = "028AC6C12A1F110244470E4CCDF
 
   leg->Draw("same");
   c_RunQA_BetaInv->SaveAs(Form("./figures/%s/c_RunQA_BetaInv.pdf",runQA::mBeamEnergy[energy].c_str()));
-  */
+  
   //---------------------
   TCanvas *c_RunQA_PrimaryMass2 = new TCanvas("c_RunQA_PrimaryMass2","c_RunQA_PrimaryMass2",10,10,800,400);
   c_RunQA_PrimaryMass2->cd()->SetLeftMargin(0.1);

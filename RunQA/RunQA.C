@@ -9,7 +9,7 @@ class StPicoEvent;
 
 StChain *chain;
 
-void RunQA(const Char_t *inputFile="../PidFlow/FileList/19p6GeV_2019/pico_prod_random.list", const string jobId = "1", const Int_t Mode = 0, const Int_t energy = 1)
+void RunQA(const Char_t *inputFile="../FileList/19p6GeV_2019/pico_prod_random_test.list", const string jobId = "1", const Int_t Mode = 0, const Int_t energy = 1)
 {
   // mBeamEnergy[NumBeamEnergy] = {"200GeV","54GeV","27GeV"};
   // Mode: 0 for QA, 1 for re-center correction, 2 for shift correction, 3 for resolution calculation, 4 for phi meson
@@ -27,7 +27,7 @@ void RunQA(const Char_t *inputFile="../PidFlow/FileList/19p6GeV_2019/pico_prod_r
   }
 
   Int_t nEvents = 10000000000;
-  //Int_t nEvents = 100;
+  //Int_t nEvents = 10000;
 
   gROOT->LoadMacro("$STAR/StRoot/StMuDSTMaker/COMMON/macros/loadSharedLibraries.C");
   loadSharedLibraries();

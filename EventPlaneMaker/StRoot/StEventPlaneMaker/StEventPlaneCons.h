@@ -18,7 +18,7 @@ namespace recoEP
   const double mVzMaxMap[NumBeamEnergy] = {70.0,70.0}; // 0: 200GeV_2014 | 1: 54GeV_2017 | 2: 27GeV_2018 
   const double mVrMax[NumBeamEnergy] = {2.0,2.0};
   const double mVrMin[NumBeamEnergy] = {0.0,0.0};
-  const double mVzVpdDiffMax[NumBeamEnergy] = {100.0,100.0}; // 3.0
+  const double mVzVpdDiffMax[NumBeamEnergy] = {10.0,10.0}; // 3.0
   const int mMatchedToFMin[NumBeamEnergy] = {2,2}; // 2
 
   // track cut

@@ -10,10 +10,34 @@
 
 using namespace std;
 
-static const string mCutsQA[2] = {"Before","After"};
-
-void plotQA_Event(int energy = 0, string JobId = "028AC6C12A1F110244470E4CCDFC40FF")
+double TofMatchLow(double *x, double *par)
 {
+  // 5th order polynomial coefficients for lower cut, l
+  double p0l = -13.11    ;
+  double p1l = 0.8207    ;
+  double p2l = -4.241e-3 ;
+  double p3l = 2.81e-5   ;
+  double p4l = -6.434e-8 ;
+  double p5l = 4.833e-11 ; 
+  return p0l + p1l*x[0] + p2l*pow(x[0],2) + p3l*pow(x[0],3) + p4l*pow(x[0],4) + p5l*pow(x[0],5); 
+}
+
+double TofMatchHigh(double *x, double *par)
+{
+  // 5th order polynomial coefficients for higher cut, h
+  double p0h = 10.07     ;
+  double p1h = 1.417     ;   
+  double p2h = 1.979e-4  ;
+  double p3h = -4.87e-6  ;
+  double p4h = 1.109e-8  ;
+  double p5h = -1.111e-11;
+  return p0h + p1h*x[0] + p2h*pow(x[0],2) + p3h*pow(x[0],3) + p4h*pow(x[0],4) + p5h*pow(x[0],5);   
+}          
+           
+static const string mCutsQA[2] = {"Before","After"};
+           
+void plotQA_Event(int energy = 0, string JobId = "028AC6C12A1F110244470E4CCDFC40FF")
+{          
   string inputfile = Form("/gpfs01/star/pwg/gwilks3/VectorMesonSpinAlignment/AuAu%s/SpinAlignment/file_%s_RunQA_%s.root",runQA::mBeamEnergy[energy].c_str(),runQA::mBeamEnergy[energy].c_str(),JobId.c_str());
   
 
@@ -123,35 +147,28 @@ void plotQA_Event(int energy = 0, string JobId = "028AC6C12A1F110244470E4CCDFC40
     c_EventQA[i_cut]->cd(1)->SetLogy();
     if(energy == 0)h_mRefMult[i_cut][9]->Draw("hE");
     if(energy != 0)h_mRefMult[i_cut][9]->Draw("hE");
+    /////////////////////////////////////
+    TF1 *TofLow = new TF1("TofLow",TofMatchLow,0,550,0);
+    TF1 *TofHigh = new TF1("TofHigh",TofMatchHigh,0,550,0);
+    TofLow->SetLineWidth(0.5);
+    TofHigh->SetLineWidth(0.5);
 
     c_EventQA[i_cut]->cd(2);
     c_EventQA[i_cut]->cd(2)->SetLogz();
-    if(energy == 0)
-    {
-      //h_mTofMatchRefMult[i_cut][9]->GetXaxis()->SetRangeUser(0.0,800.0);
-      //h_mTofMatchRefMult[i_cut][9]->GetYaxis()->SetRangeUser(0.0,800.0);
-      h_mTofMatchRefMult[i_cut][9]->Draw("colz");
-    }
-    if(energy != 0)
-    {
-      //h_mTofMatchRefMult[i_cut][9]->GetXaxis()->SetRangeUser(0.0,800.0);
-      //h_mTofMatchRefMult[i_cut][9]->GetYaxis()->SetRangeUser(0.0,800.0);
-      h_mTofMatchRefMult[i_cut][9]->Draw("colz");
-    }
-
+    
+    h_mTofMatchRefMult[i_cut][9]->GetXaxis()->SetRangeUser(0.0,700.0);
+    h_mTofMatchRefMult[i_cut][9]->GetYaxis()->SetRangeUser(0.0,700.0);
+    h_mTofMatchRefMult[i_cut][9]->Draw("colz");
+    TofLow->Draw("same");
+    TofHigh->Draw("same");
+    ////////////////////////////
     c_EventQA[i_cut]->cd(3);
     c_EventQA[i_cut]->cd(3)->SetLogz();
-    if(energy == 0)
-    {
-      //h_mTofHitsRefMult[i_cut][9]->GetYaxis()->SetRangeUser(0.0,800.0);
-      h_mTofHitsRefMult[i_cut][9]->Draw("colz");
-    }
-    if(energy != 0)
-    {
-      //h_mTofHitsRefMult[i_cut][9]->GetYaxis()->SetRangeUser(0.0,800.0);
-      h_mTofHitsRefMult[i_cut][9]->Draw("colz");
-    }
-    
+     
+    h_mTofHitsRefMult[i_cut][9]->GetYaxis()->SetRangeUser(0.0,700.0);
+    h_mTofHitsRefMult[i_cut][9]->GetXaxis()->SetRangeUser(0.0,1500.0);
+    h_mTofHitsRefMult[i_cut][9]->Draw("colz");
+    //////////////////////
     c_EventQA[i_cut]->cd(4);
     c_EventQA[i_cut]->cd(4)->SetLogy();
     h_mTofMatch[i_cut][9]->Draw("hE");
@@ -178,6 +195,7 @@ void plotQA_Event(int energy = 0, string JobId = "028AC6C12A1F110244470E4CCDFC40
     h_mVzVzVpd[i_cut][9]->Draw("colz");
 
     c_EventQA[i_cut]->cd(10);
+    c_EventQA[i_cut]->cd(10)->SetLogy();
     // c_EventQA[i_cut]->cd(8)->SetLogy();
     h_mDiffVzVzVpd[i_cut][9]->Draw();
 

@@ -24,7 +24,7 @@ class StTpcEpManager;
 
 class StEventPlaneMaker : public StMaker {
   public:
-    StEventPlaneMaker(const char *name, StPicoDstMaker *picoMaker, const string jobId, const int Mode, const int EpdMode, const int Energy, const float mipThresh, const float maxTile);
+    StEventPlaneMaker(const char *name, StPicoDstMaker *picoMaker, const string jobId, const char* inputDir, const int Mode, const int inputEpdMode, const int EpdMode, const int Energy, const float mipThresh, const float maxTile);
     virtual ~StEventPlaneMaker();
     
     virtual int Init();
@@ -56,6 +56,7 @@ class StEventPlaneMaker : public StMaker {
     int mMode; 
     int mEnergy;
     int mEpdMode; // 0 = Phi-weighting corrections | 1 = Psi-shift corrections | 2 = Run with correct phi-weighting and psi-shift corrections
+    int mInputEpdMode;
     float mMipThresh;
     float mMaxTile; 
 

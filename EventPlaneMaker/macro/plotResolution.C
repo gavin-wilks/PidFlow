@@ -48,14 +48,14 @@ void plotResolution(int beamEnergy = 0)
     const double errRaw = p_mZdcSubRes1->GetBinError(p_mZdcSubRes1->FindBin(i_cent));
     if(resRaw > 0)
     {
-      const double resSub = TMath::Sqrt(resRaw);
-      const double errSub = errRaw/(2.0*TMath::Sqrt(resRaw));
+      const double resSub = TMath::Sqrt(resRaw); // take square root of <cos(psie-psiw)> for sub event plane resolution
+      const double errSub = errRaw/(2.0*TMath::Sqrt(resRaw)); // calculate the error for this operation
 
-      const double chiSub = f_res->GetX(resSub);
-      const double errChiSub = errSub/f_res->Derivative(chiSub);
-      const double chiFull = chiSub*TMath::Sqrt(2.0);
-      mZdcFullRes1Val[i_cent] = f_res->Eval(chiFull);
-      mZdcFullRes1Err[i_cent] = f_res->Derivative(chiFull)*errChiSub*TMath::Sqrt(2.0);
+      const double chiSub = f_res->GetX(resSub); // use function to retrieve the chi value (x) for this sub event plane resolution (y)
+      const double errChiSub = errSub/f_res->Derivative(chiSub); // calculate error for this value
+      const double chiFull = chiSub*TMath::Sqrt(2.0); // the full event plane chi = sqrt(2)*chi_sub
+      mZdcFullRes1Val[i_cent] = f_res->Eval(chiFull); // evaluate the function for this chi_full value to retrieve the full psi resolution
+      mZdcFullRes1Err[i_cent] = f_res->Derivative(chiFull)*errChiSub*TMath::Sqrt(2.0); // calculate the error
     }
     cout << "i_cent = " << i_cent << ", resRaw = " << resRaw << ", resFull = " << mZdcFullRes1Val[i_cent] << " +/  - " << mZdcFullRes1Err[i_cent] << endl;
     g_mZdcFullRes1->SetPoint(i_cent,50.0*(Centrality_start[i_cent]+Centrality_stop[i_cent]),mZdcFullRes1Val[i_cent]*100.0);

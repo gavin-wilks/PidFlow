@@ -47,13 +47,23 @@ void plotQA_Track_PID_Mass2(int energy = 0, string JobId = "028AC6C12A1F11024447
 
   //std::string output_start = Form("%s[",outputname.c_str());
   //c_TrackQA_PID->Print(output_start.c_str()); // open pdf file
-
+  double ll[4] = {-0.075, 0.150, 0.600, -0.050}; // upper and lower limits for the gaussian fit 
+  double ul[4] = { 0.100, 0.400, 1.200,  0.050};
   for(int i_par = 0; i_par < 4; ++i_par)
   {
     for(int i_cut = 0; i_cut < 2; ++i_cut)
     {
+      TF1* fx;
       c_TrackQA_PID->cd(i_cut*4+i_par+1);
+      c_TrackQA_PID->cd(i_cut*4+i_par+1)->SetLogy();
       h_mMass2[i_par][i_cut]->Draw("hE");
+      if(i_cut == 2)
+      {
+        fx = new TF1("fx", "gaus", ll[i_par] , ul[i_par]);
+        fx->SetLineColor(kBlue);
+        fx->SetLineWidth(4);
+        h_mMass2[i_par][i_cut]->Fit("fx","R"); 
+      }
     }
     //c_TrackQA_PID->Update();
   }

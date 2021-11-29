@@ -61,6 +61,7 @@ void plotQA_Track_PID(int energy = 0, string JobId = "028AC6C12A1F110244470E4CCD
     h_mBetaMom[i_cut]->Draw("colz");
 
     c_TrackQA_PID->cd(i_cut*4+4);
+    c_TrackQA_PID->cd(i_cut*4+4)->SetLogy();
     h_mMass2[i_cut]->Draw("hE");
   }
 

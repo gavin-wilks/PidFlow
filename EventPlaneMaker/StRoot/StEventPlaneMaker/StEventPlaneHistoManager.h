@@ -104,11 +104,9 @@ class StEventPlaneHistoManager
     
     //--------------EPD EP---------------
     TH2F *h_mEpdEwPsi[recoEP::mEpdEpOrder][3]; // Psi east vs Psi west for each order of event plane
-    TH2F *h_mEpdFullPsi21[3]; // Full Psi 2 vs Full Psi 1
-    TH2F *h_mEpdFullPsi31[3]; // Full Psi 3 vs Full Psi 1
-    TH2F *h_mEpdFullPsi32[3]; // Full Psi 3 vs Full Psi 2
-    //TH2F *h_mEpdEwPsi_midCentral[recoEP::mEpdEpOrder][2];
-    TProfile *h_mEpdAveCos[recoEP::mEpdEpOrder][3];
+    TH1F *h_mEpdFullPsi[recoEP::mEpdEpOrder][3]; // Psi full for each order of event plane
+    TH2F *h_mEpdQyQx[2][recoEP::mEpdEpOrder][2]; // there is no shift correction for Q vector
+    TProfile *h_mEpdAveCos[recoEP::mEpdEpOrder][3]; 
     TProfile *h_mEpdAveCosD12[3];
     //--------------EPD EP---------------
 
