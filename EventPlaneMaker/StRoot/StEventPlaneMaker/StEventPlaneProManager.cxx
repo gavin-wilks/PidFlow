@@ -216,13 +216,28 @@ void StEventPlaneProManager::initTpcReCenter()
     p_mTpcq2xFull[i_vz] = new TProfile2D(ProName.c_str(),ProName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5,9,-0.5,8.5);
     ProName = Form("p_mTpcq2yFull_%s",recoEP::mVStr[i_vz].c_str());
     p_mTpcq2yFull[i_vz] = new TProfile2D(ProName.c_str(),ProName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5,9,-0.5,8.5);
+  
+    ProName = Form("p_mTpcq3xEast_%s",recoEP::mVStr[i_vz].c_str());
+    p_mTpcq3xEast[i_vz] = new TProfile2D(ProName.c_str(),ProName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5,9,-0.5,8.5); // neg eta
+    ProName = Form("p_mTpcq3yEast_%s",recoEP::mVStr[i_vz].c_str());
+    p_mTpcq3yEast[i_vz] = new TProfile2D(ProName.c_str(),ProName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5,9,-0.5,8.5);
+    ProName = Form("p_mTpcq3xWest_%s",recoEP::mVStr[i_vz].c_str());
+    p_mTpcq3xWest[i_vz] = new TProfile2D(ProName.c_str(),ProName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5,9,-0.5,8.5); // pos eta
+    ProName = Form("p_mTpcq3yWest_%s",recoEP::mVStr[i_vz].c_str());
+    p_mTpcq3yWest[i_vz] = new TProfile2D(ProName.c_str(),ProName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5,9,-0.5,8.5);
+
+    ProName = Form("p_mTpcq3xFull_%s",recoEP::mVStr[i_vz].c_str());
+    p_mTpcq3xFull[i_vz] = new TProfile2D(ProName.c_str(),ProName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5,9,-0.5,8.5);
+    ProName = Form("p_mTpcq3yFull_%s",recoEP::mVStr[i_vz].c_str());
+    p_mTpcq3yFull[i_vz] = new TProfile2D(ProName.c_str(),ProName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5,9,-0.5,8.5);
+
   }
 }
 
-void StEventPlaneProManager::fillTpcReCenterEast(TVector2 q2Vector, int Cent9, int RunIndex, int VzSign, double pt)
+void StEventPlaneProManager::fillTpcReCenterEast(int order, TVector2 qVector, int Cent9, int RunIndex, int VzSign, double pt)
 {
-  const double q2x = q2Vector.X();
-  const double q2y = q2Vector.Y();
+  const double qx = qVector.X();
+  const double qy = qVector.Y();
 
   double weight;
   if(pt <= recoEP::mPrimPtWeight)
@@ -233,15 +248,23 @@ void StEventPlaneProManager::fillTpcReCenterEast(TVector2 q2Vector, int Cent9, i
   {
     weight = recoEP::mPrimPtWeight;
   }
-
-  p_mTpcq2xEast[VzSign]->Fill((double)RunIndex,(double)Cent9,(double)q2x,(double)weight);
-  p_mTpcq2yEast[VzSign]->Fill((double)RunIndex,(double)Cent9,(double)q2y,(double)weight);
+  
+  if(order == 2)
+  {
+    p_mTpcq2xEast[VzSign]->Fill((double)RunIndex,(double)Cent9,(double)qx,(double)weight);
+    p_mTpcq2yEast[VzSign]->Fill((double)RunIndex,(double)Cent9,(double)qy,(double)weight);
+  }
+  if(order == 3)
+  {
+    p_mTpcq3xEast[VzSign]->Fill((double)RunIndex,(double)Cent9,(double)qx,(double)weight);
+    p_mTpcq3yEast[VzSign]->Fill((double)RunIndex,(double)Cent9,(double)qy,(double)weight);
+  }
 }
 
-void StEventPlaneProManager::fillTpcReCenterWest(TVector2 q2Vector, int Cent9, int RunIndex, int VzSign, double pt)
+void StEventPlaneProManager::fillTpcReCenterWest(int order, TVector2 qVector, int Cent9, int RunIndex, int VzSign, double pt)
 {
-  const double q2x = q2Vector.X();
-  const double q2y = q2Vector.Y();
+  const double qx = qVector.X();
+  const double qy = qVector.Y();
 
   double weight;
   if(pt <= recoEP::mPrimPtWeight)
@@ -252,15 +275,22 @@ void StEventPlaneProManager::fillTpcReCenterWest(TVector2 q2Vector, int Cent9, i
   {
     weight = recoEP::mPrimPtWeight;
   }
-
-  p_mTpcq2xWest[VzSign]->Fill((double)RunIndex,(double)Cent9,(double)q2x,(double)weight);
-  p_mTpcq2yWest[VzSign]->Fill((double)RunIndex,(double)Cent9,(double)q2y,(double)weight);
+  if(order == 2)
+  {
+    p_mTpcq2xWest[VzSign]->Fill((double)RunIndex,(double)Cent9,(double)qx,(double)weight);
+    p_mTpcq2yWest[VzSign]->Fill((double)RunIndex,(double)Cent9,(double)qy,(double)weight);
+  }
+  if(order == 3)
+  {
+    p_mTpcq3xWest[VzSign]->Fill((double)RunIndex,(double)Cent9,(double)qx,(double)weight);
+    p_mTpcq3yWest[VzSign]->Fill((double)RunIndex,(double)Cent9,(double)qy,(double)weight);
+  }
 }
 
-void StEventPlaneProManager::fillTpcReCenterFull(TVector2 q2Vector, int Cent9, int RunIndex, int VzSign, double pt)
+void StEventPlaneProManager::fillTpcReCenterFull(int order, TVector2 qVector, int Cent9, int RunIndex, int VzSign, double pt)
 {
-  const double q2x = q2Vector.X();
-  const double q2y = q2Vector.Y();
+  const double qx = qVector.X();
+  const double qy = qVector.Y();
 
   double weight;
   if(pt <= recoEP::mPrimPtWeight)
@@ -271,9 +301,16 @@ void StEventPlaneProManager::fillTpcReCenterFull(TVector2 q2Vector, int Cent9, i
   {
     weight = recoEP::mPrimPtWeight;
   }
-
-  p_mTpcq2xFull[VzSign]->Fill((double)RunIndex,(double)Cent9,(double)q2x,(double)weight);
-  p_mTpcq2yFull[VzSign]->Fill((double)RunIndex,(double)Cent9,(double)q2y,(double)weight);
+  if(order == 2)
+  {
+    p_mTpcq2xFull[VzSign]->Fill((double)RunIndex,(double)Cent9,(double)qx,(double)weight);
+    p_mTpcq2yFull[VzSign]->Fill((double)RunIndex,(double)Cent9,(double)qy,(double)weight);
+  }
+  if(order == 3)
+  {
+    p_mTpcq3xFull[VzSign]->Fill((double)RunIndex,(double)Cent9,(double)qx,(double)weight);
+    p_mTpcq3yFull[VzSign]->Fill((double)RunIndex,(double)Cent9,(double)qy,(double)weight);
+  }
 }
 
 void StEventPlaneProManager::writeTpcReCenter()
@@ -287,6 +324,14 @@ void StEventPlaneProManager::writeTpcReCenter()
 
     p_mTpcq2xFull[i_vz]->Write();
     p_mTpcq2yFull[i_vz]->Write();
+    
+    p_mTpcq3xEast[i_vz]->Write();
+    p_mTpcq3yEast[i_vz]->Write();
+    p_mTpcq3xWest[i_vz]->Write();
+    p_mTpcq3yWest[i_vz]->Write();
+
+    p_mTpcq3xFull[i_vz]->Write();
+    p_mTpcq3yFull[i_vz]->Write();
   }
 }
 
@@ -312,37 +357,86 @@ void StEventPlaneProManager::initTpcShift()
       p_mTpcQ2FullCos[i_vz][i_shift] = new TProfile2D(ProName.c_str(),ProName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5,9,-0.5,8.5);
       ProName = Form("p_mTpcQ2FullSin_%s_%d",recoEP::mVStr[i_vz].c_str(),i_shift);
       p_mTpcQ2FullSin[i_vz][i_shift] = new TProfile2D(ProName.c_str(),ProName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5,9,-0.5,8.5);
+    
+   
+      ProName = Form("p_mTpcQ3EastCos_%s_%d",recoEP::mVStr[i_vz].c_str(),i_shift);
+      p_mTpcQ3EastCos[i_vz][i_shift] = new TProfile2D(ProName.c_str(),ProName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5,9,-0.5,8.5);
+      ProName = Form("p_mTpcQ3EastSin_%s_%d",recoEP::mVStr[i_vz].c_str(),i_shift);
+      p_mTpcQ3EastSin[i_vz][i_shift] = new TProfile2D(ProName.c_str(),ProName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5,9,-0.5,8.5);
+
+      ProName = Form("p_mTpcQ3WestCos_%s_%d",recoEP::mVStr[i_vz].c_str(),i_shift);
+      p_mTpcQ3WestCos[i_vz][i_shift] = new TProfile2D(ProName.c_str(),ProName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5,9,-0.5,8.5);
+      ProName = Form("p_mTpcQ3WestSin_%s_%d",recoEP::mVStr[i_vz].c_str(),i_shift);
+      p_mTpcQ3WestSin[i_vz][i_shift] = new TProfile2D(ProName.c_str(),ProName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5,9,-0.5,8.5);
+
+      ProName = Form("p_mTpcQ3FullCos_%s_%d",recoEP::mVStr[i_vz].c_str(),i_shift);
+      p_mTpcQ3FullCos[i_vz][i_shift] = new TProfile2D(ProName.c_str(),ProName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5,9,-0.5,8.5);
+      ProName = Form("p_mTpcQ3FullSin_%s_%d",recoEP::mVStr[i_vz].c_str(),i_shift);
+      p_mTpcQ3FullSin[i_vz][i_shift] = new TProfile2D(ProName.c_str(),ProName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5,9,-0.5,8.5);
     }
   }
 }
 
-void StEventPlaneProManager::fillTpcShiftEast(TVector2 qVector, int Cent9, int RunIndex, int VzSign)
+void StEventPlaneProManager::fillTpcShiftEast(int order, TVector2 qVector, int Cent9, int RunIndex, int VzSign)
 {
-  double Psi2 = TMath::ATan2(qVector.Y(),qVector.X())/2.0;
-  for(int i_shift = 0; i_shift < recoEP::mNumShiftOrder; ++i_shift)
+  double Psi = TMath::ATan2(qVector.Y(),qVector.X())/double(order);
+  if(order == 2)
   {
-    p_mTpcQ2EastCos[VzSign][i_shift]->Fill((double)RunIndex,(double)Cent9,TMath::Cos(2.0*(i_shift+1)*Psi2));
-    p_mTpcQ2EastSin[VzSign][i_shift]->Fill((double)RunIndex,(double)Cent9,TMath::Sin(2.0*(i_shift+1)*Psi2));
+    for(int i_shift = 0; i_shift < recoEP::mNumShiftOrder; ++i_shift)
+    {
+      p_mTpcQ2EastCos[VzSign][i_shift]->Fill((double)RunIndex,(double)Cent9,TMath::Cos(double(order)*(i_shift+1)*Psi));
+      p_mTpcQ2EastSin[VzSign][i_shift]->Fill((double)RunIndex,(double)Cent9,TMath::Sin(double(order)*(i_shift+1)*Psi));
+    }
+  }
+  if(order == 3)
+  {
+    for(int i_shift = 0; i_shift < recoEP::mNumShiftOrder; ++i_shift)
+    {
+      p_mTpcQ3EastCos[VzSign][i_shift]->Fill((double)RunIndex,(double)Cent9,TMath::Cos(double(order)*(i_shift+1)*Psi));
+      p_mTpcQ3EastSin[VzSign][i_shift]->Fill((double)RunIndex,(double)Cent9,TMath::Sin(double(order)*(i_shift+1)*Psi));
+    }
   }
 }
 
-void StEventPlaneProManager::fillTpcShiftWest(TVector2 qVector, int Cent9, int RunIndex, int VzSign)
+void StEventPlaneProManager::fillTpcShiftWest(int order, TVector2 qVector, int Cent9, int RunIndex, int VzSign)
 {
-  float Psi2 = TMath::ATan2(qVector.Y(),qVector.X())/2.0;
-  for(int i_shift = 0; i_shift < recoEP::mNumShiftOrder; ++i_shift)
+  float Psi = TMath::ATan2(qVector.Y(),qVector.X())/double(order);
+  if(order == 2)
   {
-    p_mTpcQ2WestCos[VzSign][i_shift]->Fill((double)RunIndex,(double)Cent9,TMath::Cos(2.0*(i_shift+1)*Psi2));
-    p_mTpcQ2WestSin[VzSign][i_shift]->Fill((double)RunIndex,(double)Cent9,TMath::Sin(2.0*(i_shift+1)*Psi2));
+    for(int i_shift = 0; i_shift < recoEP::mNumShiftOrder; ++i_shift)
+    {
+      p_mTpcQ2WestCos[VzSign][i_shift]->Fill((double)RunIndex,(double)Cent9,TMath::Cos(double(order)*(i_shift+1)*Psi));
+      p_mTpcQ2WestSin[VzSign][i_shift]->Fill((double)RunIndex,(double)Cent9,TMath::Sin(double(order)*(i_shift+1)*Psi));
+    }
+  }
+  if(order == 3)
+  {
+    for(int i_shift = 0; i_shift < recoEP::mNumShiftOrder; ++i_shift)
+    {
+      p_mTpcQ3WestCos[VzSign][i_shift]->Fill((double)RunIndex,(double)Cent9,TMath::Cos(double(order)*(i_shift+1)*Psi));
+      p_mTpcQ3WestSin[VzSign][i_shift]->Fill((double)RunIndex,(double)Cent9,TMath::Sin(double(order)*(i_shift+1)*Psi));
+    }
   }
 }
 
-void StEventPlaneProManager::fillTpcShiftFull(TVector2 qVector, int Cent9, int RunIndex, int VzSign)
+void StEventPlaneProManager::fillTpcShiftFull(int order, TVector2 qVector, int Cent9, int RunIndex, int VzSign)
 {
-  float Psi2 = TMath::ATan2(qVector.Y(),qVector.X())/2.0;
-  for(int i_shift = 0; i_shift < recoEP::mNumShiftOrder; ++i_shift)
+  float Psi = TMath::ATan2(qVector.Y(),qVector.X())/double(order);
+  if(order == 2)
   {
-    p_mTpcQ2FullCos[VzSign][i_shift]->Fill((double)RunIndex,(double)Cent9,TMath::Cos(2.0*(i_shift+1)*Psi2));
-    p_mTpcQ2FullSin[VzSign][i_shift]->Fill((double)RunIndex,(double)Cent9,TMath::Sin(2.0*(i_shift+1)*Psi2));
+    for(int i_shift = 0; i_shift < recoEP::mNumShiftOrder; ++i_shift)
+    {
+      p_mTpcQ2FullCos[VzSign][i_shift]->Fill((double)RunIndex,(double)Cent9,TMath::Cos(double(order)*(i_shift+1)*Psi));
+      p_mTpcQ2FullSin[VzSign][i_shift]->Fill((double)RunIndex,(double)Cent9,TMath::Sin(double(order)*(i_shift+1)*Psi));
+    }
+  }
+  if(order == 3)
+  {
+    for(int i_shift = 0; i_shift < recoEP::mNumShiftOrder; ++i_shift)
+    {
+      p_mTpcQ3FullCos[VzSign][i_shift]->Fill((double)RunIndex,(double)Cent9,TMath::Cos(double(order)*(i_shift+1)*Psi));
+      p_mTpcQ3FullSin[VzSign][i_shift]->Fill((double)RunIndex,(double)Cent9,TMath::Sin(double(order)*(i_shift+1)*Psi));
+    }
   }
 }
 
@@ -358,6 +452,13 @@ void StEventPlaneProManager::writeTpcShift()
       p_mTpcQ2WestSin[i_vz][i_shift]->Write();
       p_mTpcQ2FullCos[i_vz][i_shift]->Write();
       p_mTpcQ2FullSin[i_vz][i_shift]->Write();
+     
+      p_mTpcQ3EastCos[i_vz][i_shift]->Write();
+      p_mTpcQ3EastSin[i_vz][i_shift]->Write();
+      p_mTpcQ3WestCos[i_vz][i_shift]->Write();
+      p_mTpcQ3WestSin[i_vz][i_shift]->Write();
+      p_mTpcQ3FullCos[i_vz][i_shift]->Write();
+      p_mTpcQ3FullSin[i_vz][i_shift]->Write();
     }
   }
 }
@@ -369,20 +470,42 @@ void StEventPlaneProManager::initTpcResolution()
   p_mTpcRanRes2QA = new TProfile2D("p_mTpcRanRes2QA","p_mTpcRanRes2QA",recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5,9,-0.5,8.5);
   p_mTpcSubRes2 = new TProfile("p_mTpcSubRes2","p_mTpcSubRes2",9,-0.5,8.5);
   p_mTpcRanRes2 = new TProfile("p_mTpcRanRes2","p_mTpcRanRes2",9,-0.5,8.5);
+
+  p_mTpcSubRes3QA = new TProfile2D("p_mTpcSubRes3QA","p_mTpcSubRes3QA",recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5,9,-0.5,8.5);
+  p_mTpcRanRes3QA = new TProfile2D("p_mTpcRanRes3QA","p_mTpcRanRes3QA",recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5,9,-0.5,8.5);
+  p_mTpcSubRes3 = new TProfile("p_mTpcSubRes3","p_mTpcSubRes3",9,-0.5,8.5);
+  p_mTpcRanRes3 = new TProfile("p_mTpcRanRes3","p_mTpcRanRes3",9,-0.5,8.5);
+
 }
 
-void StEventPlaneProManager::fillTpcResSub(double PsiEast, double PsiWest, int Cent9, int RunIndex)
+void StEventPlaneProManager::fillTpcResSub(int order, double PsiEast, double PsiWest, int Cent9, int RunIndex)
 {
-  double res2 = TMath::Cos(2.0*(PsiWest-PsiEast));
-  p_mTpcSubRes2QA->Fill((double)RunIndex,(double)Cent9,res2);
-  p_mTpcSubRes2->Fill((double)Cent9,res2);
+  double res = TMath::Cos(double(order)*(PsiWest-PsiEast));
+  if(order == 2)
+  {
+    p_mTpcSubRes2QA->Fill((double)RunIndex,(double)Cent9,res);
+    p_mTpcSubRes2->Fill((double)Cent9,res);
+  }
+  if(order == 3)
+  {
+    p_mTpcSubRes3QA->Fill((double)RunIndex,(double)Cent9,res);
+    p_mTpcSubRes3->Fill((double)Cent9,res);
+  }
 }
 
-void StEventPlaneProManager::fillTpcResRan(double PsiRanA, double PsiRanB, int Cent9, int RunIndex)
+void StEventPlaneProManager::fillTpcResRan(int order, double PsiRanA, double PsiRanB, int Cent9, int RunIndex)
 {
-  double res2 = TMath::Cos(2.0*(PsiRanB-PsiRanA));
-  p_mTpcRanRes2QA->Fill((double)RunIndex,(double)Cent9,res2);
-  p_mTpcRanRes2->Fill((double)Cent9,res2);
+  double res = TMath::Cos(double(order)*(PsiRanB-PsiRanA));
+  if(order == 2)
+  {
+    p_mTpcRanRes2QA->Fill((double)RunIndex,(double)Cent9,res);
+    p_mTpcRanRes2->Fill((double)Cent9,res);
+  }
+  if(order == 3)
+  {
+    p_mTpcRanRes3QA->Fill((double)RunIndex,(double)Cent9,res);
+    p_mTpcRanRes3->Fill((double)Cent9,res);
+  }
 }
 
 void StEventPlaneProManager::writeTpcResolution()
@@ -391,6 +514,11 @@ void StEventPlaneProManager::writeTpcResolution()
   p_mTpcRanRes2QA->Write();
   p_mTpcSubRes2->Write();
   p_mTpcRanRes2->Write();
+
+  p_mTpcSubRes3QA->Write();
+  p_mTpcRanRes3QA->Write();
+  p_mTpcSubRes3->Write();
+  p_mTpcRanRes3->Write();
 }
 //---------------------------------------------------------------------------------
 
@@ -403,20 +531,33 @@ void StEventPlaneProManager::initChargedFlow()
   {
     ProName = Form("p_mChargedV1PpQA_Cent%d",i_cent);
     p_mChargedV1PpQA[i_cent] = new TProfile(ProName.c_str(),ProName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5);
+    ProName = Form("p_mChargedV1EpdQA_Cent%d",i_cent);
+    p_mChargedV1EpdQA[i_cent] = new TProfile(ProName.c_str(),ProName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5);
     ProName = Form("p_mChargedV2EpQA_Cent%d",i_cent);
     p_mChargedV2EpQA[i_cent] = new TProfile(ProName.c_str(),ProName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5);
     ProName = Form("p_mChargedV2PpQA_Cent%d",i_cent);
     p_mChargedV2PpQA[i_cent] = new TProfile(ProName.c_str(),ProName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5);
+    ProName = Form("p_mChargedV2EpdQA_Cent%d",i_cent);
+    p_mChargedV2EpdQA[i_cent] = new TProfile(ProName.c_str(),ProName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5);
     ProName = Form("p_mChargedV3EpQA_Cent%d",i_cent);
     p_mChargedV3EpQA[i_cent] = new TProfile(ProName.c_str(),ProName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5);
+    ProName = Form("p_mChargedV3EpdQA_Cent%d",i_cent);
+    p_mChargedV3EpdQA[i_cent] = new TProfile(ProName.c_str(),ProName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5);
     ProName = Form("p_mChargedV1Pp_Cent%d",i_cent);
     p_mChargedV1Pp[i_cent] = new TProfile(ProName.c_str(),ProName.c_str(),10,-1.0,1.0);
+    ProName = Form("p_mChargedV1Epd_Cent%d",i_cent);
+    p_mChargedV1Epd[i_cent] = new TProfile(ProName.c_str(),ProName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5);
     ProName = Form("p_mChargedV2Ep_Cent%d",i_cent);
     p_mChargedV2Ep[i_cent] = new TProfile(ProName.c_str(),ProName.c_str(),25,0.2,4.2);
     ProName = Form("p_mChargedV2Pp_Cent%d",i_cent);
     p_mChargedV2Pp[i_cent] = new TProfile(ProName.c_str(),ProName.c_str(),25,0.2,4.2);
+    ProName = Form("p_mChargedV2Epd_Cent%d",i_cent);
+    p_mChargedV2Epd[i_cent] = new TProfile(ProName.c_str(),ProName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5);
     ProName = Form("p_mChargedV3Ep_Cent%d",i_cent);
     p_mChargedV3Ep[i_cent] = new TProfile(ProName.c_str(),ProName.c_str(),25,0.2,4.2);
+    ProName = Form("p_mChargedV3Epd_Cent%d",i_cent);
+    p_mChargedV3Epd[i_cent] = new TProfile(ProName.c_str(),ProName.c_str(),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5);
+    
   }
 }
 
@@ -477,19 +618,177 @@ void StEventPlaneProManager::fillChargedV3Ep(double pt, double v3, double res3, 
   }
 }
 
+void StEventPlaneProManager::fillChargedV1Epd(double pt, double v1, double res1, int Cent9, int RunIndex)
+{
+  if(res1 > 0.0)
+  {
+    if(pt >= 0.2 && pt <= 5.2)
+    {
+      p_mChargedV2EpdQA[Cent9]->Fill(RunIndex,v1/res1);
+      p_mChargedV2EpdQA[9]->Fill(RunIndex,v1/res1);
+    }
+
+    p_mChargedV1Epd[Cent9]->Fill(pt,v1/res1);
+    p_mChargedV1Epd[9]->Fill(pt,v1/res1);
+  }
+}
+
+void StEventPlaneProManager::fillChargedV2Epd(double pt, double v2, double res2, int Cent9, int RunIndex)
+{
+  if(res2 > 0.0)
+  {
+    if(pt >= 0.2 && pt <= 5.2)
+    {
+      p_mChargedV2EpdQA[Cent9]->Fill(RunIndex,v2/res2);
+      p_mChargedV2EpdQA[9]->Fill(RunIndex,v2/res2);
+    }
+
+    p_mChargedV2Epd[Cent9]->Fill(pt,v2/res2);
+    p_mChargedV2Epd[9]->Fill(pt,v2/res2);
+  }
+}
+
+void StEventPlaneProManager::fillChargedV3Epd(double pt, double v3, double res3, int Cent9, int RunIndex)
+{
+  if(res3 > 0.0)
+  {
+    if(pt >= 0.2 && pt <= 5.2)
+    {
+      p_mChargedV3EpdQA[Cent9]->Fill(RunIndex,v3/res3);
+      p_mChargedV3EpdQA[9]->Fill(RunIndex,v3/res3);
+    }
+
+    p_mChargedV3Epd[Cent9]->Fill(pt,v3/res3);
+    p_mChargedV3Epd[9]->Fill(pt,v3/res3);
+  }
+}
+
+
 void StEventPlaneProManager::writeChargedFlow()
 {
   for(int i_cent = 0; i_cent < 10; ++i_cent)
   {
+    //std::cout << "we got to the charged flow writing" << std::endl;
     p_mChargedV1PpQA[i_cent]->Write();
+    p_mChargedV1EpdQA[i_cent]->Write();
     p_mChargedV2EpQA[i_cent]->Write();
     p_mChargedV2PpQA[i_cent]->Write();
+    p_mChargedV2EpdQA[i_cent]->Write();
     p_mChargedV3EpQA[i_cent]->Write();
+    p_mChargedV3EpdQA[i_cent]->Write();
     p_mChargedV1Pp[i_cent]->Write();
+    p_mChargedV1Epd[i_cent]->Write();
     p_mChargedV2Ep[i_cent]->Write();
     p_mChargedV2Pp[i_cent]->Write();
+    p_mChargedV2Epd[i_cent]->Write();
     p_mChargedV3Ep[i_cent]->Write();
+    p_mChargedV3Epd[i_cent]->Write();
+    //std::cout << "its in the charged flow printout" << std::endl;
   }
 }
 
 //---------------------------------------------------------------------------------
+
+void StEventPlaneProManager::initEpdRes()
+{
+  std::string corrName[3] = {"Raw", "Pw", "PwS"};
+  std::string corrTitle[3] = {"Raw", "#phi-weighted", "#phi-weighted & Shifted"}; 
+
+  for (int order=1; order<=recoEP::mEpdEpOrder; order++)
+  {
+    for (int  icor=0; icor<3; icor++)
+    {
+      p_mEpdAveCos[order-1][icor] = new TProfile(Form("p_mEpdCos%d%s",order,corrName[icor].c_str()),  Form("EPD %s #LT cos(%d#Psi_{%d,W}-%d#Psi_{%d,E}) #GT",corrTitle[icor].c_str(),order,order,order,order)  ,9,-0.5,8.5);
+    }
+ 
+    p_mEpdSubResQA[order-1] = new TProfile2D(Form("p_mEpdSubRes%dQA",order),Form("p_mEpdSubRes%dQA",order),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5,9,-0.5,8.5);
+    p_mEpdSubRes[order-1] = new TProfile(Form("p_mEpdSubRes%d",order),Form("p_mEpdSubRes%d",order),9,-0.5,8.5);
+  }
+}
+
+void StEventPlaneProManager::fillEpdRes(StEpdEpInfo result, int Cent9, int RunIndex)
+{
+  for (int order=1; order<=recoEP::mEpdEpOrder; order++)
+  { 
+    p_mEpdAveCos[order-1][0]->Fill(double(Cent9),cos((double)order*(result.EastRawPsi(order)-result.WestRawPsi(order))));
+    p_mEpdAveCos[order-1][1]->Fill(double(Cent9),cos((double)order*(result.EastPhiWeightedPsi(order)-result.WestPhiWeightedPsi(order))));
+    p_mEpdAveCos[order-1][2]->Fill(double(Cent9),cos((double)order*(result.EastPhiWeightedAndShiftedPsi(order)-result.WestPhiWeightedAndShiftedPsi(order)))); 
+
+    p_mEpdSubResQA[order-1]->Fill((double)RunIndex,(double)Cent9,cos((double)order*(result.EastPhiWeightedAndShiftedPsi(order)-result.WestPhiWeightedAndShiftedPsi(order))));
+    p_mEpdSubRes[order-1]->Fill((double)Cent9,cos((double)order*(result.EastPhiWeightedAndShiftedPsi(order)-result.WestPhiWeightedAndShiftedPsi(order))));
+  }
+}
+
+void StEventPlaneProManager::writeEpdRes()
+{
+  for (int order=1; order<=recoEP::mEpdEpOrder; order++)
+  {
+    for (int  icor=0; icor<3; icor++)
+    {
+      p_mEpdAveCos[order-1][icor]->Write();
+    }
+    p_mEpdSubResQA[order-1]->Write();
+    p_mEpdSubRes[order-1]->Write();
+  }
+}
+
+void StEventPlaneProManager::initEpdFlowEta()
+{
+  for (int order=1; order<=recoEP::mEpdEpOrder; order++)
+  { 
+    for (int icent=0; icent < 9; ++icent)
+    { 
+      p_mEpdFlowEta[order-1][icent] = new TProfile(Form("p_mEpdFlowEta%d_Cent%d",order,icent),Form("p_mEpdFlowEta%d_Cent%d",order,icent),30,-5.5,5.5);
+      p_mEpdFlowEtaWeights[order-1][icent] = new TProfile(Form("p_mEpdFlowEtaWeights%d_Cent%d",order,icent),Form("p_mEpdFlowEtaWeights%d_Cent%d",order,icent),30,-5.5,5.5);
+    }
+  }
+}
+
+void StEventPlaneProManager::fillEpdFlowEta(double eta, double v, int Cent9, int order, double weight)
+{
+  p_mEpdFlowEta[order-1][Cent9]->Fill(eta,v);
+  p_mEpdFlowEtaWeights[order-1][Cent9]->Fill(eta,weight);
+}
+
+void StEventPlaneProManager::writeEpdFlowEta()
+{
+  for (int order=1; order<=recoEP::mEpdEpOrder; order++)
+  { 
+    for (int icent=0; icent < 9; ++icent)
+    {
+      p_mEpdFlowEta[order-1][icent]->Write();
+      p_mEpdFlowEtaWeights[order-1][icent]->Write();
+    }
+  }
+}
+
+void StEventPlaneProManager::initEpdFlow()
+{
+  for (int order=1; order<=recoEP::mEpdEpOrder; order++)
+  { 
+    p_mEpdFlow[order-1] = new TProfile(Form("p_mEpdFlow%d",order),Form("p_mEpdFlow%d",order),9,-0.5,8.5);
+    for (int icent=0; icent<10; ++icent)
+    {
+      p_mEpdFlowQA[order-1][icent] = new TProfile(Form("p_mEpdFlowQA%d",order),Form("p_mEpdFlowQA%d",order),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5);   
+    }
+  }
+}
+
+void StEventPlaneProManager::fillEpdFlow(double v, int Cent9, int order, int runIndex)
+{
+  p_mEpdFlow[order-1]->Fill(Cent9,v);
+  p_mEpdFlowQA[order-1][Cent9]->Fill(runIndex,v);
+  p_mEpdFlowQA[order-1][9]->Fill(runIndex,v);
+}
+
+void StEventPlaneProManager::writeEpdFlow()
+{
+  for (int order=1; order<=recoEP::mEpdEpOrder; order++)
+  { 
+    p_mEpdFlow[order-1]->Write();
+    for (int icent=0; icent<10; ++icent)
+    {
+      p_mEpdFlowQA[order-1][icent]->Write();
+    }
+  }
+}

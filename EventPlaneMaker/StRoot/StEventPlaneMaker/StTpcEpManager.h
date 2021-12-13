@@ -24,6 +24,8 @@ class StTpcEpManager : public TObject
     bool passTrackEpFull(StPicoTrack*);
 
     TVector2 calq2Vector(StPicoTrack*);
+    TVector2 calq3Vector(StPicoTrack*);
+
     double getWeight(StPicoTrack*);
 
     void addTrackEastRaw(StPicoTrack* picoTrack); // raw EP
@@ -31,9 +33,9 @@ class StTpcEpManager : public TObject
     void addTrackFullRaw(StPicoTrack* picoTrack);
 
     void readReCenterCorr();
-    TVector2 getReCenterParEast();
-    TVector2 getReCenterParWest();
-    TVector2 getReCenterParFull();
+    TVector2 getReCenterParEast(int order);
+    TVector2 getReCenterParWest(int order);
+    TVector2 getReCenterParFull(int order);
 
     void addTrackEast(StPicoTrack* picoTrack); // re-centered EP
     void addTrackWest(StPicoTrack* picoTrack);
@@ -45,13 +47,13 @@ class StTpcEpManager : public TObject
     void print(TVector2);
 
     // Shift Correction
-    bool passTrackEtaNumRawCut();
-    bool passTrackFullNumRawCut();
-    bool passTrackEtaNumCut();
-    bool passTrackFullNumCut();
+    bool passTrackEtaNumRawCut(int order);
+    bool passTrackFullNumRawCut(int order);
+    bool passTrackEtaNumCut(int order);
+    bool passTrackFullNumCut(int order);
 
     void readShiftCorr();
-    double AngleShift(double Psi2Raw);
+    double AngleShift(double PsiRaw, int order);
 
     double calShiftAngle2East();
     double calShiftAngle2West();
@@ -59,6 +61,15 @@ class StTpcEpManager : public TObject
     double calShiftAngle2RanB();
     double calShiftAngle2Full();
     double calShiftAngle2Full(StPicoTrack *picoTrack); // subtract self-correlation
+    
+    double calShiftAngle3East();
+    double calShiftAngle3West();
+    double calShiftAngle3RanA();
+    double calShiftAngle3RanB();
+    double calShiftAngle3Full();
+    double calShiftAngle3Full(StPicoTrack *picoTrack); // subtract self-correlation
+
+
 
     void readResolution();
     double getRes2Sub(int Cent9);
@@ -66,20 +77,32 @@ class StTpcEpManager : public TObject
     double getRes2Full(int Cent9);
     double getRes2FullErr(int Cent9);
 
-    TVector2 getQVector(int nEP); // east/west/full/subA/subB
-    TVector2 getQVectorRaw(int nEP);
-    int getNumTrack(int nEP);
+    double getRes3Sub(int Cent9);
+    double getRes3SubErr(int Cent9);
+    double getRes3Full(int Cent9);
+    double getRes3FullErr(int Cent9);
+
+
+    TVector2 getQVector(int nEP, int order); // east/west/full/subA/subB
+    TVector2 getQVectorRaw(int nEP, int order);
+    int getNumTrack(int nEP, int order);
 
   private:
     //Event Plane method
-    TVector2 mQ2VecEastRaw, mQ2VecWestRaw, mQ2VecFullRaw;
-    int mQ2CounterRawEast, mQ2CounterRawWest, mQ2CounterRawFull;
-    int mQ2CounterRawFull_East, mQ2CounterRawFull_West;
+    TVector2 mQ2VecEastRaw, mQ2VecWestRaw, mQ2VecFullRaw, mQ3VecEastRaw, mQ3VecWestRaw, mQ3VecFullRaw;
+    int mQ2CounterRawEast, mQ2CounterRawWest, mQ2CounterRawFull, mQ3CounterRawEast, mQ3CounterRawWest, mQ3CounterRawFull;
+    int mQ2CounterRawFull_East, mQ2CounterRawFull_West, mQ3CounterRawFull_East, mQ3CounterRawFull_West;
 
     TVector2 mQ2VecEast, mQ2VecWest, mQ2VecFull, mQ2VecRanA, mQ2VecRanB;
     int mQ2CounterEast, mQ2CounterWest, mQ2CounterFull;
     int mQ2CounterFull_East, mQ2CounterFull_West;
     int mQ2CounterRanA, mQ2CounterRanB;
+
+    TVector2 mQ3VecEast, mQ3VecWest, mQ3VecFull, mQ3VecRanA, mQ3VecRanB;
+    int mQ3CounterEast, mQ3CounterWest, mQ3CounterFull;
+    int mQ3CounterFull_East, mQ3CounterFull_West;
+    int mQ3CounterRanA, mQ3CounterRanB;
+
 
     int mEnergy;
     int mCent9;
@@ -92,6 +115,12 @@ class StTpcEpManager : public TObject
     double mTpcFullRes2Val[9];
     double mTpcFullRes2Err[9];
 
+    double mTpcSubRes3Val[9];
+    double mTpcSubRes3Err[9];
+    double mTpcFullRes3Val[9];
+    double mTpcFullRes3Err[9];
+
+
     // TPC ReCenter Correction | x axis is RunIndex, y axis is Centrality
     TProfile2D *p_mTpcq2xEast[2]; // 0 = vertex pos/neg
     TProfile2D *p_mTpcq2yEast[2];
@@ -100,6 +129,13 @@ class StTpcEpManager : public TObject
     TProfile2D *p_mTpcq2xFull[2];
     TProfile2D *p_mTpcq2yFull[2];
 
+    TProfile2D *p_mTpcq3xEast[2]; // 0 = vertex pos/neg
+    TProfile2D *p_mTpcq3yEast[2];
+    TProfile2D *p_mTpcq3xWest[2];
+    TProfile2D *p_mTpcq3yWest[2];
+    TProfile2D *p_mTpcq3xFull[2];
+    TProfile2D *p_mTpcq3yFull[2];
+
     // Shift Correction | x axis is RunIndex, y axis is Centrality
     TProfile2D *p_mTpcQ2EastCos[2][20]; // 0 = vertex pos/neg, 1 = ShiftOrder
     TProfile2D *p_mTpcQ2EastSin[2][20];
@@ -107,6 +143,13 @@ class StTpcEpManager : public TObject
     TProfile2D *p_mTpcQ2WestSin[2][20];
     TProfile2D *p_mTpcQ2FullCos[2][20];
     TProfile2D *p_mTpcQ2FullSin[2][20];
+
+    TProfile2D *p_mTpcQ3EastCos[2][20]; // 0 = vertex pos/neg, 1 = ShiftOrder
+    TProfile2D *p_mTpcQ3EastSin[2][20];
+    TProfile2D *p_mTpcQ3WestCos[2][20]; 
+    TProfile2D *p_mTpcQ3WestSin[2][20];
+    TProfile2D *p_mTpcQ3FullCos[2][20];
+    TProfile2D *p_mTpcQ3FullSin[2][20];
 
     TFile *mInPutFile_ReCenter;
     TFile *mInPutFile_Shift;

@@ -40,27 +40,31 @@ class StEventPlaneHistoManager
     
     //--------------TPC EP---------------
     void initTpcRawEP(); // raw TPC EP
-    void fillTpcRawSubEP(TVector2 QEast, TVector2 QWest, int Cent9, int runIndex);
-    void fillTpcRawFullEP(TVector2 QFull, int Cent9, int runIndex);
+    void fillTpcRawSubEP(int order, TVector2 QEast, TVector2 QWest, int Cent9, int runIndex);
+    void fillTpcRawFullEP(int order, TVector2 QFull, int Cent9, int runIndex);
     void writeTpcRawEP();
 
     void initTpcReCenterEP(); // recenter TPC EP
-    void fillTpcReCenterSubEP(TVector2 QEast, TVector2 QWest, int Cent9, int runIndex);
-    void fillTpcReCenterFullEP(TVector2 QFull, int Cent9, int runIndex);
+    void fillTpcReCenterSubEP(int order, TVector2 QEast, TVector2 QWest, int Cent9, int runIndex);
+    void fillTpcReCenterFullEP(int order, TVector2 QFull, int Cent9, int runIndex);
     void writeTpcReCenterEP();
 
     void initTpcShiftEP(); // recenter TPC EP
-    void fillTpcShiftSubEP(double PsiEast, double PsiWest, int Cent9, int runIndex);
-    void fillTpcShiftRanEP(double PsiRanA, double PsiRanB, int Cent9, int runIndex);
-    void fillTpcShiftFullEP(double PsiFull, int Cent9, int runIndex);
+    void fillTpcShiftSubEP(int order, double PsiEast, double PsiWest, int Cent9, int runIndex);
+    void fillTpcShiftRanEP(int order, double PsiRanA, double PsiRanB, int Cent9, int runIndex);
+    void fillTpcShiftFullEP(int order, double PsiFull, int Cent9, int runIndex);
     void writeTpcShiftEP();
     //--------------TPC EP---------------
     
     //--------------EPD EP---------------
-    void initEpdEpResults();
-    void fillEpdEpResults(StEpdEpInfo result, int CentId);
-    void writeEpdEpResults();
+    void initEpdQ();
+    void fillEpdQ(StEpdEpInfo result, int CentId);
+    void writeEpdQ();
    
+    void initEpdEp();
+    void fillEpdEp(StEpdEpInfo result, int CentId);
+    void writeEpdEp();
+
     //void initEpdFlowResults();
     //void fillEpdFlowResults();
     //void writeEpdFlowResults();
@@ -87,19 +91,19 @@ class StEventPlaneHistoManager
 
     //--------------TPC EP---------------
     // x-axis: runIndex | y-axis: EP
-    TH2F *h_mTpcRawEpEast[9]; // raw EP
-    TH2F *h_mTpcRawEpWest[9];
-    TH2F *h_mTpcRawEpFull[9];
+    TH2F *h_mTpcRawEpEast[2][9]; // raw EP
+    TH2F *h_mTpcRawEpWest[2][9];
+    TH2F *h_mTpcRawEpFull[2][9];
 
-    TH2F *h_mTpcReCenterEpEast[9]; // recenter EP
-    TH2F *h_mTpcReCenterEpWest[9];
-    TH2F *h_mTpcReCenterEpFull[9];
+    TH2F *h_mTpcReCenterEpEast[2][9]; // recenter EP
+    TH2F *h_mTpcReCenterEpWest[2][9];
+    TH2F *h_mTpcReCenterEpFull[2][9];
 
-    TH2F *h_mTpcShiftEpEast[9]; // shift EP
-    TH2F *h_mTpcShiftEpWest[9];
-    TH2F *h_mTpcShiftEpRanA[9];
-    TH2F *h_mTpcShiftEpRanB[9];
-    TH2F *h_mTpcShiftEpFull[9];
+    TH2F *h_mTpcShiftEpEast[2][9]; // shift EP
+    TH2F *h_mTpcShiftEpWest[2][9];
+    TH2F *h_mTpcShiftEpRanA[2][9];
+    TH2F *h_mTpcShiftEpRanB[2][9];
+    TH2F *h_mTpcShiftEpFull[2][9];
     //--------------TPC EP---------------
     
     //--------------EPD EP---------------

@@ -1,12 +1,15 @@
 #ifndef StEventPlaneProManager_h
 #define StEventPlaneProManager_h
 
+#include "StEventPlaneCons.h"
+#include "StEpdUtil/StEpdEpInfo.h"
 #include <TString.h>
 #include <TVector2.h>
 #include "StMessMgr.h"
 
 class TProfile;
 class TProfile2D;
+class StEpdEpInfo;
 
 class StEventPlaneProManager
 {
@@ -36,29 +39,47 @@ class StEventPlaneProManager
     
     //--------------TPC EP---------------
     void initTpcReCenter(); // Re-Center
-    void fillTpcReCenterEast(TVector2 qVector, int Cent9, int RunIndex, int VzSign, double pt); // VzSign = vertex pos/neg
-    void fillTpcReCenterWest(TVector2 qVector, int Cent9, int RunIndex, int VzSign, double pt);
-    void fillTpcReCenterFull(TVector2 qVector, int Cent9, int RunIndex, int VzSign, double pt);
+    void fillTpcReCenterEast(int order, TVector2 qVector, int Cent9, int RunIndex, int VzSign, double pt); // VzSign = vertex pos/neg
+    void fillTpcReCenterWest(int order, TVector2 qVector, int Cent9, int RunIndex, int VzSign, double pt);
+    void fillTpcReCenterFull(int order, TVector2 qVector, int Cent9, int RunIndex, int VzSign, double pt);
     void writeTpcReCenter();
 
     void initTpcShift(); // Re-Center
-    void fillTpcShiftEast(TVector2 qVector, int Cent9, int RunIndex, int VzSign); // VzSign = vertex pos/neg
-    void fillTpcShiftWest(TVector2 qVector, int Cent9, int RunIndex, int VzSign);
-    void fillTpcShiftFull(TVector2 qVector, int Cent9, int RunIndex, int VzSign);
+    void fillTpcShiftEast(int order, TVector2 qVector, int Cent9, int RunIndex, int VzSign); // VzSign = vertex pos/neg
+    void fillTpcShiftWest(int order, TVector2 qVector, int Cent9, int RunIndex, int VzSign);
+    void fillTpcShiftFull(int order, TVector2 qVector, int Cent9, int RunIndex, int VzSign);
     void writeTpcShift();
 
     void initTpcResolution();
-    void fillTpcResSub(double PsiEast, double PsiWest, int Cent9, int RunIndex);
-    void fillTpcResRan(double PsiRanA, double PsiRanB, int Cent9, int RunIndex);
+    void fillTpcResSub(int order, double PsiEast, double PsiWest, int Cent9, int RunIndex);
+    void fillTpcResRan(int order, double PsiRanA, double PsiRanB, int Cent9, int RunIndex);
     void writeTpcResolution();
     //--------------TPC EP---------------
+
+    //--------------EPD EP---------------
+    void initEpdRes();
+    void fillEpdRes(StEpdEpInfo result, int Cent9, int runIndex);
+    void writeEpdRes();
+
+    void initEpdFlowEta();
+    void fillEpdFlowEta(double eta, double v, int Cent9, int order, double weight);
+    void writeEpdFlowEta();
+
+    void initEpdFlow();
+    void fillEpdFlow(double v, int Cent9, int order, int runIndex);
+    void writeEpdFlow();
+   
+    //--------------EPD EP---------------
 
     //--------------Charged Flow---------------
     void initChargedFlow();
     void fillChargedV1Pp(double pt, double eta, double v1, double res1, int Cent9, int RunIndex, double reweight);
+    void fillChargedV1Epd(double pt, double v1, double res1, int Cent9, int RunIndex);
     void fillChargedV2Pp(double pt, double v2, double res2, int Cent9, int RunIndex, double reweight);
     void fillChargedV2Ep(double pt, double v2, double res2, int Cent9, int RunIndex, double reweight);
+    void fillChargedV2Epd(double pt, double v2, double res2, int Cent9, int RunIndex);
     void fillChargedV3Ep(double pt, double v3, double res3, int Cent9, int RunIndex, double reweight);
+    void fillChargedV3Epd(double pt, double v3, double res3, int Cent9, int RunIndex);
     void writeChargedFlow();
     //--------------Charged Flow---------------
 
@@ -94,6 +115,13 @@ class StEventPlaneProManager
     TProfile2D *p_mTpcq2xFull[2];
     TProfile2D *p_mTpcq2yFull[2];
 
+    TProfile2D *p_mTpcq3xEast[2]; // 0 = vertex pos/neg
+    TProfile2D *p_mTpcq3yEast[2];
+    TProfile2D *p_mTpcq3xWest[2];
+    TProfile2D *p_mTpcq3yWest[2];
+    TProfile2D *p_mTpcq3xFull[2];
+    TProfile2D *p_mTpcq3yFull[2];
+
     // Shift Correction | x axis is RunIndex, y axis is Centrality
     TProfile2D *p_mTpcQ2EastCos[2][20]; // 0 = vertex pos/neg, 1 = ShiftOrder
     TProfile2D *p_mTpcQ2EastSin[2][20];
@@ -102,23 +130,54 @@ class StEventPlaneProManager
     TProfile2D *p_mTpcQ2FullCos[2][20];
     TProfile2D *p_mTpcQ2FullSin[2][20];
 
+    TProfile2D *p_mTpcQ3EastCos[2][20]; // 0 = vertex pos/neg, 1 = ShiftOrder
+    TProfile2D *p_mTpcQ3EastSin[2][20];
+    TProfile2D *p_mTpcQ3WestCos[2][20]; 
+    TProfile2D *p_mTpcQ3WestSin[2][20];
+    TProfile2D *p_mTpcQ3FullCos[2][20];
+    TProfile2D *p_mTpcQ3FullSin[2][20];
+
     // EP Resolution
     TProfile2D *p_mTpcSubRes2QA; // 2nd Res vs runIndex & cent9
     TProfile2D *p_mTpcRanRes2QA; // 2nd Res vs runIndex & cent9
     TProfile *p_mTpcSubRes2; // 2nd Res vs cent9
     TProfile *p_mTpcRanRes2; // 2nd Res vs cent9
+    
+    TProfile2D *p_mTpcSubRes3QA; // 3rd Res vs runIndex & cent9
+    TProfile2D *p_mTpcRanRes3QA; // 3rd Res vs runIndex & cent9
+    TProfile *p_mTpcSubRes3; // 3rd Res vs cent9
+    TProfile *p_mTpcRanRes3; // 3rd Res vs cent9
+
     //--------------TPC EP---------------
+
+    //--------------EPD EP---------------
+    TProfile2D *p_mEpdSubResQA[recoEP::mEpdEpOrder]; // 1st Res vs runIndex & cent9
+    TProfile *p_mEpdSubRes[recoEP::mEpdEpOrder]; // 1st Res vs cent9
+
+    TProfile *p_mEpdAveCos[recoEP::mEpdEpOrder][3];
+
+    TProfile *p_mEpdFlowEta[recoEP::mEpdEpOrder][9];
+    TProfile *p_mEpdFlowEtaWeights[recoEP::mEpdEpOrder][9];
+    TProfile *p_mEpdFlow[recoEP::mEpdEpOrder];
+    TProfile *p_mEpdFlowQA[recoEP::mEpdEpOrder][10];
+    //--------------EPD EP---------------
 
     //--------------Charged Flow---------------
     // charged particle flow for different centrality bins: 0-8 cent9, 9 minBias
     TProfile *p_mChargedV1PpQA[10]; // <v1Pp> vs. runIndex | pt [0.2, 2.0]
+    TProfile *p_mChargedV1EpdQA[10];
     TProfile *p_mChargedV2EpQA[10]; // <v2Ep> vs. runIndex | pt [0.2, 5.2]
     TProfile *p_mChargedV2PpQA[10]; // <v2Pp> vs. runIndex | pt [0.2, 5.2]
+    TProfile *p_mChargedV2EpdQA[10];
     TProfile *p_mChargedV3EpQA[10]; // <v3Ep> vs. runIndex | pt [0.2, 5.2]
+    TProfile *p_mChargedV3EpdQA[10];
     TProfile *p_mChargedV1Pp[10]; // v1Pp vs. eta
+    TProfile *p_mChargedV1Epd[10];
     TProfile *p_mChargedV2Ep[10]; // v2Ep vs. pt
     TProfile *p_mChargedV2Pp[10]; // v2Pp vs. pt
+    TProfile *p_mChargedV2Epd[10];
     TProfile *p_mChargedV3Ep[10]; // v3Ep vs. pt
+    TProfile *p_mChargedV3Epd[10];
 
     //--------------Charged Flow---------------
 

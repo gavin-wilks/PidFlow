@@ -21,7 +21,7 @@ outPath=/gpfs01/star/pwg/gwilks3/VectorMesonSpinAlignment/AuAu19p6GeV_2019
 
 ##########Mode Selection##########
 
-outDir=EpdEp
+#outDir=EpdEp
 
 #mode=0
 #inputEpdMode=0
@@ -31,26 +31,22 @@ outDir=EpdEp
 #inputEpdMode=0
 #epdMode=1
 
-mode=0
-inputEpdMode=1
-epdMode=2
+#mode=0
+epdMode=5
 
 
 
-# mode=1
-# outDir=ReCenterParameter
+#mode=0
+#outDir=ReCenterParameter
 
-# mode=2
-# outDir=ShiftParameter
+#mode=1
+#outDir=ShiftParameter
 
-# mode=3
-# outDir=ShiftParameterFull
+#mode=2
+#outDir=Resolution
 
-# mode=4
-# outDir=Resolution
-
-#mode=5
-#outDir=ChargedFlow
+mode=3
+outDir=ChargedFlow
 ##########Mode Selection##########
 
 mkdir -p JOBS/report
@@ -61,7 +57,7 @@ mkdir -p ${outPath}/Log/PidFlow/${outDir}
 mkdir -p ${outPath}/OutPut/PidFlow/${outDir}
 
 ##########Test Production##########
-star-submit-template -u ie -template testEventPlaneMaker.xml -entities mode=$mode,inputEpdMode=$inputEpdMode,epdMode=$epdMode,energy=$energy,library=$library,codePath=$codePath,outPath=$outPath,listPath=$listPath,outDir=$outDir
+star-submit-template -u ie -template testEventPlaneMaker.xml -entities mode=$mode,epdMode=$epdMode,energy=$energy,library=$library,codePath=$codePath,outPath=$outPath,listPath=$listPath,outDir=$outDir
 ##########Test Production##########
 
 ##########Full Production##########

@@ -10,7 +10,7 @@
 
 using namespace std;
 
-void plotChargedFlow(int beamEnergy = 0, int cent9 = 9)
+void plotChargedFlow(int beamEnergy = 1, int cent9 = 9)
 {
   string inputfile = Form("../StRoot/StEventPlaneUtility/ChargedFlow/file_%s_ChargedFlow.root",recoEP::mBeamEnergy[beamEnergy].c_str());
   TFile *File_InPut = TFile::Open(inputfile.c_str());
@@ -25,30 +25,30 @@ void plotChargedFlow(int beamEnergy = 0, int cent9 = 9)
   for(int i_cent = 0; i_cent < 10; ++i_cent)
   {
     string ProName;
-    ProName = Form("p_mChargedV1PpQA_Cent%d",i_cent);
-    p_mChargedV1PpQA[i_cent] = (TProfile*)File_InPut->Get(ProName.c_str()); 
+    //ProName = Form("p_mChargedV1PpQA_Cent%d",i_cent);
+    //p_mChargedV1PpQA[i_cent] = (TProfile*)File_InPut->Get(ProName.c_str()); 
     ProName = Form("p_mChargedV2EpQA_Cent%d",i_cent);
     p_mChargedV2EpQA[i_cent] = (TProfile*)File_InPut->Get(ProName.c_str());
-    ProName = Form("p_mChargedV2PpQA_Cent%d",i_cent);
-    p_mChargedV2PpQA[i_cent] = (TProfile*)File_InPut->Get(ProName.c_str());
+    //ProName = Form("p_mChargedV2PpQA_Cent%d",i_cent);
+    //p_mChargedV2PpQA[i_cent] = (TProfile*)File_InPut->Get(ProName.c_str());
     ProName = Form("p_mChargedV3EpQA_Cent%d",i_cent);
     p_mChargedV3EpQA[i_cent] = (TProfile*)File_InPut->Get(ProName.c_str());
-    ProName = Form("p_mChargedV1Pp_Cent%d",i_cent);
-    p_mChargedV1Pp[i_cent] = (TProfile*)File_InPut->Get(ProName.c_str());
+    //ProName = Form("p_mChargedV1Pp_Cent%d",i_cent);
+    //p_mChargedV1Pp[i_cent] = (TProfile*)File_InPut->Get(ProName.c_str());
     ProName = Form("p_mChargedV2Ep_Cent%d",i_cent);
     p_mChargedV2Ep[i_cent] = (TProfile*)File_InPut->Get(ProName.c_str());
-    ProName = Form("p_mChargedV2Pp_Cent%d",i_cent);
-    p_mChargedV2Pp[i_cent] = (TProfile*)File_InPut->Get(ProName.c_str());
+    //ProName = Form("p_mChargedV2Pp_Cent%d",i_cent);
+    //p_mChargedV2Pp[i_cent] = (TProfile*)File_InPut->Get(ProName.c_str());
     ProName = Form("p_mChargedV3Ep_Cent%d",i_cent);
     p_mChargedV3Ep[i_cent] = (TProfile*)File_InPut->Get(ProName.c_str());
   }
 
-  TCanvas *c_v1 = new TCanvas("c_v1","c_v1",10,10,800,800);
-  c_v1->SetLeftMargin(0.15);
-  c_v1->SetBottomMargin(0.15);
-  c_v1->SetGrid(0,0);
-  c_v1->SetTicks(1,1);
-  c_v1->cd();
+  //TCanvas *c_v1 = new TCanvas("c_v1","c_v1",10,10,800,800);
+  //c_v1->SetLeftMargin(0.15);
+  //c_v1->SetBottomMargin(0.15);
+  //c_v1->SetGrid(0,0);
+  //c_v1->SetTicks(1,1);
+  //c_v1->cd();
 
   TH1F *h_play = new TH1F("h_play","h_play",100,-2.0,8.0);
   for(Int_t i_bin = 0; i_bin < 100; i_bin++)
@@ -71,14 +71,14 @@ void plotChargedFlow(int beamEnergy = 0, int cent9 = 9)
   h_play->SetNdivisions(505,"X");
   h_play->SetNdivisions(505,"Y");
   h_play->DrawCopy("pE");
-  p_mChargedV1Pp[cent9]->Scale(100.0);
-  p_mChargedV1Pp[cent9]->SetMarkerStyle(24);
-  p_mChargedV1Pp[cent9]->SetMarkerColor(kGray+2);
-  p_mChargedV1Pp[cent9]->SetMarkerSize(1.5);
-  p_mChargedV1Pp[cent9]->SetLineColor(kGray+2);
-  p_mChargedV1Pp[cent9]->Draw("pE1X0 same");
-  string FigureName = Form("./figures/c_mChargedV1Pp_%s.eps",recoEP::mBeamEnergy[beamEnergy].c_str());
-  c_v1->SaveAs(FigureName.c_str());
+  //p_mChargedV1Pp[cent9]->Scale(100.0);
+  //p_mChargedV1Pp[cent9]->SetMarkerStyle(24);
+  //p_mChargedV1Pp[cent9]->SetMarkerColor(kGray+2);
+  //p_mChargedV1Pp[cent9]->SetMarkerSize(1.5);
+  //p_mChargedV1Pp[cent9]->SetLineColor(kGray+2);
+  //p_mChargedV1Pp[cent9]->Draw("pE1X0 same");
+  string FigureName = Form("./figures/c_mChargedV1Pp_%s.pdf",recoEP::mBeamEnergy[beamEnergy].c_str());
+  //c_v1->SaveAs(FigureName.c_str());
 
   TCanvas *c_v2 = new TCanvas("c_v2","c_v2",10,10,800,800);
   c_v2->SetLeftMargin(0.15);
@@ -99,19 +99,19 @@ void plotChargedFlow(int beamEnergy = 0, int cent9 = 9)
   p_mChargedV2Ep[cent9]->SetLineColor(kAzure+2);
   p_mChargedV2Ep[cent9]->Draw("pE1X0 same");
 
-  p_mChargedV2Pp[cent9]->SetMarkerStyle(24);
-  p_mChargedV2Pp[cent9]->SetMarkerColor(kGray+2);
-  p_mChargedV2Pp[cent9]->SetMarkerSize(1.5);
-  p_mChargedV2Pp[cent9]->SetLineColor(kGray+2);
-  p_mChargedV2Pp[cent9]->Draw("pE1X0 same");
+  //p_mChargedV2Pp[cent9]->SetMarkerStyle(24);
+  //p_mChargedV2Pp[cent9]->SetMarkerColor(kGray+2);
+  //p_mChargedV2Pp[cent9]->SetMarkerSize(1.5);
+  //p_mChargedV2Pp[cent9]->SetLineColor(kGray+2);
+  //p_mChargedV2Pp[cent9]->Draw("pE1X0 same");
 
   TLegend *leg = new TLegend(0.20,0.70,0.45,0.85);
   leg->SetFillColor(10);
   leg->SetBorderSize(0);
   leg->AddEntry(p_mChargedV2Ep[cent9],"v_{2}^{EP,TPC}","p");
-  leg->AddEntry(p_mChargedV2Pp[cent9],"v_{2}^{PP,ZDC-SMD}","p");
+  //leg->AddEntry(p_mChargedV2Pp[cent9],"v_{2}^{PP,ZDC-SMD}","p");
   leg->Draw("same");
-  FigureName = Form("./figures/c_mChargedV2EpPp_%s.eps",recoEP::mBeamEnergy[beamEnergy].c_str());
+  FigureName = Form("./figures/c_mChargedV2Ep_%s.pdf",recoEP::mBeamEnergy[beamEnergy].c_str());
   c_v2->SaveAs(FigureName.c_str());
 
   TCanvas *c_v3 = new TCanvas("c_v3","c_v3",10,10,800,800);
@@ -132,7 +132,7 @@ void plotChargedFlow(int beamEnergy = 0, int cent9 = 9)
   p_mChargedV3Ep[cent9]->SetMarkerSize(1.5);
   p_mChargedV3Ep[cent9]->SetLineColor(kAzure+2);
   p_mChargedV3Ep[cent9]->Draw("pE1X0 same");
-  FigureName = Form("./figures/c_mChargedV3Ep_%s.eps",recoEP::mBeamEnergy[beamEnergy].c_str());
+  FigureName = Form("./figures/c_mChargedV3Ep_%s.pdf",recoEP::mBeamEnergy[beamEnergy].c_str());
   c_v3->SaveAs(FigureName.c_str());
 
   TCanvas *c_QA = new TCanvas("c_QA","c_QA",10,10,1200,1200);
@@ -164,30 +164,30 @@ void plotChargedFlow(int beamEnergy = 0, int cent9 = 9)
   h_QA->SetNdivisions(505,"X");
   h_QA->SetNdivisions(505,"Y");
 
-  c_QA->cd(1); // <v1Pp> vs. runIndex
-  h_QA->GetYaxis()->SetTitle("<v_{1}>");
-  h_QA->GetYaxis()->SetRangeUser(-0.01,0.01);
-  h_QA->DrawCopy("pE");
+  //c_QA->cd(1); // <v1Pp> vs. runIndex
+  //h_QA->GetYaxis()->SetTitle("<v_{1}>");
+  //h_QA->GetYaxis()->SetRangeUser(-0.01,0.01);
+  //h_QA->DrawCopy("pE");
   // p_mChargedV1PpQA[cent9]->Scale(100.0);
-  p_mChargedV1PpQA[cent9]->SetMarkerStyle(24);
-  p_mChargedV1PpQA[cent9]->SetMarkerColor(kGray+2);
-  p_mChargedV1PpQA[cent9]->SetMarkerSize(0.5);
-  p_mChargedV1PpQA[cent9]->SetLineColor(kGray+2);
-  p_mChargedV1PpQA[cent9]->Draw("pE1X0 same");
+  //p_mChargedV1PpQA[cent9]->SetMarkerStyle(24);
+  //p_mChargedV1PpQA[cent9]->SetMarkerColor(kGray+2);
+  //p_mChargedV1PpQA[cent9]->SetMarkerSize(0.5);
+  //p_mChargedV1PpQA[cent9]->SetLineColor(kGray+2);
+  //p_mChargedV1PpQA[cent9]->Draw("pE1X0 same");
 
-  c_QA->cd(2); // <v2Pp> vs. runIndex
-  h_QA->GetYaxis()->SetTitle("<v_{2}^{PP,ZDC-SMD}>");
-  h_QA->GetYaxis()->SetRangeUser(-0.01,0.10);
-  h_QA->DrawCopy("pE");
+  //c_QA->cd(2); // <v2Pp> vs. runIndex
+  //h_QA->GetYaxis()->SetTitle("<v_{2}^{PP,ZDC-SMD}>");
+  //h_QA->GetYaxis()->SetRangeUser(-0.01,0.10);
+  //h_QA->DrawCopy("pE");
   // p_mChargedV1PpQA[cent9]->Scale(100.0);
-  p_mChargedV2PpQA[cent9]->SetMarkerStyle(24);
-  p_mChargedV2PpQA[cent9]->SetMarkerColor(kGray+2);
-  p_mChargedV2PpQA[cent9]->SetMarkerSize(0.5);
-  p_mChargedV2PpQA[cent9]->SetLineColor(kGray+2);
-  p_mChargedV2PpQA[cent9]->Draw("pE1X0 same");
+  //p_mChargedV2PpQA[cent9]->SetMarkerStyle(24);
+  //p_mChargedV2PpQA[cent9]->SetMarkerColor(kGray+2);
+  //p_mChargedV2PpQA[cent9]->SetMarkerSize(0.5);
+  //p_mChargedV2PpQA[cent9]->SetLineColor(kGray+2);
+  //p_mChargedV2PpQA[cent9]->Draw("pE1X0 same");
 
   c_QA->cd(3); // <v2Ep> vs. runIndex
-  h_QA->GetYaxis()->SetTitle("<v_{2}^{EP,ZDC-SMD}>");
+  h_QA->GetYaxis()->SetTitle("<v_{2}^{EP,TPC}>");
   h_QA->GetYaxis()->SetRangeUser(-0.01,0.10);
   h_QA->DrawCopy("pE");
   // p_mChargedV1PpQA[cent9]->Scale(100.0);
@@ -198,7 +198,7 @@ void plotChargedFlow(int beamEnergy = 0, int cent9 = 9)
   p_mChargedV2EpQA[cent9]->Draw("pE1X0 same");
 
   c_QA->cd(4); // <v3Ep> vs. runIndex
-  h_QA->GetYaxis()->SetTitle("<v_{3}^{EP,ZDC-SMD}>");
+  h_QA->GetYaxis()->SetTitle("<v_{3}^{EP,TPC}>");
   h_QA->GetYaxis()->SetRangeUser(-0.01,0.10);
   h_QA->DrawCopy("pE");
   // p_mChargedV1PpQA[cent9]->Scale(100.0);
@@ -207,6 +207,6 @@ void plotChargedFlow(int beamEnergy = 0, int cent9 = 9)
   p_mChargedV3EpQA[cent9]->SetMarkerSize(0.5);
   p_mChargedV3EpQA[cent9]->SetLineColor(kGray+2);
   p_mChargedV3EpQA[cent9]->Draw("pE1X0 same");
-  FigureName = Form("./figures/c_mChargedFlowQA_%s.eps",recoEP::mBeamEnergy[beamEnergy].c_str());
+  FigureName = Form("./figures/c_mChargedFlowQA_%s.pdf",recoEP::mBeamEnergy[beamEnergy].c_str());
   c_QA->SaveAs(FigureName.c_str());
 }
