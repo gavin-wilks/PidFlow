@@ -91,19 +91,19 @@ class StEventPlaneHistoManager
 
     //--------------TPC EP---------------
     // x-axis: runIndex | y-axis: EP
-    TH2F *h_mTpcRawEpEast[2][9]; // raw EP
-    TH2F *h_mTpcRawEpWest[2][9];
-    TH2F *h_mTpcRawEpFull[2][9];
+    TH2F *h_mTpcRawEpEast[3][9]; // raw EP
+    TH2F *h_mTpcRawEpWest[3][9];
+    TH2F *h_mTpcRawEpFull[3][9];
 
-    TH2F *h_mTpcReCenterEpEast[2][9]; // recenter EP
-    TH2F *h_mTpcReCenterEpWest[2][9];
-    TH2F *h_mTpcReCenterEpFull[2][9];
+    TH2F *h_mTpcReCenterEpEast[3][9]; // recenter EP
+    TH2F *h_mTpcReCenterEpWest[3][9];
+    TH2F *h_mTpcReCenterEpFull[3][9];
 
-    TH2F *h_mTpcShiftEpEast[2][9]; // shift EP
-    TH2F *h_mTpcShiftEpWest[2][9];
-    TH2F *h_mTpcShiftEpRanA[2][9];
-    TH2F *h_mTpcShiftEpRanB[2][9];
-    TH2F *h_mTpcShiftEpFull[2][9];
+    TH2F *h_mTpcShiftEpEast[3][9]; // shift EP
+    TH2F *h_mTpcShiftEpWest[3][9];
+    TH2F *h_mTpcShiftEpRanA[3][9];
+    TH2F *h_mTpcShiftEpRanB[3][9];
+    TH2F *h_mTpcShiftEpFull[3][9];
     //--------------TPC EP---------------
     
     //--------------EPD EP---------------

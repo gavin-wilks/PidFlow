@@ -176,38 +176,38 @@ void StEventPlaneHistoManager::initTpcRawEP()
 {
   for(int i_cent = 0; i_cent < 9; ++i_cent)
   {
-    for(int order = 2; order <= 3; ++order)
+    for(int order = 1; order <= 3; ++order)
     {
       string HistName = Form("h_mTpcRawEpEast_%d_%d",order,i_cent);
-      h_mTpcRawEpEast[order-2][i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(double)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
+      h_mTpcRawEpEast[order-1][i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(double)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
       HistName = Form("h_mTpcRawEpWest_%d_%d",order,i_cent);
-      h_mTpcRawEpWest[order-2][i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(double)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
+      h_mTpcRawEpWest[order-1][i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(double)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
       HistName = Form("h_mTpcRawEpFull_%d_%d",order,i_cent);
-      h_mTpcRawEpFull[order-2][i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(double)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
+      h_mTpcRawEpFull[order-1][i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(double)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
     }
   }
 }
 
 void StEventPlaneHistoManager::fillTpcRawSubEP(int order, TVector2 QEast, TVector2 QWest, int Cent9, int runIndex)
 {
-  double PsiEast = 0.5*TMath::ATan2(QEast.Y(),QEast.X()); h_mTpcRawEpEast[order-2][Cent9]->Fill(runIndex,PsiEast);
-  double PsiWest = 0.5*TMath::ATan2(QWest.Y(),QWest.X()); h_mTpcRawEpWest[order-2][Cent9]->Fill(runIndex,PsiWest);
+  double PsiEast = (1.0/double(order))*TMath::ATan2(QEast.Y(),QEast.X()); h_mTpcRawEpEast[order-1][Cent9]->Fill(runIndex,PsiEast);
+  double PsiWest = (1.0/double(order))*TMath::ATan2(QWest.Y(),QWest.X()); h_mTpcRawEpWest[order-1][Cent9]->Fill(runIndex,PsiWest);
 }
 
 void StEventPlaneHistoManager::fillTpcRawFullEP(int order, TVector2 QFull, int Cent9, int runIndex)
 {
-  double PsiFull = 0.5*TMath::ATan2(QFull.Y(),QFull.X()); h_mTpcRawEpFull[order-2][Cent9]->Fill(runIndex,PsiFull);
+  double PsiFull = (1.0/double(order))*TMath::ATan2(QFull.Y(),QFull.X()); h_mTpcRawEpFull[order-1][Cent9]->Fill(runIndex,PsiFull);
 }
 
 void StEventPlaneHistoManager::writeTpcRawEP()
 {
   for(int i_cent = 0; i_cent < 9; ++i_cent)
   {
-    for(int order = 2; order <= 3; ++order)
+    for(int order = 1; order <= 3; ++order)
     {
-      h_mTpcRawEpEast[order-2][i_cent]->Write();
-      h_mTpcRawEpWest[order-2][i_cent]->Write();
-      h_mTpcRawEpFull[order-2][i_cent]->Write();
+      h_mTpcRawEpEast[order-1][i_cent]->Write();
+      h_mTpcRawEpWest[order-1][i_cent]->Write();
+      h_mTpcRawEpFull[order-1][i_cent]->Write();
     }
   }
 }
@@ -217,38 +217,38 @@ void StEventPlaneHistoManager::initTpcReCenterEP()
 {
   for(int i_cent = 0; i_cent < 9; ++i_cent)
   {
-    for(int order = 2; order <=3; ++order)
+    for(int order = 1; order <=3; ++order)
     {
       string HistName = Form("h_mTpcReCenterEpEast_%d_%d",order,i_cent);
-      h_mTpcReCenterEpEast[order-2][i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(double)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
+      h_mTpcReCenterEpEast[order-1][i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(double)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
       HistName = Form("h_mTpcReCenterEpWest_%d_%d",order,i_cent);
-      h_mTpcReCenterEpWest[order-2][i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(double)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
+      h_mTpcReCenterEpWest[order-1][i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(double)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
       HistName = Form("h_mTpcReCenterEpFull_%d_%d",order,i_cent);
-      h_mTpcReCenterEpFull[order-2][i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(double)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
+      h_mTpcReCenterEpFull[order-1][i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(double)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
     }
   }
 }
 
 void StEventPlaneHistoManager::fillTpcReCenterSubEP(int order, TVector2 QEast, TVector2 QWest, int Cent9, int runIndex)
 {
-  double PsiEast = 0.5*TMath::ATan2(QEast.Y(),QEast.X()); h_mTpcReCenterEpEast[order-2][Cent9]->Fill(runIndex,PsiEast);
-  double PsiWest = 0.5*TMath::ATan2(QWest.Y(),QWest.X()); h_mTpcReCenterEpWest[order-2][Cent9]->Fill(runIndex,PsiWest);
+  double PsiEast = (1.0/double(order))*TMath::ATan2(QEast.Y(),QEast.X()); h_mTpcReCenterEpEast[order-1][Cent9]->Fill(runIndex,PsiEast);
+  double PsiWest = (1.0/double(order))*TMath::ATan2(QWest.Y(),QWest.X()); h_mTpcReCenterEpWest[order-1][Cent9]->Fill(runIndex,PsiWest);
 }
 
 void StEventPlaneHistoManager::fillTpcReCenterFullEP(int order, TVector2 QFull, int Cent9, int runIndex)
 {
-  double PsiFull = 0.5*TMath::ATan2(QFull.Y(),QFull.X()); h_mTpcReCenterEpFull[order-2][Cent9]->Fill(runIndex,PsiFull);
+  double PsiFull = (1.0/double(order))*TMath::ATan2(QFull.Y(),QFull.X()); h_mTpcReCenterEpFull[order-1][Cent9]->Fill(runIndex,PsiFull);
 }
 
 void StEventPlaneHistoManager::writeTpcReCenterEP()
 {
   for(int i_cent = 0; i_cent < 9; ++i_cent)
   {
-    for(int order = 2; order <= 3; ++order)
+    for(int order = 1; order <= 3; ++order)
     {
-      h_mTpcReCenterEpEast[order-2][i_cent]->Write();
-      h_mTpcReCenterEpWest[order-2][i_cent]->Write();
-      h_mTpcReCenterEpFull[order-2][i_cent]->Write();
+      h_mTpcReCenterEpEast[order-1][i_cent]->Write();
+      h_mTpcReCenterEpWest[order-1][i_cent]->Write();
+      h_mTpcReCenterEpFull[order-1][i_cent]->Write();
     }
   }
 }
@@ -258,50 +258,50 @@ void StEventPlaneHistoManager::initTpcShiftEP()
 {
   for(int i_cent = 0; i_cent < 9; ++i_cent)
   {
-    for(int order = 2; order <= 3; ++order)
+    for(int order = 1; order <= 3; ++order)
     {
       string HistName = Form("h_mTpcShiftEpEast_%d_%d",order,i_cent);
-      h_mTpcShiftEpEast[order-2][i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(double)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
+      h_mTpcShiftEpEast[order-1][i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(double)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
       HistName = Form("h_mTpcShiftEpWest_%d_%d",order,i_cent);
-      h_mTpcShiftEpWest[order-2][i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(double)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
+      h_mTpcShiftEpWest[order-1][i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(double)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
       HistName = Form("h_mTpcShiftEpRanA_%d_%d",order,i_cent);
-      h_mTpcShiftEpRanA[order-2][i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(double)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
+      h_mTpcShiftEpRanA[order-1][i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(double)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
       HistName = Form("h_mTpcShiftEpRanB_%d_%d",order,i_cent);
-      h_mTpcShiftEpRanB[order-2][i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(double)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
+      h_mTpcShiftEpRanB[order-1][i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(double)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
       HistName = Form("h_mTpcShiftEpFull_%d_%d",order,i_cent);
-      h_mTpcShiftEpFull[order-2][i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(double)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
+      h_mTpcShiftEpFull[order-1][i_cent] = new TH2F(HistName.c_str(),HistName.c_str(),recoEP::mNumOfRunIndex,-0.5,(double)recoEP::mNumOfRunIndex-0.5,360,-1.0*TMath::Pi(),TMath::Pi());
     }
   }
 }
 
 void StEventPlaneHistoManager::fillTpcShiftSubEP(int order, double PsiEast, double PsiWest, int Cent9, int runIndex)
 {
-  h_mTpcShiftEpEast[order-2][Cent9]->Fill(runIndex,PsiEast);
-  h_mTpcShiftEpWest[order-2][Cent9]->Fill(runIndex,PsiWest);
+  h_mTpcShiftEpEast[order-1][Cent9]->Fill(runIndex,PsiEast);
+  h_mTpcShiftEpWest[order-1][Cent9]->Fill(runIndex,PsiWest);
 }
 
 void StEventPlaneHistoManager::fillTpcShiftRanEP(int order, double PsiRanA, double PsiRanB, int Cent9, int runIndex)
 {
-  h_mTpcShiftEpRanA[order-2][Cent9]->Fill(runIndex,PsiRanA);
-  h_mTpcShiftEpRanB[order-2][Cent9]->Fill(runIndex,PsiRanB);
+  h_mTpcShiftEpRanA[order-1][Cent9]->Fill(runIndex,PsiRanA);
+  h_mTpcShiftEpRanB[order-1][Cent9]->Fill(runIndex,PsiRanB);
 }
 
 void StEventPlaneHistoManager::fillTpcShiftFullEP(int order, double PsiFull, int Cent9, int runIndex)
 {
-  h_mTpcShiftEpFull[order-2][Cent9]->Fill(runIndex,PsiFull);
+  h_mTpcShiftEpFull[order-1][Cent9]->Fill(runIndex,PsiFull);
 }
 
 void StEventPlaneHistoManager::writeTpcShiftEP()
 {
   for(int i_cent = 0; i_cent < 9; ++i_cent)
   {
-    for(int order = 2; order <= 3; ++order)
+    for(int order = 1; order <= 3; ++order)
     {
-      h_mTpcShiftEpEast[order-2][i_cent]->Write();
-      h_mTpcShiftEpWest[order-2][i_cent]->Write();
-      h_mTpcShiftEpRanA[order-2][i_cent]->Write();
-      h_mTpcShiftEpRanB[order-2][i_cent]->Write();
-      h_mTpcShiftEpFull[order-2][i_cent]->Write();
+      h_mTpcShiftEpEast[order-1][i_cent]->Write();
+      h_mTpcShiftEpWest[order-1][i_cent]->Write();
+      h_mTpcShiftEpRanA[order-1][i_cent]->Write();
+      h_mTpcShiftEpRanB[order-1][i_cent]->Write();
+      h_mTpcShiftEpFull[order-1][i_cent]->Write();
     }
   }
 }
