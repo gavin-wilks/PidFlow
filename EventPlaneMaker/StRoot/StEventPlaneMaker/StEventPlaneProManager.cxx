@@ -624,6 +624,33 @@ void StEventPlaneProManager::writeTpcResolution()
   p_mTpcSubRes3->Write();
   p_mTpcRanRes3->Write();
 }
+
+void StEventPlaneProManager::initTpcFlowEta()
+{
+  for (int order=1; order<=3; order++)
+  { 
+    for (int icent=0; icent < 9; ++icent)
+    { 
+      p_mTpcFlowEta[order-1][icent] = new TProfile(Form("p_mTpcFlowEta%d_Cent%d",order,icent),Form("p_mTpcFlowEta%d_Cent%d",order,icent),30,-5.5,5.5);
+    }
+  }
+}
+
+void StEventPlaneProManager::fillTpcFlowEta(double eta, double v, int Cent9, int order, double weight)
+{
+  p_mTpcFlowEta[order-1][Cent9]->Fill(eta,v);
+}
+
+void StEventPlaneProManager::writeTpcFlowEta()
+{
+  for (int order=1; order<=3; order++)
+  { 
+    for (int icent=0; icent < 9; ++icent)
+    {
+      p_mTpcFlowEta[order-1][icent]->Write();
+    }
+  }
+}
 //---------------------------------------------------------------------------------
 
 //---------------------------------------------------------------------------------

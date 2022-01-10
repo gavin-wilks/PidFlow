@@ -168,6 +168,7 @@ class StEventPlaneProManager
     TProfile *p_mTpcSubRes3; // 3rd Res vs cent9
     TProfile *p_mTpcRanRes3; // 3rd Res vs cent9
 
+    TProfile *p_mTpcFlowEta[3][10];
     //--------------TPC EP---------------
 
     //--------------EPD EP---------------

@@ -546,7 +546,7 @@ int StEventPlaneMaker::Make()
       }
 
       if(mMode == 0)
-      { // fill ReCenter Correction for ZDC-SMD East/West & TPC East/West/Full
+      { // fill ReCenter Correction for TPC East/West/Full
 
 	// TPC: 
 	// fill recenter correction parameter & fill raw TPC EP
@@ -732,7 +732,7 @@ int StEventPlaneMaker::Make()
       }
 
       if(mMode == 1)
-      { // fill Shift Correction for ZDC-SMD East/West & TPC East/West/Full
+      { // fill Shift Correction for TPC East/West/Full
 
 	// TPC: 
 	// apply recenter correction to East/West/Full
