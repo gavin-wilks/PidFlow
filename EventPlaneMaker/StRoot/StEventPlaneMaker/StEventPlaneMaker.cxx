@@ -204,6 +204,7 @@ int StEventPlaneMaker::Init()
 
     mEventPlaneProManager->initTpcResolution(); // TPC
     mEventPlaneHistoManager->initTpcShiftEP();
+    mEventPlaneProManager->initTpcFlowEta();
     mTpcEpManager->readReCenterCorr(); // read in ReCenter Correction Parameters
     mTpcEpManager->readShiftCorr(); // read in ReCenter Correction Parameters
     mUsedTrackCounter = 0; // for Random EP
@@ -282,6 +283,7 @@ int StEventPlaneMaker::Finish()
 
       mEventPlaneProManager->writeTpcResolution(); // TPC
       mEventPlaneHistoManager->writeTpcShiftEP();
+      mEventPlaneProManager->writeTpcFlowEta();
 
       mFile_Resolution->Close();
     }
@@ -866,7 +868,31 @@ int StEventPlaneMaker::Make()
 	    double tpcPsi1West = mTpcEpManager->calShiftAngle1West();
 	    mEventPlaneProManager->fillTpcResSub(1,tpcPsi1East,tpcPsi1West,cent9,runIndex);
 	    mEventPlaneHistoManager->fillTpcShiftSubEP(1,tpcPsi1East,tpcPsi1West,cent9,runIndex);
-	  }
+	    
+            for(unsigned int i_track = 0; i_track < nTracks; ++i_track)
+	    { // calculate QVector after recenter correction
+	      StPicoTrack *picoTrack = (StPicoTrack*)mPicoDst->track(i_track); // get picoTrack
+	      TVector3 primMom; // temp fix for StThreeVectorF & TVector3
+	      const double primPx    = picoTrack->pMom().x(); // x works for both TVector3 and StThreeVectorF
+	      const double primPy    = picoTrack->pMom().y();
+	      const double primPz    = picoTrack->pMom().z();
+	      primMom.SetXYZ(primPx,primPy,primPz);
+	      const double primPt = primMom.Perp(); // track pT
+	      const double primEta = primMom.PseudoRapidity(); // track eta
+	      const double primPhi = primMom.Phi(); // track eta
+ 
+              if(mEventPlaneCut->passTrackChargedFlowEast(picoTrack,mPicoEvent))
+	      {
+	        const double v1Ep = TMath::Cos(1.0*(primPhi-tpcPsi1West));
+	        mEventPlaneProManager->fillTpcFlowEta(primEta, v1Ep, cent9, 1, reweight);
+	      }
+	      if(mEventPlaneCut->passTrackChargedFlowWest(picoTrack,mPicoEvent))
+	      {
+	        const double v1Ep = TMath::Cos(1.0*(primPhi-tpcPsi1East));
+	        mEventPlaneProManager->fillTpcFlowEta(primEta, v1Ep, cent9, 1, reweight);
+	      } 
+            }
+          }
 	}
 	if(mTpcEpManager->passTrackFullNumCut(1))
 	{ // fill shift correction for full EP
@@ -889,6 +915,30 @@ int StEventPlaneMaker::Make()
 	    double tpcPsi2West = mTpcEpManager->calShiftAngle2West();
 	    mEventPlaneProManager->fillTpcResSub(2,tpcPsi2East,tpcPsi2West,cent9,runIndex);
 	    mEventPlaneHistoManager->fillTpcShiftSubEP(2,tpcPsi2East,tpcPsi2West,cent9,runIndex);
+
+            for(unsigned int i_track = 0; i_track < nTracks; ++i_track)
+	    { // calculate QVector after recenter correction
+	      StPicoTrack *picoTrack = (StPicoTrack*)mPicoDst->track(i_track); // get picoTrack
+	      TVector3 primMom; // temp fix for StThreeVectorF & TVector3
+	      const double primPx    = picoTrack->pMom().x(); // x works for both TVector3 and StThreeVectorF
+	      const double primPy    = picoTrack->pMom().y();
+	      const double primPz    = picoTrack->pMom().z();
+	      primMom.SetXYZ(primPx,primPy,primPz);
+	      const double primPt = primMom.Perp(); // track pT
+	      const double primEta = primMom.PseudoRapidity(); // track eta
+	      const double primPhi = primMom.Phi(); // track eta
+
+              if(mEventPlaneCut->passTrackChargedFlowEast(picoTrack,mPicoEvent))
+	      {
+	        const double v2Ep = TMath::Cos(2.0*(primPhi-tpcPsi2West));
+                mEventPlaneProManager->fillTpcFlowEta(primEta, v2Ep, cent9, 2, reweight); 
+	      }
+	      if(mEventPlaneCut->passTrackChargedFlowWest(picoTrack,mPicoEvent))
+	      {
+	        const double v2Ep = TMath::Cos(2.0*(primPhi-tpcPsi2East));
+                mEventPlaneProManager->fillTpcFlowEta(primEta, v2Ep, cent9, 2, reweight);
+	      }
+            }
 	  }
 	}
 	if(mTpcEpManager->passTrackFullNumCut(2))
@@ -912,6 +962,30 @@ int StEventPlaneMaker::Make()
 	    double tpcPsi3West = mTpcEpManager->calShiftAngle3West();
 	    mEventPlaneProManager->fillTpcResSub(3,tpcPsi3East,tpcPsi3West,cent9,runIndex);
 	    mEventPlaneHistoManager->fillTpcShiftSubEP(3,tpcPsi3East,tpcPsi3West,cent9,runIndex);
+
+            for(unsigned int i_track = 0; i_track < nTracks; ++i_track)
+	    { // calculate QVector after recenter correction
+	      StPicoTrack *picoTrack = (StPicoTrack*)mPicoDst->track(i_track); // get picoTrack
+	      TVector3 primMom; // temp fix for StThreeVectorF & TVector3
+	      const double primPx    = picoTrack->pMom().x(); // x works for both TVector3 and StThreeVectorF
+	      const double primPy    = picoTrack->pMom().y();
+	      const double primPz    = picoTrack->pMom().z();
+	      primMom.SetXYZ(primPx,primPy,primPz);
+	      const double primPt = primMom.Perp(); // track pT
+	      const double primEta = primMom.PseudoRapidity(); // track eta
+	      const double primPhi = primMom.Phi(); // track eta
+
+              if(mEventPlaneCut->passTrackChargedFlowEast(picoTrack,mPicoEvent))
+	      {
+	        const double v3Ep = TMath::Cos(3.0*(primPhi-tpcPsi3West));
+                mEventPlaneProManager->fillTpcFlowEta(primEta, v3Ep, cent9, 3, reweight);
+	      }
+	      if(mEventPlaneCut->passTrackChargedFlowWest(picoTrack,mPicoEvent))
+	      {
+	        const double v3Ep = TMath::Cos(3.0*(primPhi-tpcPsi3East));
+                mEventPlaneProManager->fillTpcFlowEta(primEta, v3Ep, cent9, 3, reweight);
+	      }
+            }
 	  }
 	}
 	if(mTpcEpManager->passTrackFullNumCut(3))

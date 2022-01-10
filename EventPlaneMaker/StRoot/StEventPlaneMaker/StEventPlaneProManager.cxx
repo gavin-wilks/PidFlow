@@ -638,7 +638,7 @@ void StEventPlaneProManager::initTpcFlowEta()
 
 void StEventPlaneProManager::fillTpcFlowEta(double eta, double v, int Cent9, int order, double weight)
 {
-  p_mTpcFlowEta[order-1][Cent9]->Fill(eta,v);
+  p_mTpcFlowEta[order-1][Cent9]->Fill(eta,v,weight);
 }
 
 void StEventPlaneProManager::writeTpcFlowEta()
@@ -915,7 +915,7 @@ void StEventPlaneProManager::initEpdFlowEta()
 
 void StEventPlaneProManager::fillEpdFlowEta(double eta, double v, int Cent9, int order, double weight)
 {
-  p_mEpdFlowEta[order-1][Cent9]->Fill(eta,v);
+  p_mEpdFlowEta[order-1][Cent9]->Fill(eta,v,weight);
   p_mEpdFlowEtaWeights[order-1][Cent9]->Fill(eta,weight);
 }
 

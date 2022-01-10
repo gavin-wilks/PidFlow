@@ -54,6 +54,10 @@ class StEventPlaneProManager
     void fillTpcResSub(int order, double PsiEast, double PsiWest, int Cent9, int RunIndex);
     void fillTpcResRan(int order, double PsiRanA, double PsiRanB, int Cent9, int RunIndex);
     void writeTpcResolution();
+    
+    void initTpcFlowEta();
+    void fillTpcFlowEta(double eta, double v, int Cent9, int order, double weight);
+    void writeTpcFlowEta();
     //--------------TPC EP---------------
 
     //--------------EPD EP---------------
