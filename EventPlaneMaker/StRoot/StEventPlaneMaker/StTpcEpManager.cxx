@@ -728,13 +728,13 @@ void StTpcEpManager::readShiftCorr()
 double StTpcEpManager::AngleShift(double PsiRaw, int order)
 {
   double PsiCorr = PsiRaw;
-  if(PsiRaw > double(1.0/order)*TMath::Pi())
+  if(PsiRaw > 1.0/double(order)*TMath::Pi())
   {
-    PsiCorr = PsiRaw - TMath::Pi();
+    PsiCorr = PsiRaw - 2.0/double(order)*TMath::Pi();
   }
-  if(PsiRaw < -double(1.0/order)*TMath::Pi())
+  if(PsiRaw < -1.0/double(order)*TMath::Pi())
   {
-    PsiCorr = PsiRaw + TMath::Pi();
+    PsiCorr = PsiRaw + 2.0/double(order)*TMath::Pi();
   }
 
   return PsiCorr;

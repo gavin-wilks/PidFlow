@@ -339,7 +339,6 @@ void StEventPlaneHistoManager::fillEpdEp(StEpdEpInfo result, int CentId)
     h_mEpdEwPsi[order-1][0]->Fill(result.EastRawPsi(order),result.WestRawPsi(order));
     h_mEpdEwPsi[order-1][1]->Fill(result.EastPhiWeightedPsi(order),result.WestPhiWeightedPsi(order));
     h_mEpdEwPsi[order-1][2]->Fill(result.EastPhiWeightedAndShiftedPsi(order),result.WestPhiWeightedAndShiftedPsi(order));
-
     h_mEpdFullPsi[order-1][0]->Fill(result.FullRawPsi(order));
     h_mEpdFullPsi[order-1][1]->Fill(result.FullPhiWeightedPsi(order));
     h_mEpdFullPsi[order-1][2]->Fill(result.FullPhiWeightedAndShiftedPsi(order));

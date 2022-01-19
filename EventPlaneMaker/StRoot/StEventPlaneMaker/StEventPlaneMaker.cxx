@@ -23,7 +23,7 @@
 
 #include <algorithm>
 //#include <filesystem>
-
+#include <fstream>
 #include <TH1F.h>
 #include <TH2F.h>
 #include <TFile.h>
@@ -60,6 +60,7 @@ StEventPlaneMaker::StEventPlaneMaker(const char* name, StPicoDstMaker *picoMaker
     mInPut_EpdCorrections = Form("StRoot/StEventPlaneUtility/EpdCorrections/file_%s_EpdCorrections_1.root",recoEP::mBeamEnergy[energy].c_str());
     mOutPut_EpdCorrections = Form("file_%s_EpdCorrections_%d_%s.root",recoEP::mBeamEnergy[energy].c_str(),mEpdMode,jobId.c_str());
     mOutPut_EpdResults = Form("file_%s_EpdResEta_%d_%s.root",recoEP::mBeamEnergy[energy].c_str(),mEpdMode,jobId.c_str());  
+    //cout << "successfully instantised the epd" << endl;
   }
   if(mEpdMode == 3)
   {
@@ -107,15 +108,15 @@ int StEventPlaneMaker::Init()
   mTpcEpManager = new StTpcEpManager(mEnergy); // initialize TPC EP Manager
   mEpdEpManager = new StEpdEpManager(mEnergy); // initialize EPD EP Manager  
 
-  mEpdHits = new TClonesArray("StPicoEpdHit");
+  //mEpdHits = new TClonesArray("StPicoEpdHit");
 
-  mPicoDstChain = mPicoDstMaker->chain(); 
-  cout << "Chain counts = " << mPicoDstMaker->chain()->GetEntries() << endl;
+  //mPicoDstChain = mPicoDstMaker->chain(); 
+  //cout << "Chain counts = " << mPicoDstMaker->chain()->GetEntries() << endl;
   
-  unsigned int found;
-  mPicoDstChain->SetBranchStatus("EpdHit*",1,&found);   // note you need the asterisk
-  cout << "EpdHit Branch returned found= " << found << endl;
-  mPicoDstChain->SetBranchAddress("EpdHit",&mEpdHits);
+  //unsigned int found;
+  //mPicoDstChain->SetBranchStatus("EpdHit*",1,&found);   // note you need the asterisk
+  //cout << "EpdHit Branch returned found= " << found << endl;
+  //mPicoDstChain->SetBranchAddress("EpdHit",&mEpdHits);
 
   mEpFinder = new StEpdEpFinder(10,mOutPut_EpdCorrections.c_str(),mInPut_EpdCorrections.c_str()); // Set the nEventType to 1, since we do not have separation for centrality yet 
   mEpFinder->SetnMipThreshold(mMipThresh);  // recommended by EPD group
@@ -124,20 +125,31 @@ int StEventPlaneMaker::Init()
    
   mEpdGeom = new StEpdGeom;
 
-  double mEtaLin[3][9] = {{-1.950, -1.900, -1.850, -1.706, -1.438, -1.340, -1.045, -0.717, -0.700},
-                          {-1.950, -1.900, -1.850, -1.706, -1.438, -1.340, -1.045, -0.717, -0.700},
-                          {-1.950, -1.900, -1.850, -1.706, -1.438, -1.340, -1.045, -0.717, -0.700}};
-
-  double mEtaCub[3][9] = {{0.1608, 0.1600, 0.1600, 0.1595, 0.1457, 0.1369, 0.1092, 0.0772, 0.0700},
-                          {0.1608, 0.1600, 0.1600, 0.1595, 0.1457, 0.1369, 0.1092, 0.0772, 0.0700},
-                          {0.1608, 0.1600, 0.1600, 0.1595, 0.1457, 0.1369, 0.1092, 0.0772, 0.0700}};
-
+  double mEtaLin[3][9];
+  double mEtaCub[3][9];
+                     
+  if(mEpdMode == 3 || mEpdMode == 5)
+  {
+    std::ifstream etaweights(Form("StRoot/StEventPlaneUtility/EtaWeights/file_%s_EtaWeights.txt",recoEP::mBeamEnergy[mEnergy].c_str()));
+ 
+    for(int order = 1; order <= recoEP::mEpdEpOrder; order++)
+    {
+      for(int i_cent = 0; i_cent < 9; i_cent++)
+      {
+        etaweights >> mEtaLin[order-1][i_cent]; etaweights >> mEtaCub[order-1][i_cent];
+      }
+    } 
+  } 
   if(mEpdMode == 2)
   {
     mFile_EpdResults = new TFile(mOutPut_EpdResults.c_str(),"RECREATE");
  
     mEventPlaneProManager->initEpdRes();
-    mEventPlaneProManager->initEpdFlowEta(); 
+    mEventPlaneProManager->initEpdFlowEta();
+    mEventPlaneHistoManager->initEpdEp();
+    mEventPlaneHistoManager->initEpdQ();
+ 
+    //cout << "epd is initialized" << endl;
   }
   if(mEpdMode == 3)
   {
@@ -150,7 +162,7 @@ int StEventPlaneMaker::Init()
     }
     mEpFinder->SetEtaWeights(1,wt1);    
     
-    TH2D wt2("Order2etaWeight","Order2etaWeight",100,-5.5,5.5,10,0,10);
+    /*TH2D wt2("Order2etaWeight","Order2etaWeight",100,-5.5,5.5,10,0,10);
     for (int ix=1; ix<101; ix++){
       for (int iy=1; iy<11; iy++){
         double eta = wt2.GetXaxis()->GetBinCenter(ix);
@@ -166,7 +178,7 @@ int StEventPlaneMaker::Init()
         wt3.SetBinContent(ix,iy,mEtaLin[2][iy-1]*eta+mEtaCub[2][iy-1]*pow(eta,3));
       }
     }
-    mEpFinder->SetEtaWeights(3,wt3);   
+    mEpFinder->SetEtaWeights(3,wt3);   */
   }
   if(mEpdMode == 4)
   {
@@ -174,6 +186,7 @@ int StEventPlaneMaker::Init()
 
     mEventPlaneProManager->initEpdRes();
     mEventPlaneProManager->initEpdFlow();
+    mEventPlaneProManager->initEpdFlowEta();
     mEventPlaneHistoManager->initEpdEp();
     mEventPlaneHistoManager->initEpdQ();
   }
@@ -208,6 +221,7 @@ int StEventPlaneMaker::Init()
     mTpcEpManager->readReCenterCorr(); // read in ReCenter Correction Parameters
     mTpcEpManager->readShiftCorr(); // read in ReCenter Correction Parameters
     mUsedTrackCounter = 0; // for Random EP
+    //cout << "initialized the TPC" << endl;
   }
   if(mMode == 3)
   { // fill Charged Flow
@@ -246,6 +260,7 @@ int StEventPlaneMaker::Finish()
     mFile_EpdResults->cd();
     mEventPlaneProManager->writeEpdRes();
     mEventPlaneProManager->writeEpdFlow();
+    mEventPlaneProManager->writeEpdFlowEta();
     mEventPlaneHistoManager->writeEpdEp(); 
     mEventPlaneHistoManager->writeEpdQ();
     mFile_EpdResults->Close();
@@ -384,13 +399,13 @@ int StEventPlaneMaker::Make()
     //bool isPileUpEventStRefMultCorr = !mRefMultCorr->passnTofMatchRefmultCut(1.0*refMult, 1.0*numOfBTofMatch); // 27 GeV | always return !true for other energies
     bool isPileUpEvent = isPileUpEventStEventPlaneCut;// || isPileUpEventStRefMultCorr;
     // cout << "isPileUpEvent = " << isPileUpEvent << ", isPileUpEventStEventPlaneCut = " << isPileUpEventStEventPlaneCut << ", isPileUpEventStRefMultCorr = " << isPileUpEventStRefMultCorr << endl;
-
+    //cout << "We are in the make function" << endl;
     //if(mEventPlaneCut->passEventCut(mPicoDst) && !isPileUpEvent && cent9 > -0.5)
     if(mEventPlaneCut->passEventCut(mPicoDst) && !isPileUpEvent && cent9 > -0.5)
     { // apply Event Cuts for anlaysis 
-      
+      //cout << "Event passed the cut" << endl;
       StEpdEpInfo result;
-      if (mEpdMode < 5) result = mEpFinder->Results(mEpdHits,pv,cent9);
+      if (mEpdMode < 5 && mEpdMode >= 0) result = mEpFinder->Results(mPicoDst->picoArray(StPicoArrays::EpdHit),pv,cent9);
       
       mEpdEpManager->initEpdEp(cent9,runIndex);
       
@@ -398,48 +413,71 @@ int StEventPlaneMaker::Make()
       if(mEpdMode == 2)
       {// Fill TProfiles for EP resolution and numerator for flow calculations.
        // These two TProfile plots will be used to set eta weights in an external macro.
+        //cout << "We are in mEpdMode == 2" << endl;
+
         mEventPlaneProManager->fillEpdRes(result,cent9,runIndex); 
-
-        for(unsigned int iEpd = 0; iEpd < mPicoDst->numberOfEpdHits(); iEpd++) 
+        
+        if(mPicoDst->numberOfEpdHits() > 0)
         {
-          StPicoEpdHit *EpdHit = mPicoDst->epdHit(iEpd);
-          if (! EpdHit) continue;
-
-          TVector3 pos = mEpdGeom->RandomPointOnTile(EpdHit->id());
-          TVector3 StraightLine = pos - pv;
-          double phi = StraightLine.Phi();
-          while(phi < 0.0) phi += 2.0*TMath::Pi(); 
-          double eta = StraightLine.Eta();
-          if (!(fabs(eta) > 0) || (fabs(eta) > 1000)) continue;
-          int ew = (EpdHit->id() < 0)? 0 : 1;  //is EPD east or west
-
-          double nMip = EpdHit->nMIP(); // Weight of the track
-          double nMipEff = nMip; // Put a max on nMip in calculation to prevent slow tracks from overcontributing
-          if(nMipEff > 3.0) nMipEff = 3.0;
-          else if(nMipEff < 0.3) continue;
-
-          double v1, v2, v3; 
-          if (1 == ew){  //west
-            v1 = TMath::Cos(1.0*(phi-result.EastPhiWeightedAndShiftedPsi(1)));
-            v2 = TMath::Cos(2.0*(phi-result.EastPhiWeightedAndShiftedPsi(2)));
-            v3 = TMath::Cos(3.0*(phi-result.EastPhiWeightedAndShiftedPsi(3)));
+          cout << "Number of Epd Hits = " << mPicoDst->numberOfEpdHits() << endl;
+          for(unsigned int iEpd = 0; iEpd < mPicoDst->numberOfEpdHits(); iEpd++) 
+          {
  
-            mEventPlaneProManager->fillEpdFlowEta(eta,v1,cent9,1,nMipEff);
-            mEventPlaneProManager->fillEpdFlowEta(eta,v2,cent9,2,nMipEff); 
-            mEventPlaneProManager->fillEpdFlowEta(eta,v3,cent9,3,nMipEff);
+            //cout << "Before grabbing the epdHit" << endl;
+
+            StPicoEpdHit *EpdHit = mPicoDst->epdHit(iEpd);
+            if (! EpdHit) continue;
+
+            //cout << "We have an EPD hit" << endl;          
+
+            TVector3 pos = mEpdGeom->RandomPointOnTile(EpdHit->id());
+            TVector3 StraightLine = pos - pv;
+            double phi = StraightLine.Phi();
+            while(phi < 0.0) phi += 2.0*TMath::Pi(); 
+            double eta = StraightLine.Eta();
+            if (!(fabs(eta) > 0) || (fabs(eta) > 1000)) continue;
+      
+            //cout << "We have found the position of the hit" << endl;
+  
+            int ew = (EpdHit->id() < 0)? 0 : 1;  //is EPD east or west
+
+            double nMip = EpdHit->nMIP(); // Weight of the track
+            double nMipEff = nMip; // Put a max on nMip in calculation to prevent slow tracks from overcontributing 
+            if(nMipEff > 3.0) nMipEff = 3.0;
+            else if(nMipEff < 0.3) continue;
+
+            //cout << "Determined the weight of the track" << endl;
+
+            double v1, v2, v3; 
+            if (1 == ew){  //west
+              v1 = TMath::Cos(1.0*(phi-result.EastPhiWeightedAndShiftedPsi(1)));
+              v2 = TMath::Cos(2.0*(phi-result.EastPhiWeightedAndShiftedPsi(2)));
+              v3 = TMath::Cos(3.0*(phi-result.EastPhiWeightedAndShiftedPsi(3)));
+ 
+              mEventPlaneProManager->fillEpdFlowEta(eta,v1,cent9,1,nMipEff);
+              mEventPlaneProManager->fillEpdFlowEta(eta,v2,cent9,2,nMipEff); 
+              mEventPlaneProManager->fillEpdFlowEta(eta,v3,cent9,3,nMipEff);
+
+              //cout << "Filling west flow" << endl;
+            }
+            else if(0 == ew){ //east
+              v1 = TMath::Cos(1.0*(phi-result.WestPhiWeightedAndShiftedPsi(1)));
+              v2 = TMath::Cos(2.0*(phi-result.WestPhiWeightedAndShiftedPsi(2)));
+              v3 = TMath::Cos(3.0*(phi-result.WestPhiWeightedAndShiftedPsi(3)));
+ 
+              mEventPlaneProManager->fillEpdFlowEta(eta,v1,cent9,1,nMipEff);
+              mEventPlaneProManager->fillEpdFlowEta(eta,v2,cent9,2,nMipEff); 
+              mEventPlaneProManager->fillEpdFlowEta(eta,v3,cent9,3,nMipEff);
+              //cout << "Filling east flow" << endl;
+            } 
           }
-          else if(0 == ew){ //east
-            v1 = TMath::Cos(1.0*(phi-result.WestPhiWeightedAndShiftedPsi(1)));
-            v2 = TMath::Cos(2.0*(phi-result.WestPhiWeightedAndShiftedPsi(2)));
-            v3 = TMath::Cos(3.0*(phi-result.WestPhiWeightedAndShiftedPsi(3)));
- 
-            mEventPlaneProManager->fillEpdFlowEta(eta,v1,cent9,1,nMipEff);
-            mEventPlaneProManager->fillEpdFlowEta(eta,v2,cent9,2,nMipEff); 
-            mEventPlaneProManager->fillEpdFlowEta(eta,v3,cent9,3,nMipEff);
-          } 
+          //cout << "Outside of the loop" << endl;
+          mEventPlaneHistoManager->fillEpdEp(result, cent9);
+          //cout << "Filled EPD EP" << endl; 
+          mEventPlaneHistoManager->fillEpdQ(result, cent9);
+          //cout << "Filled EPD Q" << endl;
+          //cout << "Successfully ran make for EPD" << endl;
         }
-        mEventPlaneHistoManager->fillEpdEp(result, cent9); 
-        mEventPlaneHistoManager->fillEpdQ(result, cent9);
       }
       // mEpdMode == 3 recalculates the shift parameters using the proper eta weights (calculated from the flow output of mEpdMode == 2)
       // One must use the original mEpdMode == 0 corrections file for this step
@@ -812,20 +850,24 @@ int StEventPlaneMaker::Make()
 	// apply recenter correction & apply shift correction to East/West/Full
 	// fill EP Resolution for Sub/Ran & fill Shift TPC EP
 	// Random EP
+	//cout << "TPC mode = 2" << endl;
 	int ranTrack[mUsedTrackCounter];
 	double ranCounter = (double)mUsedTrackCounter/2.0 - 1.0;
 	for(int i_track = 0; i_track < mUsedTrackCounter; ++i_track)
 	{
 	  ranTrack[i_track] = i_track;
 	}
+        //cout << "Filled ranTrack" << endl;
 	std::srand(time(0));
 	std::random_shuffle(ranTrack,ranTrack+mUsedTrackCounter);
 	mUsedTrackCounter = 0;
 	for(unsigned int i_track = 0; i_track < nTracks; ++i_track)
 	{
+          //cout << "In the track loop" << endl;
 	  StPicoTrack *picoTrack = (StPicoTrack*)mPicoDst->track(i_track); // get picoTrack
 	  if(mEventPlaneCut->passTrackEp(picoTrack,mPicoEvent))
 	  { // track cut for EP reconstruction
+            //cout << "passTrackEp" << endl;
 	    TVector3 primMom; // temp fix for StThreeVectorF & TVector3
 	    const double primPx    = picoTrack->pMom().x(); // x works for both TVector3 and StThreeVectorF
 	    const double primPy    = picoTrack->pMom().y();
@@ -834,6 +876,7 @@ int StEventPlaneMaker::Make()
 	    const double primPt = primMom.Perp(); // track pT
 	    if(mTpcEpManager->passTrackEpFull(picoTrack)) // Full EP 
 	    {
+              //cout << "passTrackEpFull" << endl;
 	      if((double)ranTrack[mUsedTrackCounter] > ranCounter) // RanA
 	      {
 		mTpcEpManager->addTrackRanA(picoTrack);
@@ -860,12 +903,15 @@ int StEventPlaneMaker::Make()
 	TVector2 vTpcQ3West = mTpcEpManager->getQVector(1,3); // receter QVec West
 	TVector2 vTpcQ3Full = mTpcEpManager->getQVector(2,3); // receter QVec Full
 
+        //cout << "Grabbed Q vectors for each order" << endl;
+
         if(mTpcEpManager->passTrackEtaNumCut(1))
 	{ // fill shift correction for east/west sub EP
 	  if( !(vTpcQ1East.Mod() < 1e-10 || vTpcQ1West.Mod() < 1e-10) )
 	  {
 	    double tpcPsi1East = mTpcEpManager->calShiftAngle1East();
 	    double tpcPsi1West = mTpcEpManager->calShiftAngle1West();
+            //cout << "ORDER 1:  EastPsi = " << tpcPsi1East << "   WestPsi = " << tpcPsi1West << endl;
 	    mEventPlaneProManager->fillTpcResSub(1,tpcPsi1East,tpcPsi1West,cent9,runIndex);
 	    mEventPlaneHistoManager->fillTpcShiftSubEP(1,tpcPsi1East,tpcPsi1West,cent9,runIndex);
 	    
@@ -913,6 +959,8 @@ int StEventPlaneMaker::Make()
 	  {
 	    double tpcPsi2East = mTpcEpManager->calShiftAngle2East();
 	    double tpcPsi2West = mTpcEpManager->calShiftAngle2West();
+
+            //cout << "ORDER 2:  EastPsi = " << tpcPsi2East << "   WestPsi = " << tpcPsi2West << endl;
 	    mEventPlaneProManager->fillTpcResSub(2,tpcPsi2East,tpcPsi2West,cent9,runIndex);
 	    mEventPlaneHistoManager->fillTpcShiftSubEP(2,tpcPsi2East,tpcPsi2West,cent9,runIndex);
 
@@ -960,6 +1008,8 @@ int StEventPlaneMaker::Make()
 	  {
 	    double tpcPsi3East = mTpcEpManager->calShiftAngle3East();
 	    double tpcPsi3West = mTpcEpManager->calShiftAngle3West();
+
+            //cout << "ORDER 3:  EastPsi = " << tpcPsi3East << "   WestPsi = " << tpcPsi3West << endl;
 	    mEventPlaneProManager->fillTpcResSub(3,tpcPsi3East,tpcPsi3West,cent9,runIndex);
 	    mEventPlaneHistoManager->fillTpcShiftSubEP(3,tpcPsi3East,tpcPsi3West,cent9,runIndex);
 

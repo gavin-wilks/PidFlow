@@ -695,8 +695,8 @@ void StEventPlaneProManager::initChargedFlow()
     
     ProName = Form("p_mChargedV1EpEta_Cent%d",i_cent);
     p_mChargedV1EpEta[i_cent] = new TProfile(ProName.c_str(),ProName.c_str(),30,-5.5,5.5);
-    ProName = Form("p_mChargedV3EpEta_Cent%d",i_cent);
-    p_mChargedV3EpEta[i_cent] = new TProfile(ProName.c_str(),ProName.c_str(),30,-5.5,5.5);
+    ProName = Form("p_mChargedV2EpEta_Cent%d",i_cent);
+    p_mChargedV2EpEta[i_cent] = new TProfile(ProName.c_str(),ProName.c_str(),30,-5.5,5.5);
     ProName = Form("p_mChargedV3EpEta_Cent%d",i_cent);
     p_mChargedV3EpEta[i_cent] = new TProfile(ProName.c_str(),ProName.c_str(),30,-5.5,5.5);
   }
@@ -789,8 +789,8 @@ void StEventPlaneProManager::fillChargedV1Epd(double pt, double v1, double res1,
   {
     if(pt >= 0.2 && pt <= 5.2)
     {
-      p_mChargedV2EpdQA[Cent9]->Fill(RunIndex,v1/res1);
-      p_mChargedV2EpdQA[9]->Fill(RunIndex,v1/res1);
+      p_mChargedV1EpdQA[Cent9]->Fill(RunIndex,v1/res1);
+      p_mChargedV1EpdQA[9]->Fill(RunIndex,v1/res1);
     }
 
     p_mChargedV1Epd[Cent9]->Fill(pt,v1/res1);
@@ -879,12 +879,13 @@ void StEventPlaneProManager::fillEpdRes(StEpdEpInfo result, int Cent9, int RunIn
 {
   for (int order=1; order<=recoEP::mEpdEpOrder; order++)
   { 
-    p_mEpdAveCos[order-1][0]->Fill(double(Cent9),cos((double)order*(result.EastRawPsi(order)-result.WestRawPsi(order))));
-    p_mEpdAveCos[order-1][1]->Fill(double(Cent9),cos((double)order*(result.EastPhiWeightedPsi(order)-result.WestPhiWeightedPsi(order))));
-    p_mEpdAveCos[order-1][2]->Fill(double(Cent9),cos((double)order*(result.EastPhiWeightedAndShiftedPsi(order)-result.WestPhiWeightedAndShiftedPsi(order)))); 
-
-    p_mEpdSubResQA[order-1]->Fill((double)RunIndex,(double)Cent9,cos((double)order*(result.EastPhiWeightedAndShiftedPsi(order)-result.WestPhiWeightedAndShiftedPsi(order))));
-    p_mEpdSubRes[order-1]->Fill((double)Cent9,cos((double)order*(result.EastPhiWeightedAndShiftedPsi(order)-result.WestPhiWeightedAndShiftedPsi(order))));
+    p_mEpdAveCos[order-1][0]->Fill(double(Cent9),TMath::Cos((double)order*(result.EastRawPsi(order)-result.WestRawPsi(order))));
+    p_mEpdAveCos[order-1][1]->Fill(double(Cent9),TMath::Cos((double)order*(result.EastPhiWeightedPsi(order)-result.WestPhiWeightedPsi(order))));
+    p_mEpdAveCos[order-1][2]->Fill(double(Cent9),TMath::Cos((double)order*(result.EastPhiWeightedAndShiftedPsi(order)-result.WestPhiWeightedAndShiftedPsi(order)))); 
+    //cout << "Filled the avecos tprofiles for order " << order << endl;
+    p_mEpdSubResQA[order-1]->Fill((double)RunIndex,(double)Cent9,TMath::Cos((double)order*(result.EastPhiWeightedAndShiftedPsi(order)-result.WestPhiWeightedAndShiftedPsi(order))));
+    p_mEpdSubRes[order-1]->Fill((double)Cent9,TMath::Cos((double)order*(result.EastPhiWeightedAndShiftedPsi(order)-result.WestPhiWeightedAndShiftedPsi(order))));
+    //cout << "Filled the SubRes for order " << order << endl;
   }
 }
 
@@ -938,7 +939,7 @@ void StEventPlaneProManager::initEpdFlow()
     p_mEpdFlow[order-1] = new TProfile(Form("p_mEpdFlow%d",order),Form("p_mEpdFlow%d",order),9,-0.5,8.5);
     for (int icent=0; icent<10; ++icent)
     {
-      p_mEpdFlowQA[order-1][icent] = new TProfile(Form("p_mEpdFlowQA%d",order),Form("p_mEpdFlowQA%d",order),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5);   
+      p_mEpdFlowQA[order-1][icent] = new TProfile(Form("p_mEpdFlowQA%d_Cent%d",order,icent),Form("p_mEpdFlowQA%d_Cent%d",order,icent),recoEP::mNumOfRunIndex,-0.5,(float)recoEP::mNumOfRunIndex-0.5);   
     }
   }
 }

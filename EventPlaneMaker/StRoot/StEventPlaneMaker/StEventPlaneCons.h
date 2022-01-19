@@ -47,7 +47,7 @@ namespace recoEP
 
   const std::string mVStr[2] = {"pos","neg"};
   const std::string mOrder = "2nd";
-  const int mNumShiftOrder = 20;
+  const int mNumShiftOrder = 5;
 
   // EPD Event Plane
   const int mEpdEpOrder = 3;
