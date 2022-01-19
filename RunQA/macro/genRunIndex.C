@@ -6,7 +6,7 @@
 #include <iterator>
 #include "../StRoot/StRunQAMaker/StRunQACons.h"
 
-int genRunIndex(int energy = 0)
+int genRunIndex(int energy = 1)
 {
   const int numOfRuns = 4000;
   int runId[numOfRuns];
@@ -43,7 +43,7 @@ int genRunIndex(int energy = 0)
   }
   file_runList.close();
 
-  std::string outputfile = Form("/star/u/gwilks3/Workspace/VectorMesonSpinAlignment/RunQA/StRoot/StRunQAUtility/RunIndex/runIndex_%s.txt",runQA::mBeamEnergy[energy].c_str());
+  std::string outputfile = Form("/star/u/gwilks3/Workspace/VectorMesonSpinAlignment/PidFlow/RunQA/StRoot/StRunQAUtility/RunIndex/runIndex_%s.txt",runQA::mBeamEnergy[energy].c_str());
   std::ofstream file_runIndex;
   file_runIndex.open(outputfile.c_str());
   if (!file_runIndex.is_open()) 
