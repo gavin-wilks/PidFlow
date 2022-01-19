@@ -9,7 +9,7 @@ class StPicoEvent;
 
 StChain *chain;
 
-void recoEventPlane(const Char_t *inputFile="../FileList/19p6GeV_2019/pico_prod_random_test.list", const string jobId = "1", const Int_t Mode = 3, const Int_t EpdMode = 5, const Int_t energy = 1)
+void recoEventPlane(const Char_t *inputFile="../FileList/19p6GeV_2019/pico_prod_random_test.list", const string jobId = "1", const Int_t Mode = 2, const Int_t EpdMode = 2, const Int_t energy = 1)
 {
   // mBeamEnergy[NumBeamEnergy] = {"200GeV","54GeV","27GeV"};
   // Mode: 

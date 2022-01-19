@@ -31,11 +31,9 @@ outPath=/gpfs01/star/pwg/gwilks3/VectorMesonSpinAlignment/AuAu19p6GeV_2019
 #inputEpdMode=0
 #epdMode=1
 
-#mode=0
-epdMode=5
-
-
-
+mode=-1
+epdMode=4
+outDir=EpdEp
 #mode=0
 #outDir=ReCenterParameter
 
@@ -45,8 +43,8 @@ epdMode=5
 #mode=2
 #outDir=Resolution
 
-mode=3
-outDir=ChargedFlow
+#mode=3
+#outDir=ChargedFlow
 ##########Mode Selection##########
 
 mkdir -p JOBS/report

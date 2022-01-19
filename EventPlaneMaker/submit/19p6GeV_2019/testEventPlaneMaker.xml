@@ -2,7 +2,7 @@
 <!--
 <job minFilesPerProcess="10" filesPerHour="10" maxFilesPerProcess="10" fileListSyntax="paths" simulateSubmission="false">
 -->
-<job minFilesPerProcess="5" filesPerHour="10" maxFilesPerProcess="10" fileListSyntax="xrootd" simulateSubmission="false">
+<job minFilesPerProcess="5" filesPerHour="10" maxFilesPerProcess="5" fileListSyntax="xrootd" simulateSubmission="false">
 
 
   <command>
@@ -20,9 +20,7 @@
 
   <!--input URL="filelist:&listPath;/pico_prod_random.list" /-->
   <!--input URL="filelist:/star/u/gwilks3/Workspace/VectorMesonSpinAlignment/PidFlow/EventPlaneMaker/submit/19p6GeV_2019/resubmit.list" /-->
-  <!--input URL="catalog:star.bnl.gov?production=P16id,library=SL18f,filetype=daq_reco_picoDst,trgsetupname=AuAu_200_production_low_2014,storage=nfs,filename~st_physics" preferStorage="local" singleCopy="true" nFiles="1024"/>
-  -->
-  <input URL="catalog:star.bnl.gov?production=P21ic,library=SL21c,filetype=daq_reco_picoDst,trgsetupname=production_19GeV_2019,storage=nfs,filename~st_physics" preferStorage="local" singleCopy="true" nFiles="1000"/>
+  <input URL="catalog:star.bnl.gov?production=P21ic,library=SL21c,filetype=daq_reco_picoDst,trgsetupname=production_19GeV_2019,storage=nfs,filename~st_physics" preferStorage="local" singleCopy="true" nFiles="2000"/>
 
   <stdout URL="file:&outPath;/Log/PidFlow/&outDir;/$JOBID.out"/>
   <!-- <stdout URL="file:&#38;outPath;/Log/PidFlow/&#38;outDir;/$JOBID.out"/> -->
