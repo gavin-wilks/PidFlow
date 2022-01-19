@@ -28,21 +28,17 @@ void plotEpdEpResolution(int beamEnergy = 1, int EpdMode = 2, string JobId = "1"
   string corrName[3] = {"Raw", "Pw", "PwS"}; // Raw, phi-weighted, phi-weighted and shifted
  
   TProfile *p_mEpdSubRes[recoEP::mEpdEpOrder][3]; 
-  TProfile *p_mD12[3];
-  TProfile *p_mD12R1[3];
+  double Centrality_start[9] = {0.7,0.6,0.5,0.4,0.3,0.2,0.1,0.05,0.0}; 
+  double Centrality_stop[9]  = {0.8,0.7,0.6,0.5,0.4,0.3,0.2,0.1,0.05};  
+
+  double mEpdFullResVal[recoEP::mEpdEpOrder][3][9];
+  double mEpdFullResErr[recoEP::mEpdEpOrder][3][9];
 
   TGraphAsymmErrors *g_mEpdFullRes[recoEP::mEpdEpOrder][3];
  
-  const int nCent = 9;
-  double Centrality_start[9] = {0.7,0.6,0.5,0.4,0.3,0.2,0.1,0.05, 0.0};
-  double Centrality_stop[9]  = {0.8,0.7,0.6,0.5,0.4,0.3,0.2, 0.1,0.05};  
-
-  double mEpdFullResVal[recoEP::mEpdEpOrder][3][nCent];
-  double mEpdFullResErr[recoEP::mEpdEpOrder][3][nCent];
- 
   int color[4] = {1,2,4,3};
   int mstyle[4] = {21,25,24,20};
-  string inputfile = Form("/gpfs01/star/pwg/gwilks3/VectorMesonSpinAlignment/AuAu%s/OutPut/PidFlow/file_%s_EpdResults_%d_%s.root",recoEP::mBeamEnergy[beamEnergy],recoEP::mBeamEnergy[beamEnergy],EpdMode,JobId.c_str());
+  string inputfile = Form("../StRoot/StEventPlaneUtility/EpdResolution/file_%s_EpdResEta.root",recoEP::mBeamEnergy[beamEnergy]);
   TFile *File_InPut = TFile::Open(inputfile.c_str());
 
   TF1 *f_res = new TF1("f_res",ResolutionFull,0,10,0);
@@ -51,33 +47,36 @@ void plotEpdEpResolution(int beamEnergy = 1, int EpdMode = 2, string JobId = "1"
   {
     for(int order = 1; order <= recoEP::mEpdEpOrder; order++)
     {
-      string HistName = Form("EpdCos%d%s",order,corrName[i_corr].c_str());
+      string HistName = Form("p_mEpdCos%d%s",order,corrName[i_corr].c_str());
       p_mEpdSubRes[order-1][i_corr] = (TProfile*) File_InPut->Get(HistName.c_str());
       g_mEpdFullRes[order-1][i_corr] = new TGraphAsymmErrors();
-      for(int i_cent = 0; i_cent < nCent; ++i_cent)
+      for(int i_cent = 0; i_cent < 9; ++i_cent)
       {
         const double resRaw = p_mEpdSubRes[order-1][i_corr]->GetBinContent(p_mEpdSubRes[order-1][i_corr]->FindBin(i_cent));
         const double errRaw = p_mEpdSubRes[order-1][i_corr]->GetBinError(p_mEpdSubRes[order-1][i_corr]->FindBin(i_cent));
         if(resRaw > 0)
         {
-          const double resSub = TMath::Sqrt(resRaw);
-          const double errSub = errRaw/(2.0*TMath::Sqrt(resRaw));
+    
+          mEpdFullResVal[order-1][i_corr][i_cent] = TMath::Sqrt(resRaw);              
+          mEpdFullResErr[order-1][i_corr][i_cent] = errRaw/(2.0*TMath::Sqrt(resRaw));
 
-          const double chiSub = f_res->GetX(resSub);
-          const double errChiSub = errSub/f_res->Derivative(chiSub);
-          const double chiFull = chiSub*TMath::Sqrt(2.0);
-          mEpdFullResVal[order-1][i_corr][i_cent] = f_res->Eval(chiFull);
-          mEpdFullResErr[order-1][i_corr][i_cent] = f_res->Derivative(chiFull)*errChiSub*TMath::Sqrt(2.0);
+          //const double chiSub = f_res->GetX(resSub);
+          //const double errChiSub = errSub/f_res->Derivative(chiSub);
+          //const double chiFull = chiSub*TMath::Sqrt(2.0);
+          //mEpdFullResVal[order-1][i_corr][i_cent] = f_res->Eval(chiFull);
+          //mEpdFullResErr[order-1][i_corr][i_cent] = f_res->Derivative(chiFull)*errChiSub*TMath::Sqrt(2.0);
         }
-        cout << "i_cent = " << i_cent << ", resRaw = " << resRaw << ", resFull = " << mEpdFullResVal[order-1][i_corr][i_cent] << " +/  - " << mEpdFullResErr[order-1][i_corr][i_cent] << endl;
+        cout << "i_cent = " << i_cent << ", resRaw = " << resRaw << ", resFull = " << mEpdFullResVal[order-1][i_corr][i_cent] << " +/- " << mEpdFullResErr[order-1][i_corr][i_cent] << endl;
         cout << "order-1: " << order-1 << "  | i_corr: " << i_corr << "  | i_cent: " << i_cent << endl; 
-        g_mEpdFullRes[order-1][i_corr]->SetPoint(i_cent,50.0*(Centrality_start[i_cent]+Centrality_stop[i_cent]),mEpdFullResVal[order-1][i_corr][i_cent]*100.0);
+        double cx = 50.0*(Centrality_start[i_cent]+Centrality_stop[i_cent]);
+        double fval = mEpdFullResVal[order-1][i_corr][i_cent]*100.0;
+        g_mEpdFullRes[order-1][i_corr]->SetPoint(i_cent,double(cx),double(fval));
         g_mEpdFullRes[order-1][i_corr]->SetPointError(i_cent,0.0,0.0,mEpdFullResErr[order-1][i_corr][i_cent]*100.0,mEpdFullResErr[order-1][i_corr][i_cent]*100.0);
       }
     }
   }
  
-  string outputname = Form("./figures/EpdEpResolutions_%s_%d_%s.pdf",recoEP::mBeamEnergy[beamEnergy].c_str(),EpdMode,JobId.c_str()); 
+  string outputname = Form("./figures/EpdEpResolutions_%s_%s.pdf",recoEP::mBeamEnergy[beamEnergy].c_str(),JobId.c_str()); 
   string outputstart = Form("%s[",outputname.c_str());
   string outputstop = Form("%s]",outputname.c_str()); 
  

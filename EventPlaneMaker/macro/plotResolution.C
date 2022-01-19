@@ -30,60 +30,54 @@ void plotResolution(int beamEnergy = 1)
   double Centrality_start[9] = {0.7,0.6,0.5,0.4,0.3,0.2,0.1,0.05, 0.0};
   double Centrality_stop[9]  = {0.8,0.7,0.6,0.5,0.4,0.3,0.2, 0.1,0.05};
 
-  // ZDC-SMD event plane resolution
-  //double mZdcFullRes1Val[9];
-  //double mZdcFullRes1Err[9];
-  //double mZdcFullRes2Val[9];
-  //double mZdcFullRes2Err[9];
-  //TGraphAsymmErrors *g_mZdcFullRes1 = new TGraphAsymmErrors();
-  //TGraphAsymmErrors *g_mZdcFullRes2 = new TGraphAsymmErrors();
 
-  //// calculate 1st full event plane resolution
-  //cout << "ZDC-SMD Event Plane Resolution:" << endl;
-  //cout << "1st Full Event Plane:" << endl;
-  //TProfile *p_mZdcSubRes1 = (TProfile*)File_InPut->Get("p_mZdcSubRes1");
-  //for(int i_cent = 0; i_cent < 9; ++i_cent)
-  //{
-  //  const double resRaw = p_mZdcSubRes1->GetBinContent(p_mZdcSubRes1->FindBin(i_cent));
-  //  const double errRaw = p_mZdcSubRes1->GetBinError(p_mZdcSubRes1->FindBin(i_cent));
-  //  if(resRaw > 0)
-  //  {
-  //    const double resSub = TMath::Sqrt(resRaw); // take square root of <cos(psie-psiw)> for sub event plane resolution
-  //    const double errSub = errRaw/(2.0*TMath::Sqrt(resRaw)); // calculate the error for this operation
+  double mTpcSubRes1Val[9];
+  double mTpcSubRes1Err[9];
+  double mTpcFullRes1Val[9];
+  double mTpcFullRes1Err[9];
+  TGraphAsymmErrors *g_mTpcSubRes1 = new TGraphAsymmErrors();
+  TGraphAsymmErrors *g_mTpcFullRes1 = new TGraphAsymmErrors();
 
-  //    const double chiSub = f_res->GetX(resSub); // use function to retrieve the chi value (x) for this sub event plane resolution (y)
-  //    const double errChiSub = errSub/f_res->Derivative(chiSub); // calculate error for this value
-  //    const double chiFull = chiSub*TMath::Sqrt(2.0); // the full event plane chi = sqrt(2)*chi_sub
-  //    mZdcFullRes1Val[i_cent] = f_res->Eval(chiFull); // evaluate the function for this chi_full value to retrieve the full psi resolution
-  //    mZdcFullRes1Err[i_cent] = f_res->Derivative(chiFull)*errChiSub*TMath::Sqrt(2.0); // calculate the error
-  //  }
-  //  cout << "i_cent = " << i_cent << ", resRaw = " << resRaw << ", resFull = " << mZdcFullRes1Val[i_cent] << " +/  - " << mZdcFullRes1Err[i_cent] << endl;
-  //  g_mZdcFullRes1->SetPoint(i_cent,50.0*(Centrality_start[i_cent]+Centrality_stop[i_cent]),mZdcFullRes1Val[i_cent]*100.0);
-  //  g_mZdcFullRes1->SetPointError(i_cent,0.0,0.0,mZdcFullRes1Err[i_cent]*100.0,mZdcFullRes1Err[i_cent]*100.0);
-  //}
+  // calculate sub event plane resolution
+  cout << "TPC Event Plane Resolution:" << endl;
+  cout << "Sub Event Plane:" << endl;
+  TProfile *p_mTpcSubRes1 = (TProfile*)File_InPut->Get("p_mTpcSubRes1");
+  for(int i_cent = 0; i_cent < 9; ++i_cent)
+  {
+    const double resRaw = p_mTpcSubRes1->GetBinContent(p_mTpcSubRes1->FindBin(i_cent));
+    const double errRaw = p_mTpcSubRes1->GetBinError(p_mTpcSubRes1->FindBin(i_cent));
+    if(resRaw > 0)
+    {
+      mTpcSubRes1Val[i_cent] = TMath::Sqrt(resRaw);
+      mTpcSubRes1Err[i_cent] = errRaw/(2.0*TMath::Sqrt(resRaw));
+    }
+    cout << "i_cent = " << i_cent << ", resRaw = " << resRaw << ", resSub = " << mTpcSubRes1Val[i_cent] << " +/- " << mTpcSubRes1Err[i_cent] << endl;
+    g_mTpcSubRes1->SetPoint(i_cent,50.0*(Centrality_start[i_cent]+Centrality_stop[i_cent]),mTpcSubRes1Val[i_cent]*100.0);
+    g_mTpcSubRes1->SetPointError(i_cent,0.0,0.0,mTpcSubRes1Err[i_cent]*100.0,mTpcSubRes1Err[i_cent]*100.0);
+  }
 
-  //// calculate 2nd full event plane resolution
-  //cout << "2nd Full Event Plane:" << endl;
-  //TProfile *p_mZdcSubRes2 = (TProfile*)File_InPut->Get("p_mZdcSubRes2");
-  //for(int i_cent = 0; i_cent < 9; ++i_cent)
-  //{
-  //  const double resRaw = p_mZdcSubRes2->GetBinContent(p_mZdcSubRes2->FindBin(i_cent));
-  //  const double errRaw = p_mZdcSubRes2->GetBinError(p_mZdcSubRes2->FindBin(i_cent));
-  //  if(resRaw > 0)
-  //  {
-  //    const double resSub = TMath::Sqrt(resRaw);
-  //    const double errSub = errRaw/(2.0*TMath::Sqrt(resRaw));
+  // calculate full event plane resolution
+  cout << "Full Event Plane:" << endl;
+  TProfile *p_mTpcRanRes1 = (TProfile*)File_InPut->Get("p_mTpcRanRes1");
+  for(int i_cent = 0; i_cent < 9; ++i_cent)
+  {
+    const double resRaw = p_mTpcRanRes1->GetBinContent(p_mTpcRanRes1->FindBin(i_cent));
+    const double errRaw = p_mTpcRanRes1->GetBinError(p_mTpcRanRes1->FindBin(i_cent));
+    if(resRaw > 0)
+    {
+      const double resSub = TMath::Sqrt(resRaw);
+      const double errSub = errRaw/(2.0*TMath::Sqrt(resRaw));
 
-  //    const double chiSub = f_res->GetX(resSub);
-  //    const double errChiSub = errSub/f_res->Derivative(chiSub);
-  //    const double chiFull = chiSub*TMath::Sqrt(2.0);
-  //    mZdcFullRes2Val[i_cent] = f_res->Eval(chiFull);
-  //    mZdcFullRes2Err[i_cent] = f_res->Derivative(chiFull)*errChiSub*TMath::Sqrt(2.0);
-  //  }
-  //  cout << "i_cent = " << i_cent << ", resRaw = " << resRaw << ", resFull = " << mZdcFullRes2Val[i_cent] << " +/  - " << mZdcFullRes2Err[i_cent] << endl;
-  //  g_mZdcFullRes2->SetPoint(i_cent,50.0*(Centrality_start[i_cent]+Centrality_stop[i_cent]),mZdcFullRes2Val[i_cent]*100.0);
-  //  g_mZdcFullRes2->SetPointError(i_cent,0.0,0.0,mZdcFullRes2Err[i_cent]*100.0,mZdcFullRes2Err[i_cent]*100.0);
-  //}
+      const double chiSub = f_res->GetX(resSub);
+      const double errChiSub = errSub/f_res->Derivative(chiSub);
+      const double chiFull = chiSub*TMath::Sqrt(2.0);
+      mTpcFullRes1Val[i_cent] = f_res->Eval(chiFull);
+      mTpcFullRes1Err[i_cent] = f_res->Derivative(chiFull)*errChiSub*TMath::Sqrt(2.0);
+    }
+    cout << "i_cent = " << i_cent << ", resRaw = " << resRaw << ", resFull = " << mTpcFullRes1Val[i_cent] << " +/- " << mTpcFullRes1Err[i_cent] << endl;
+    g_mTpcFullRes1->SetPoint(i_cent,50.0*(Centrality_start[i_cent]+Centrality_stop[i_cent]),mTpcFullRes1Val[i_cent]*100.0);
+    g_mTpcFullRes1->SetPointError(i_cent,0.0,0.0,mTpcFullRes1Err[i_cent]*100.0,mTpcFullRes1Err[i_cent]*100.0);
+  }
 
   // TPC event plane resolution
   double mTpcSubRes2Val[9];
@@ -211,15 +205,15 @@ void plotResolution(int beamEnergy = 1)
   h_play->SetNdivisions(505,"Y");
   h_play->Draw("pE");
 
-  //g_mZdcFullRes1->SetMarkerStyle(21);
-  //g_mZdcFullRes1->SetMarkerColor(kGray+2);
-  //g_mZdcFullRes1->SetMarkerSize(1.5);
-  //g_mZdcFullRes1->Draw("pE Same");
+  g_mTpcSubRes1->SetMarkerStyle(24);
+  g_mTpcSubRes1->SetMarkerColor(kGreen+2);
+  g_mTpcSubRes1->SetMarkerSize(1.5);
+  g_mTpcSubRes1->Draw("pE Same");
 
-  //g_mZdcFullRes2->SetMarkerStyle(25);
-  //g_mZdcFullRes2->SetMarkerColor(kGray+2);
-  //g_mZdcFullRes2->SetMarkerSize(1.5);
-  //g_mZdcFullRes2->Draw("pE Same");
+  g_mTpcFullRes1->SetMarkerStyle(20);
+  g_mTpcFullRes1->SetMarkerColor(kGreen+2);
+  g_mTpcFullRes1->SetMarkerSize(1.5);
+  g_mTpcFullRes1->Draw("pE Same");
 
   g_mTpcSubRes2->SetMarkerStyle(24);
   g_mTpcSubRes2->SetMarkerColor(kAzure+2);
@@ -231,12 +225,12 @@ void plotResolution(int beamEnergy = 1)
   g_mTpcFullRes2->SetMarkerSize(1.5);
   g_mTpcFullRes2->Draw("pE Same");
 
-  g_mTpcSubRes3->SetMarkerStyle(25);
+  g_mTpcSubRes3->SetMarkerStyle(24);
   g_mTpcSubRes3->SetMarkerColor(kGray+2);
   g_mTpcSubRes3->SetMarkerSize(1.5);
   g_mTpcSubRes3->Draw("pE Same");
 
-  g_mTpcFullRes3->SetMarkerStyle(21);
+  g_mTpcFullRes3->SetMarkerStyle(20);
   g_mTpcFullRes3->SetMarkerColor(kGray+2);
   g_mTpcFullRes3->SetMarkerSize(1.5);
   g_mTpcFullRes3->Draw("pE Same");
@@ -244,6 +238,8 @@ void plotResolution(int beamEnergy = 1)
   TLegend *leg = new TLegend(0.60,0.70,0.85,0.85);
   leg->SetFillColor(10);
   leg->SetBorderSize(0);
+  leg->AddEntry(g_mTpcFullRes1,"1^{st} Full TPC EP","p");
+  leg->AddEntry(g_mTpcSubRes1,"1^{st} #eta_{sub} TPC EP","p");
   leg->AddEntry(g_mTpcFullRes2,"2^{nd} Full TPC EP","p");
   leg->AddEntry(g_mTpcSubRes2,"2^{nd} #eta_{sub} TPC EP","p");
   leg->AddEntry(g_mTpcFullRes3,"3^{rd} Full TPC EP","p");
